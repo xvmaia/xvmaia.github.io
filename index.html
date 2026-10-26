@@ -204,7 +204,7 @@ footer p{font-style:italic;color:var(--muted)}
 .lerr{min-height:24px;margin-top:10px;font-size:17px;color:var(--gold)}
 #lbody{text-align:left;font-size:20px;line-height:1.7;white-space:pre-wrap;animation:fadeup 1.4s ease both}
 #lbody .lt{font-family:"Great Vibes",cursive;font-size:38px;color:var(--gold);text-align:center;white-space:normal;margin-bottom:12px;line-height:1.2}
-.keybtn{position:fixed;top:12px;right:92px;z-index:40;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:16px;cursor:pointer;animation:bump .6s 3}
+.keybtn{position:fixed;top:12px;right:150px;z-index:40;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:16px;cursor:pointer;animation:bump .6s 3}
 .whisper:empty{display:none}
 
 .letterform{text-align:left}
@@ -252,6 +252,19 @@ footer p{font-style:italic;color:var(--muted)}
 .pet .say{font-size:9px;line-height:1.6;min-height:30px}
 .pbtn{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px}
 .status{font-family:Montserrat,sans-serif;font-weight:600;font-size:15px;margin:6px 0;color:var(--gold)}
+
+.trophy{display:none;position:fixed;top:12px;right:92px;z-index:40;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:16px;cursor:pointer}
+.js .trophy{display:block}
+.namebar{display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;margin:10px 0}
+.namebar input,.rkbox input{padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-family:Montserrat,sans-serif;font-size:14px;text-align:center;width:160px}
+.namebar .btn,.rkbox .btn{padding:8px 14px;font-size:11px}
+.rkbox{margin-top:14px;padding:12px;border:1px dashed var(--gold);border-radius:16px;font-size:17px}
+.rkbox .btn{margin:6px 3px 0}
+.rkrow{display:flex;align-items:center;gap:10px;padding:8px 8px;border-bottom:1px dashed var(--line);text-align:left}
+.rkrow .pos{width:34px;font-size:20px;text-align:center}.rkrow .nm{flex:1;font-weight:600;word-break:break-word}.rkrow .sc{font-family:Montserrat,sans-serif;font-size:13px;color:var(--muted);white-space:nowrap}
+.rkrow.me{background:rgba(244,154,200,.18);border-radius:10px}
+.rkrow .rm{border:0;background:none;cursor:pointer;font-size:16px}
+.who{font-family:Montserrat,sans-serif;font-size:12px;color:var(--muted);margin:2px 0 6px}
 </style>
 <script>document.documentElement.classList.add("js")</script>
 </head>
@@ -416,6 +429,7 @@ footer p{font-style:italic;color:var(--muted)}
   </footer>
 </main>
 <div class="hearts" id="hearts" aria-hidden="true"></div>
+<button class="trophy" id="trophy" aria-label="Ranking de corazones">🏆</button>
 <button class="keybtn" id="keybtn" aria-label="Clave" style="display:none">🔑</button>
 <div class="pill" id="pill">♡ <b id="hc">0</b></div>
 <div class="modal" id="modal" hidden><div class="mbox"><button class="bk" id="mbk" aria-label="Más juegos" style="display:none">🎮</button><button class="x" id="mx" aria-label="Cerrar">✕</button><h3 id="mt"></h3><div id="mb"></div></div></div>
@@ -489,7 +503,7 @@ function animalTap(set){
 let hearts = ls("xv_hearts"), sessHearts = 0;
 $("hc").textContent = hearts;
 function addHeart(e){
-  hearts++; sessHearts++; ls("xv_hearts",hearts); if(sessHearts>=12) showKey(); $("hc").textContent = hearts;
+  hearts++; sessHearts++; ls("xv_hearts",hearts); if(sessHearts>=12) showKey(); scheduleHeartRank(); $("hc").textContent = hearts;
   const p=$("pill"); p.classList.remove("bump"); void p.offsetWidth; p.classList.add("bump");
   burst(e.clientX,e.clientY,["💗","♡","💖"],5,60);
   const m={10:"¡10 corazones! Maia se emociona 💗",25:"¡25! Ya sos de la familia 🥹",50:"¡50 corazones! Qué generosidad 💖",100:"¡100! Corazón de oro 🏆",250:"¡250! Esto ya es una obsesión adorable 😍"}[hearts];
@@ -578,7 +592,7 @@ function catGame(){
   function end(){
     stop(); holes.forEach(h=>{h.disabled=true;h.textContent="";});
     const m= score>=18 ? "¡Leyenda felina! Ninguna lagartija se te escapa 👑" : score>=12 ? "¡Excelente! Cazadora nata 🐾" : score>=6 ? "Nada mal. Las lagartijas ya tiemblan 🦎" : "Las lagartijas se burlan de vos… ¡revancha! 😛";
-    $("gend").innerHTML=score+" lagartijas. "+m+ENDB; wireEnd(); if(score>=12) confetti(40);
+    $("gend").innerHTML=score+" lagartijas. "+m+ENDB; wireEnd(); if(score>=12) confetti(40); rankAfter(0,score);
   }
 }
 function yarnGame(){
@@ -588,7 +602,7 @@ function yarnGame(){
   yb.onclick=()=>{ score++; $("gs").textContent=score; yb.style.transform="rotate("+(score*35)+"deg) scale("+(1+(score%2)*.12)+")"; };
   const clock=setInterval(()=>{ t--; $("gt").textContent=t; if(t<=0){ stop(); yb.disabled=true;
     const m= score>=60?"¡Gato mareado, pero campeón! 🏆":score>=40?"¡Qué velocidad! El gato te mira con respeto 🐾":score>=25?"Buen ritmo. El ovillo quedó hecho un lío 🧶":"El ovillo ni se enteró… ¡otra vez! 😹";
-    $("gend").innerHTML=score+" toques. "+m+ENDB; wireEnd(); if(score>=40) confetti(40); } },1000);
+    $("gend").innerHTML=score+" toques. "+m+ENDB; wireEnd(); if(score>=40) confetti(40); rankAfter(1,score); } },1000);
   stop=()=>clearInterval(clock);
 }
 function fishGame(){
@@ -609,7 +623,7 @@ function fishGame(){
   function end(){
     const avg=Math.round(times.reduce((a,b)=>a+b,0)/times.length);
     const m= avg<350?"Reflejos de ninja 🥷":avg<500?"¡Muy rápida! 🐾":avg<750?"Normalita. El gato bosteza 😺":"Más lenta que una siesta 😴";
-    fb.disabled=true; fb.textContent="🐟"; $("gend").innerHTML="Promedio: "+avg+" ms. "+m+ENDB; wireEnd(); if(avg<500) confetti(35);
+    fb.disabled=true; fb.textContent="🐟"; $("gend").innerHTML="Promedio: "+avg+" ms. "+m+ENDB; wireEnd(); if(avg<500) confetti(35); rankAfter(2,avg);
   }
   stop=()=>clearTimeout(tm); next();
 }
@@ -625,7 +639,7 @@ function lizGame(){
       if(open.length===2){
         moves++; $("mm").textContent=moves; const [a,b]=open;
         if(a.dataset.e===b.dataset.e){ a.className=b.className="mc done"; open=[]; pairs++; $("mp").textContent=pairs;
-          if(pairs===6){ $("gend").innerHTML="¡Ganaste en "+moves+" intentos! "+(moves<=8?"Memoria de elefante 🐘":"¡Muy bien, lagartija lista! 🦎")+ENDB; wireEnd(); confetti(50); } }
+          if(pairs===6){ $("gend").innerHTML="¡Ganaste en "+moves+" intentos! "+(moves<=8?"Memoria de elefante 🐘":"¡Muy bien, lagartija lista! 🦎")+ENDB; wireEnd(); confetti(50); rankAfter(3,moves); } }
         else { lock=true; setTimeout(()=>{ [a,b].forEach(x=>{x.className="mc";x.textContent="?";}); open=[]; lock=false; },700); }
       }
     }; });
@@ -641,7 +655,7 @@ function simonGame(){
     p.onclick=()=>{ if(lock) return; flash(i);
       if(i===seq[pos]){ pos++; if(pos===seq.length){ $("sl").textContent=seq.length; lock=true; stat("✅ ¡Bien! Se viene otra ronda"); timers.push(setTimeout(play,900)); } }
       else { lock=true; const n=seq.length-1; stat("❌ Ups, te equivocaste");
-        $("gend").innerHTML=(n>=8?"¡Memoria brillante! 🧠":n>=5?"¡Muy bien! 🦎":n>=3?"Nada mal 😄":"La lagartija se distrajo con una mosca 🪰")+" Superaste "+n+" rondas."+ENDB; wireEnd(); if(n>=5) confetti(35); } }; }
+        $("gend").innerHTML=(n>=8?"¡Memoria brillante! 🧠":n>=5?"¡Muy bien! 🦎":n>=3?"Nada mal 😄":"La lagartija se distrajo con una mosca 🪰")+" Superaste "+n+" rondas."+ENDB; wireEnd(); if(n>=5) confetti(35); rankAfter(4,n); } }; }
   stop=()=>timers.forEach(clearTimeout); play();
 }
 function flyGame(){
@@ -652,7 +666,7 @@ function flyGame(){
     f.onclick=()=>{ score++; $("gs").textContent=score; f.textContent="😋"; f.onclick=null; setTimeout(()=>f.remove(),200); }; ar.appendChild(f); setTimeout(()=>f.remove(),1100); },550);
   const clock=setInterval(()=>{ t--; $("gt").textContent=t; if(t<=0){ stop(); ar.innerHTML="";
     const m= score>=18?"¡Lengua de campeona! 👑":score>=12?"¡Cazadora profesional! 🦎":score>=6?"Bien, hoy cenás liviano 🪰":"Las moscas se ríen de vos… ¡otra vez! 😛";
-    $("gend").innerHTML=score+" moscas. "+m+ENDB; wireEnd(); if(score>=12) confetti(40); } },1000);
+    $("gend").innerHTML=score+" moscas. "+m+ENDB; wireEnd(); if(score>=12) confetti(40); rankAfter(5,score); } },1000);
   stop=()=>{ clearInterval(spawn); clearInterval(clock); };
 }
 
@@ -680,7 +694,7 @@ function snakeGame(){
   function end(){
     cleanup(); snakeBest=Math.max(snakeBest,score); $("gb").textContent=snakeBest;
     const m=score>=20?"¡Reina de las moscas! 🏆":score>=10?"¡Muy bien! Como en los viejos celulares 📱":score>=4?"Nada mal, seguí practicando 🦎":"La lagartija se enredó 😅";
-    $("gend").innerHTML=score+" moscas. "+m+ENDB; wireEnd(); if(score>=10) confetti(40);
+    $("gend").innerHTML=score+" moscas. "+m+ENDB; wireEnd(); if(score>=10) confetti(40); rankAfter(6,score);
   }
   function step(){
     dir=nd; const h={x:(snake[0].x+dir.x+N)%N,y:(snake[0].y+dir.y+N)%N};
@@ -801,6 +815,85 @@ function rpsGame(){
   stop=()=>clearTimeout(tm);
 }
 
+
+/* ---------- nombres y rankings (compartidos entre invitados) ---------- */
+const RK="https://textdb.dev/api/data/xvmaia-xv-ranking-9b8a290d7eb4-";
+const cleanName=t=>String(t||"").replace(/[\u0000-\u001f<>]/g,"").replace(/\s+/g," ").trim().slice(0,20);
+const getName=()=>{ try{ return cleanName(localStorage.getItem("xv_name")||""); }catch(e){ return ""; } };
+const setName=n=>{ try{ localStorage.setItem("xv_name",cleanName(n)); }catch(e){} };
+async function rkGet(id){ try{ const t=await getText(RK+id); const a=JSON.parse(t); return Array.isArray(a)?a.filter(x=>x&&typeof x.n==="string"&&typeof x.s==="number"):[]; }catch(e){ return []; } }
+async function rkSubmit(id,name,score,high){
+  const better=(a,b)=>high?a>b:a<b;
+  for(let tries=0;tries<3;tries++){
+    let list=await rkGet(id);
+    const i=list.findIndex(x=>x.n.toLowerCase()===name.toLowerCase());
+    if(i>=0){ if(!better(score,list[i].s)) return list; list[i]={n:name,s:score,d:Date.now()}; } else list.push({n:name,s:score,d:Date.now()});
+    list.sort((a,b)=>high?b.s-a.s:a.s-b.s); list=list.slice(0,30);
+    await putText(RK+id,JSON.stringify(list));
+    const chk=await rkGet(id); if(chk.some(x=>x.n.toLowerCase()===name.toLowerCase()&&x.s===score)) return chk;
+  }
+  return await rkGet(id);
+}
+const MEDAL=["🥇","🥈","🥉"];
+function nameRow(onSave){
+  const box=document.createElement("div"); box.className="namebar";
+  box.innerHTML='<span class="who">👤 Tu nombre:</span><input maxlength="20" placeholder="Ej: Sofi" autocomplete="off"><button class="btn solid" type="button">Guardar</button>';
+  const inp=box.querySelector("input"), btn=box.querySelector("button"); inp.value=getName();
+  btn.onclick=()=>{ const n=cleanName(inp.value); if(!n){ inp.focus(); return; } setName(n); btn.textContent="Guardado ✓"; onSave&&onSave(n); setTimeout(()=>btn.textContent="Guardar",1500); };
+  return box;
+}
+async function showRanking(id,title,high,fmt,back){
+  stop(); stop=()=>{}; modal.hidden=false; $("mbk").style.display="none";
+  mt.textContent="🏆 "+title;
+  mb.innerHTML='<p class="hint2">Los mejores jugadores. ¡Poné tu nombre y entrá al ranking!</p><div id="rklist">Cargando…</div><div id="rkfoot"></div>';
+  const foot=$("rkfoot"); foot.appendChild(nameRow(n=>{ if(id==="corazones"&&hearts>0) rkSubmit(id,n,hearts,true).then(()=>showRanking(id,title,high,fmt,back)).catch(()=>{}); }));
+  const bk=document.createElement("button"); bk.className="btn"; bk.textContent="Volver"; bk.style.marginTop="12px"; bk.onclick=back||openMenu; foot.appendChild(bk);
+  const list=await rkGet(id), box=$("rklist"); if(!box) return; box.textContent="";
+  if(!list.length){ box.textContent="Todavía no hay nadie en el ranking. ¡Sé el primero!"; return; }
+  const me=getName().toLowerCase();
+  list.slice(0,10).forEach((it,k)=>{
+    const row=document.createElement("div"); row.className="rkrow"+(it.n.toLowerCase()===me?" me":"");
+    const pos=document.createElement("span"); pos.className="pos"; pos.textContent=MEDAL[k]||String(k+1); row.appendChild(pos);
+    const nm=document.createElement("span"); nm.className="nm"; nm.textContent=it.n; row.appendChild(nm);
+    const sc=document.createElement("span"); sc.className="sc"; sc.textContent=fmt(it.s); row.appendChild(sc);
+    if(adm){ const rm=document.createElement("button"); rm.className="rm"; rm.textContent="🗑"; rm.title="Quitar del ranking";
+      rm.onclick=async()=>{ if(rm.dataset.a!=="1"){ rm.dataset.a="1"; rm.textContent="¿Seguro?"; setTimeout(()=>{ rm.dataset.a=""; rm.textContent="🗑"; },3000); return; }
+        try{ const cur=await rkGet(id); await putText(RK+id,JSON.stringify(cur.filter(x=>!(x.n===it.n&&x.s===it.s)))); row.remove(); }catch(e){ rm.textContent="Error"; } };
+      row.appendChild(rm); }
+    box.appendChild(row);
+  });
+}
+async function rankAfter(i,score){
+  const g=GAMES[i], r=g.rk; if(!r) return; const area=$("gend"); if(!area) return;
+  if(r.high && score<=0) return;
+  const box=document.createElement("div"); box.className="rkbox"; area.appendChild(box);
+  const done=async name=>{
+    box.textContent="Guardando en el ranking…";
+    try{
+      const list=await rkSubmit(r.id,name,score,r.high); const pos=list.findIndex(x=>x.n.toLowerCase()===name.toLowerCase())+1;
+      const mine=list.find(x=>x.n.toLowerCase()===name.toLowerCase());
+      box.textContent=""; const t=document.createElement("div"); t.textContent=(pos>0?"🏆 Puesto #"+pos+" · ":"")+"Tu mejor: "+(mine?r.fmt(mine.s):r.fmt(score)); box.appendChild(t);
+      const v=document.createElement("button"); v.className="btn"; v.textContent="Ver ranking"; v.onclick=()=>showRanking(r.id,g.n,r.high,r.fmt,()=>openGame(i,true)); box.appendChild(v);
+    }catch(e){ box.textContent="No se pudo guardar el puntaje 📶"; }
+  };
+  const name=getName();
+  if(name){ done(name); }
+  else {
+    box.innerHTML='<div>🏆 Poné tu nombre para entrar al ranking</div>'; box.appendChild(nameRow(n=>done(n)));
+  }
+}
+async function openHeartsRank(){
+  const fmt=n=>n+" ❤";
+  showRanking("corazones","Más corazones",true,fmt,()=>{ closeGame(); });
+  // submit the player's current total once they have a name
+}
+let heartTimer=null;
+function scheduleHeartRank(){
+  clearTimeout(heartTimer);
+  heartTimer=setTimeout(()=>{ const n=getName(); if(n&&hearts>0) rkSubmit("corazones",n,hearts,true).catch(()=>{}); },6000);
+}
+$("trophy").addEventListener("click",()=>{ const n=getName(); if(n&&hearts>0) rkSubmit("corazones",n,hearts,true).catch(()=>{}).finally(()=>openHeartsRank()); else openHeartsRank(); });
+
 const GAMES=[
  {n:"Atrapá a la lagartija",e:"🦎",run:catGame,how:["Van apareciendo 🦎 en los huecos.","Tocalas antes de que se escondan.","Tenés 20 segundos. ¡Cada una vale 1 punto!"]},
  {n:"El ovillo",e:"🧶",run:yarnGame,how:["Tocá el ovillo 🧶 lo más rápido que puedas.","Tenés 10 segundos. ¡Cada toque suma un punto!"]},
@@ -814,16 +907,34 @@ const GAMES=[
  {n:"Mascota virtual",e:"🥚",retro:true,run:petGame,how:["Elegí si querés cuidar a un lagartito 🦎 o a un gatito 🐈.","Necesita comida, diversión y energía: tocá Comer, Jugar o 😴 Dormir cuando una barra baje.","Si las tres barras se mantienen altas un rato, ¡sube de nivel!"]},
  {n:"Piedra, papel o tijera",e:"✌️",retro:true,run:rpsGame,how:["Vos sos la lagartija 🦎 y la compu es el gato 🐈.","Elegí ✊ piedra, ✋ papel o ✌️ tijera: la piedra gana a la tijera, la tijera al papel y el papel a la piedra.","El primero en llegar a 3 puntos gana."]}
 ];
+GAMES[0].rk={id:"lagartijas",high:true,fmt:s=>s+" lagartijas"};
+GAMES[1].rk={id:"ovillo",high:true,fmt:s=>s+" toques"};
+GAMES[2].rk={id:"reflejos",high:false,fmt:s=>s+" ms"};
+GAMES[3].rk={id:"memoria",high:false,fmt:s=>s+" intentos"};
+GAMES[4].rk={id:"simon",high:true,fmt:s=>s+" rondas"};
+GAMES[5].rk={id:"moscas",high:true,fmt:s=>s+" moscas"};
+GAMES[6].rk={id:"veloz",high:true,fmt:s=>s+" moscas"};
 function openMenu(){
   stop(); stop=()=>{}; modal.hidden=false; $("mbk").style.display="none"; mt.textContent="🎮 Sala de juegos";
   const tile=(g,i)=>'<button class="tile'+(g.retro?' retro':'')+'" data-i="'+i+'"><span class="te">'+g.e+'</span><span class="tn'+(g.retro?' px':'')+'" style="'+(g.retro?'font-size:10px;line-height:1.5':'')+'">'+g.n+'</span></button>';
   mb.innerHTML='<p class="hint2">Elegí un juego. Todos explican cómo se juega antes de empezar.</p><div class="sec">Con la lagartija y el gato</div><div class="tiles">'+GAMES.map((g,i)=>g.retro?'':tile(g,i)).join("")+'</div><div class="sec">Recuerdos retro · años 80 y 90</div><div class="tiles">'+GAMES.map((g,i)=>g.retro?tile(g,i):'').join("")+'</div>';
   mb.querySelectorAll(".tile").forEach(t=>t.onclick=()=>openGame(+t.dataset.i));
+  mb.insertBefore(nameRow(()=>{}),mb.children[1]);
+  const rk=document.createElement("button"); rk.className="btn solid"; rk.textContent="🏆 Ver rankings"; rk.style.marginTop="6px"; rk.onclick=openRankMenu; mb.appendChild(rk);
+}
+function openRankMenu(){
+  stop(); stop=()=>{}; modal.hidden=false; $("mbk").style.display="none"; mt.textContent="🏆 Rankings";
+  const items=GAMES.map((g,i)=>g.rk?{e:g.e,n:g.n,i}:null).filter(Boolean);
+  mb.innerHTML='<p class="hint2">Elegí un ranking para ver quién va primero.</p><div class="tiles">'+items.map(x=>'<button class="tile" data-i="'+x.i+'"><span class="te">'+x.e+'</span><span class="tn">'+x.n+'</span></button>').join("")+'<button class="tile" data-h="1"><span class="te">❤️</span><span class="tn">Más corazones</span></button></div><button class="btn" id="rkb2">Volver</button>';
+  mb.querySelectorAll(".tile").forEach(t=>t.onclick=()=>{ if(t.dataset.h){ openHeartsRank(); } else { const g=GAMES[+t.dataset.i], r=g.rk; showRanking(r.id,g.n,r.high,r.fmt,openRankMenu); } });
+  $("rkb2").onclick=openMenu;
 }
 function showHow(g){
   mt.textContent=g.e+" "+g.n;
   mb.innerHTML='<div class="how"><div class="how-t">Cómo se juega</div><ol>'+g.how.map(x=>'<li>'+x+'</li>').join("")+'</ol></div><button class="btn solid" id="gogo">¡Jugar!</button>';
   $("gogo").onclick=()=>{ g.run(); };
+  if(g.rk){ const b=document.createElement("button"); b.className="btn"; b.textContent="🏆 Ver ranking"; b.style.marginLeft="6px"; b.onclick=()=>showRanking(g.rk.id,g.n,g.rk.high,g.rk.fmt,()=>openGame(cur.i)); $("gogo").after(b); }
+  const w=getName(); const who=document.createElement("div"); who.className="who"; who.textContent=w?"👤 Jugás como "+w:"👤 Poné tu nombre en la sala de juegos para entrar a los rankings"; mb.appendChild(who);
 }
 function openGame(i,skip){ stop(); stop=()=>{}; cur.i=i; modal.hidden=false; $("mbk").style.display=""; if(skip) GAMES[i].run(); else showHow(GAMES[i]); }
 $("mbk").addEventListener("click",openMenu);
