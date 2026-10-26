@@ -817,7 +817,7 @@ const GAMES=[
 function openMenu(){
   stop(); stop=()=>{}; modal.hidden=false; $("mbk").style.display="none"; mt.textContent="🎮 Sala de juegos";
   const tile=(g,i)=>'<button class="tile'+(g.retro?' retro':'')+'" data-i="'+i+'"><span class="te">'+g.e+'</span><span class="tn'+(g.retro?' px':'')+'" style="'+(g.retro?'font-size:10px;line-height:1.5':'')+'">'+g.n+'</span></button>';
-  mb.innerHTML='<p class="hint2">Elegí un juego. Todos explican cómo se juega antes de empezar.</p><div class="sec">Clásicos de Maia</div><div class="tiles">'+GAMES.map((g,i)=>g.retro?'':tile(g,i)).join("")+'</div><div class="sec">Recuerdos retro · años 80 y 90</div><div class="tiles">'+GAMES.map((g,i)=>g.retro?tile(g,i):'').join("")+'</div>';
+  mb.innerHTML='<p class="hint2">Elegí un juego. Todos explican cómo se juega antes de empezar.</p><div class="sec">Con la lagartija y el gato</div><div class="tiles">'+GAMES.map((g,i)=>g.retro?'':tile(g,i)).join("")+'</div><div class="sec">Recuerdos retro · años 80 y 90</div><div class="tiles">'+GAMES.map((g,i)=>g.retro?tile(g,i):'').join("")+'</div>';
   mb.querySelectorAll(".tile").forEach(t=>t.onclick=()=>openGame(+t.dataset.i));
 }
 function showHow(g){
