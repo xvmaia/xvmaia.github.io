@@ -154,7 +154,7 @@ footer p{font-style:italic;color:var(--muted)}
 .name.bless{animation:shine 6s linear infinite,blessing 1.4s ease}
 @keyframes blessing{0%{transform:scale(1) rotate(0)}30%{transform:scale(1.14) rotate(-4deg);filter:drop-shadow(0 0 18px var(--gold2)) hue-rotate(70deg)}60%{transform:scale(1.08) rotate(3deg);filter:drop-shadow(0 0 22px var(--rose)) hue-rotate(170deg)}100%{transform:none;filter:none}}
 .hearts{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:35}
-.hrt{position:absolute;bottom:-60px;padding:12px;color:var(--gold);opacity:0;animation:rise linear infinite;pointer-events:auto;cursor:pointer;font-weight:400;line-height:1;text-shadow:0 0 10px var(--gold2)}
+.hrt{position:absolute;bottom:-60px;padding:18px;color:var(--gold);opacity:0;animation:rise linear infinite;pointer-events:auto;cursor:pointer;font-weight:400;line-height:1;text-shadow:0 0 10px var(--gold2)}
 .hrt.popped{visibility:hidden}
 .pill{display:none;position:fixed;top:12px;right:12px;z-index:40;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line);color:var(--gold);padding:6px 14px;border-radius:999px;font-family:Montserrat,sans-serif;font-size:14px;box-shadow:0 8px 20px -12px rgba(196,86,154,.7)}
 .js .pill{display:flex}.pill b{color:var(--ink);font-weight:600;min-width:1ch;text-align:center}
@@ -459,7 +459,7 @@ function animalTap(set){
 let hearts = ls("xv_hearts"), sessHearts = 0;
 $("hc").textContent = hearts;
 function addHeart(e){
-  hearts++; sessHearts++; ls("xv_hearts",hearts); if(sessHearts===30) showKey(); $("hc").textContent = hearts;
+  hearts++; sessHearts++; ls("xv_hearts",hearts); if(sessHearts>=12) showKey(); $("hc").textContent = hearts;
   const p=$("pill"); p.classList.remove("bump"); void p.offsetWidth; p.classList.add("bump");
   burst(e.clientX,e.clientY,["💗","♡","💖"],5,60);
   const m={10:"¡10 corazones! Maia se emociona 💗",25:"¡25! Ya sos de la familia 🥹",50:"¡50 corazones! Qué generosidad 💖",100:"¡100! Corazón de oro 🏆",250:"¡250! Esto ya es una obsesión adorable 😍"}[hearts];
@@ -472,7 +472,7 @@ function mkHeart(){
   b.addEventListener("pointerdown",e=>{ e.preventDefault(); if(b.classList.contains("popped"))return; b.classList.add("popped"); addHeart(e); });
   $("hearts").appendChild(b);
 }
-for (let i=0;i<12;i++) mkHeart();
+for (let i=0;i<16;i++) mkHeart();
 
 /* maia blessings */
 let taps2=0;
@@ -699,8 +699,11 @@ $("inref").addEventListener("click",loadInbox);
 /* clave: los mensajes están cifrados y solo se abren con la contraseña (AES-GCM + PBKDF2) */
 function showKey(){
   if (!window.PAYLOAD || !window.crypto || !crypto.subtle) return;
+  if ($("keybtn").style.display==="") return;
   $("keybtn").style.display=""; say("🔑 Con tantos corazones apareció una llave…");
 }
+let pillTaps=0, pillLast=0;
+$("pill").addEventListener("click",()=>{ const n=Date.now(); pillTaps=(n-pillLast>2500)?1:pillTaps+1; pillLast=n; if(pillTaps>=5) showKey(); });
 const unb64=x=>Uint8Array.from(atob(x),c=>c.charCodeAt(0));
 const normPw=t=>t.trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/\s+/g," ");
 async function decryptPayload(pw){
