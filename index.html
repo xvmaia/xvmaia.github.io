@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Maia Mis XV</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Montserrat:wght@300;400;500;600&family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#fdf4fb; --bg2:#efe3ff; --card:#ffffff; --ink:#3e2c52; --muted:#86709c;
@@ -169,7 +169,7 @@ footer p{font-style:italic;color:var(--muted)}
 .tbar i{display:block;height:100%;width:50%;background:#4fbf8f;transition:width .25s}
 .tmsg{margin-top:16px;font-size:20px;min-height:30px}.tiny{display:block;margin-top:8px;font-family:Montserrat,sans-serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .modal{position:fixed;inset:0;background:rgba(20,10,30,.65);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}.modal[hidden]{display:none}
-.mbox{background:var(--card);color:var(--ink);border-radius:22px;padding:24px 16px 20px;max-width:380px;width:100%;position:relative;text-align:center;border:1px solid var(--line);max-height:92vh;overflow:auto}
+.mbox{background:linear-gradient(180deg,var(--card),var(--bg));color:var(--ink);border-radius:26px;padding:26px 16px 20px;max-width:390px;width:100%;position:relative;text-align:center;border:2px solid var(--gold);box-shadow:0 30px 70px -20px rgba(0,0,0,.6),0 0 0 7px rgba(244,154,200,.12);max-height:92vh;overflow:auto}
 .mbox h3{font-family:"Great Vibes",cursive;font-weight:400;font-size:36px;color:var(--gold);line-height:1.2;margin-bottom:6px}
 .mbox .x{position:absolute;top:8px;right:10px;border:0;background:none;color:var(--muted);font-size:22px;cursor:pointer;padding:8px}
 .ghead{display:flex;justify-content:space-around;font-family:Montserrat,sans-serif;font-size:15px;margin:10px 0}
@@ -219,6 +219,39 @@ footer p{font-style:italic;color:var(--muted)}
 .inl .del{margin-top:8px;padding:6px 12px;font-size:11px}
 .inl .st{font-family:Montserrat,sans-serif;font-size:11px;color:var(--muted)}
 .inbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.inbar .del{margin-top:0}
+
+.mbox .bk{position:absolute;top:8px;left:10px;border:0;background:none;font-size:22px;cursor:pointer;padding:8px}
+.ghead span{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px 14px}
+.how{background:var(--bg);border:1px dashed var(--gold);border-radius:18px;padding:14px 14px 8px;text-align:left;margin:12px 0 16px}
+.how .how-t{font-family:Montserrat,sans-serif;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;text-align:center}
+.how ol{list-style:none;counter-reset:s;padding:0}
+.how li{counter-increment:s;display:flex;gap:10px;align-items:flex-start;margin:8px 0;font-size:18px;line-height:1.35}
+.how li::before{content:counter(s);flex:0 0 26px;height:26px;border-radius:50%;background:var(--gold);color:#fff;font-family:Montserrat,sans-serif;font-weight:600;font-size:13px;display:grid;place-items:center;margin-top:1px}
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:8px 0 14px}
+.tile{border:1px solid var(--line);border-radius:16px;background:var(--bg);color:inherit;padding:12px 6px;cursor:pointer;font:inherit;display:flex;flex-direction:column;align-items:center;gap:4px;transition:transform .15s}
+.tile:active{transform:scale(.95)}
+.tile .te{font-size:30px;line-height:1}.tile .tn{font-family:Montserrat,sans-serif;font-size:12px;font-weight:500;line-height:1.2}
+.tile.retro{background:#c7f0d8;color:#1f3d1a;border:2px solid #1f3d1a}
+.sec{font-family:Montserrat,sans-serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:14px 0 4px}
+.px{font-family:"Press Start 2P",monospace}
+.lcd{display:block;margin:10px auto;border:6px solid #1f3d1a;border-radius:10px;background:#c7f0d8;touch-action:none;max-width:100%;height:auto}
+.lcd.pong{background:#111}
+.dpad{display:grid;grid-template-columns:repeat(3,66px);grid-template-rows:repeat(2,54px);gap:6px;justify-content:center;margin:8px 0}
+.dpad button,.dpad2 button{border:0;border-radius:14px;background:linear-gradient(180deg,var(--gold),var(--rose));color:#fff;font-size:24px;cursor:pointer;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.dpad .u{grid-column:2;grid-row:1}.dpad .l{grid-column:1;grid-row:2}.dpad .d{grid-column:2;grid-row:2}.dpad .r{grid-column:3;grid-row:2}
+.dpad2{display:flex;gap:12px;justify-content:center;margin:8px 0}.dpad2 button{width:96px;height:52px}
+.ttt{display:grid;grid-template-columns:repeat(3,84px);gap:8px;justify-content:center;margin:12px 0}
+.ttt button{height:84px;border-radius:16px;border:2px solid var(--line);background:var(--bg);font-size:42px;color:inherit;cursor:pointer;font-family:inherit}
+.rps{display:flex;gap:10px;justify-content:center;margin:12px 0}.rps button{font-size:40px;width:84px;height:84px;border-radius:20px;border:2px solid var(--line);background:var(--bg);cursor:pointer;touch-action:manipulation}
+.duel{font-size:54px;margin:8px 0;letter-spacing:.2em}
+.pet{background:#c7f0d8;color:#1f3d1a;border:6px solid #1f3d1a;border-radius:46% 46% 42% 42%/38% 38% 62% 62%;padding:22px 16px 16px;margin:10px auto;max-width:300px;font-family:"Press Start 2P",monospace}
+.pet .face{font-size:64px;line-height:1.1;animation:petbob 1.6s ease-in-out infinite}
+@keyframes petbob{50%{transform:translateY(-6px)}}
+.pet .bars{display:grid;gap:7px;margin:12px 0 8px;font-size:9px;text-align:left}
+.pet .bar2{height:8px;background:rgba(31,61,26,.2);border-radius:4px;overflow:hidden;margin-top:3px}.pet .bar2 i{display:block;height:100%;background:#1f3d1a;width:100%;transition:width .3s}
+.pet .say{font-size:9px;line-height:1.6;min-height:30px}
+.pbtn{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.status{font-family:Montserrat,sans-serif;font-weight:600;font-size:15px;margin:6px 0;color:var(--gold)}
 </style>
 <script>document.documentElement.classList.add("js")</script>
 </head>
@@ -385,7 +418,7 @@ footer p{font-style:italic;color:var(--muted)}
 <div class="hearts" id="hearts" aria-hidden="true"></div>
 <button class="keybtn" id="keybtn" aria-label="Clave" style="display:none">🔑</button>
 <div class="pill" id="pill">♡ <b id="hc">0</b></div>
-<div class="modal" id="modal" hidden><div class="mbox"><button class="x" id="mx" aria-label="Cerrar">✕</button><h3 id="mt"></h3><div id="mb"></div></div></div>
+<div class="modal" id="modal" hidden><div class="mbox"><button class="bk" id="mbk" aria-label="Más juegos" style="display:none">🎮</button><button class="x" id="mx" aria-label="Cerrar">✕</button><h3 id="mt"></h3><div id="mb"></div></div></div>
 <div class="toast" id="toast"></div>
 <script>
 
@@ -444,7 +477,7 @@ const say = t => window.toast && window.toast(t);
 let unlocked=false; try{ localStorage.removeItem("xv_unlocked"); }catch(e){}
 let taps=0, lastTap=0;
 function animalTap(set){
-  if (unlocked){ openGame(set); return; }
+  if (unlocked){ openMenu(); return; }
   const now=Date.now(); taps=(now-lastTap>2500)?1:taps+1; lastTap=now;
   if (taps>=5){
     unlocked=true;
@@ -527,11 +560,11 @@ $("tbL").onclick=e=>vote("L",e); $("tbC").onclick=e=>vote("C",e);
 renderTeams(); refreshTeams(); setInterval(refreshTeams,20000);
 
 /* secret games */
-const modal=$("modal"), mt=$("mt"), mb=$("mb"); let stop=()=>{}; const cur={set:"cat",i:0};
+const modal=$("modal"), mt=$("mt"), mb=$("mb"); let stop=()=>{}; const cur={i:0}; let snakeBest=0;
 function closeGame(){ stop(); stop=()=>{}; modal.hidden=true; mb.innerHTML=""; }
 $("mx").onclick=closeGame; modal.addEventListener("click",e=>{ if(e.target===modal) closeGame(); });
-const ENDB='<br><button class="btn solid" id="again" style="margin:12px 4px 0">Jugar de nuevo</button><button class="btn" id="other" style="margin:12px 4px 0">Otro juego</button>';
-function wireEnd(){ $("again").onclick=()=>openGame(cur.set,cur.i); $("other").onclick=()=>openGame(cur.set,(cur.i+1)%SETS[cur.set].length); }
+const ENDB='<br><button class="btn solid" id="again" style="margin:12px 4px 0">Jugar de nuevo</button><button class="btn" id="other" style="margin:12px 4px 0">Más juegos</button>';
+function wireEnd(){ $("again").onclick=()=>openGame(cur.i,true); $("other").onclick=openMenu; }
 
 function catGame(){
   mt.textContent="🐈 ¡Atrapá a la lagartija!";
@@ -598,15 +631,16 @@ function lizGame(){
     }; });
 }
 function simonGame(){
-  mt.textContent="🦎 Simón dice lagartija";
-  mb.innerHTML='<p class="hint2">Mirá la secuencia y repetila. Cada ronda se agrega un paso más.</p><div class="ghead"><span>Rondas superadas <b id="sl">0</b></span></div><div class="grid2" id="g2"></div><div class="gend" id="gend"></div>';
+  mt.textContent="🎨 Simón dice";
+  mb.innerHTML='<p class="hint2">Mirá la secuencia y repetila en el mismo orden.</p><div class="status" id="sstat">👀 Mirá…</div><div class="ghead"><span>Rondas superadas <b id="sl">0</b></span></div><div class="grid2" id="g2"></div><div class="gend" id="gend"></div>';
   const cols=["#4fbf8f","#f49ac8","#a78bfa","#f0a35e"], em=["🦎","💗","✨","🪰"], pads=[], seq=[]; let pos=0,lock=true,timers=[];
+  const stat=t=>{ const e=$("sstat"); if(e) e.textContent=t; };
   const flash=i=>{ pads[i].classList.add("lit"); setTimeout(()=>pads[i].classList.remove("lit"),350); };
-  const play=()=>{ lock=true; seq.push(Math.floor(rnd(0,4))); seq.forEach((v,k)=>timers.push(setTimeout(()=>flash(v),500+k*700))); timers.push(setTimeout(()=>{ lock=false; pos=0; },500+seq.length*700)); };
+  const play=()=>{ lock=true; stat("👀 Mirá la secuencia…"); seq.push(Math.floor(rnd(0,4))); seq.forEach((v,k)=>timers.push(setTimeout(()=>flash(v),500+k*700))); timers.push(setTimeout(()=>{ lock=false; pos=0; stat("👆 ¡Tu turno! Repetí la secuencia"); },500+seq.length*700)); };
   for (let i=0;i<4;i++){ const p=document.createElement("button"); p.className="pad"; p.style.background=cols[i]; p.style.color=cols[i]; p.textContent=em[i]; $("g2").appendChild(p); pads.push(p);
     p.onclick=()=>{ if(lock) return; flash(i);
-      if(i===seq[pos]){ pos++; if(pos===seq.length){ $("sl").textContent=seq.length; lock=true; timers.push(setTimeout(play,800)); } }
-      else { lock=true; const n=seq.length-1;
+      if(i===seq[pos]){ pos++; if(pos===seq.length){ $("sl").textContent=seq.length; lock=true; stat("✅ ¡Bien! Se viene otra ronda"); timers.push(setTimeout(play,900)); } }
+      else { lock=true; const n=seq.length-1; stat("❌ Ups, te equivocaste");
         $("gend").innerHTML=(n>=8?"¡Memoria brillante! 🧠":n>=5?"¡Muy bien! 🦎":n>=3?"Nada mal 😄":"La lagartija se distrajo con una mosca 🪰")+" Superaste "+n+" rondas."+ENDB; wireEnd(); if(n>=5) confetti(35); } }; }
   stop=()=>timers.forEach(clearTimeout); play();
 }
@@ -621,10 +655,180 @@ function flyGame(){
     $("gend").innerHTML=score+" moscas. "+m+ENDB; wireEnd(); if(score>=12) confetti(40); } },1000);
   stop=()=>{ clearInterval(spawn); clearInterval(clock); };
 }
-const SETS={cat:[catGame,yarnGame,fishGame],liz:[lizGame,simonGame,flyGame]};
-function openGame(set,i){ stop(); stop=()=>{}; cur.set=set; cur.i=(i===undefined)?Math.floor(rnd(0,SETS[set].length)):i; modal.hidden=false; SETS[set][cur.i](); }
-document.querySelectorAll(".peek,.sitcat").forEach(el=>el.addEventListener("click",()=>animalTap("cat")));
-document.querySelectorAll(".peekliz,.lizard").forEach(el=>el.addEventListener("click",()=>animalTap("liz")));
+
+function snakeGame(){
+  mt.textContent="🦎 Lagartija veloz";
+  mb.innerHTML='<p class="hint2">Guiá a la lagartija con las flechas (o deslizá el dedo). ¡Comé las moscas!</p><div class="ghead"><span>Moscas <b id="gs">0</b></span><span>Récord <b id="gb">'+snakeBest+'</b></span></div><canvas id="cv" class="lcd" width="300" height="300"></canvas><div class="dpad"><button class="u" data-d="u">▲</button><button class="l" data-d="l">◀</button><button class="d" data-d="d">▼</button><button class="r" data-d="r">▶</button></div><div class="gend" id="gend"></div>';
+  const cv=$("cv"), g=cv.getContext("2d"), N=15, C=20; let snake=[{x:7,y:7},{x:6,y:7},{x:5,y:7}], dir={x:1,y:0}, nd={x:1,y:0}, apple, score=0, over=false, timer;
+  const place=()=>{ do{ apple={x:Math.floor(rnd(0,N)),y:Math.floor(rnd(0,N))}; }while(snake.some(s=>s.x===apple.x&&s.y===apple.y)); }; place();
+  const dirs={u:{x:0,y:-1},d:{x:0,y:1},l:{x:-1,y:0},r:{x:1,y:0}};
+  const turn=d=>{ if(d.x===-dir.x&&d.y===-dir.y) return; nd=d; };
+  mb.querySelectorAll(".dpad button").forEach(b=>b.addEventListener("pointerdown",e=>{ e.preventDefault(); turn(dirs[b.dataset.d]); }));
+  const key=e=>{ const m={ArrowUp:"u",ArrowDown:"d",ArrowLeft:"l",ArrowRight:"r"}[e.key]; if(m){ e.preventDefault(); turn(dirs[m]); } };
+  addEventListener("keydown",key);
+  let sx=0,sy=0; cv.addEventListener("touchstart",e=>{ sx=e.touches[0].clientX; sy=e.touches[0].clientY; },{passive:true});
+  cv.addEventListener("touchend",e=>{ const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy; if(Math.max(Math.abs(dx),Math.abs(dy))<20) return; turn(Math.abs(dx)>Math.abs(dy)?(dx>0?dirs.r:dirs.l):(dy>0?dirs.d:dirs.u)); },{passive:true});
+  function draw(){
+    g.fillStyle="#c7f0d8"; g.fillRect(0,0,300,300);
+    g.fillStyle="rgba(31,61,26,.07)"; for(let i=0;i<N;i++){ g.fillRect(i*C,0,1,300); g.fillRect(0,i*C,300,1); }
+    g.fillStyle="#1f3d1a"; snake.forEach((s,i)=>{ if(i>0) g.fillRect(s.x*C+2,s.y*C+2,C-4,C-4); });
+    g.font="19px serif"; g.textAlign="center"; g.textBaseline="middle";
+    g.fillText("🦎",snake[0].x*C+C/2,snake[0].y*C+C/2+1);
+    g.fillText("🪰",apple.x*C+C/2,apple.y*C+C/2+1);
+  }
+  function cleanup(){ over=true; clearTimeout(timer); removeEventListener("keydown",key); }
+  function end(){
+    cleanup(); snakeBest=Math.max(snakeBest,score); $("gb").textContent=snakeBest;
+    const m=score>=20?"¡Reina de las moscas! 🏆":score>=10?"¡Muy bien! Como en los viejos celulares 📱":score>=4?"Nada mal, seguí practicando 🦎":"La lagartija se enredó 😅";
+    $("gend").innerHTML=score+" moscas. "+m+ENDB; wireEnd(); if(score>=10) confetti(40);
+  }
+  function step(){
+    dir=nd; const h={x:(snake[0].x+dir.x+N)%N,y:(snake[0].y+dir.y+N)%N};
+    if (snake.some(s=>s.x===h.x&&s.y===h.y)) return end();
+    snake.unshift(h);
+    if (h.x===apple.x&&h.y===apple.y){ score++; $("gs").textContent=score; place(); } else snake.pop();
+    draw();
+  }
+  const loop=()=>{ if(over) return; step(); if(!over) timer=setTimeout(loop,Math.max(70,150-score*4)); };
+  stop=cleanup; draw(); timer=setTimeout(loop,500);
+}
+function tttGame(){
+  mt.textContent="🦎🐈 Ta-Te-Ti";
+  mb.innerHTML='<p class="hint2">Vos sos la lagartija 🦎 y la compu es el gato 🐈. Tocá un casillero vacío.</p><div class="status" id="tst">👆 ¡Es tu turno!</div><div class="ghead"><span>🦎 <b id="sw">0</b></span><span>🐈 <b id="sc">0</b></span><span>Empates <b id="sd">0</b></span></div><div class="ttt" id="tt"></div><div class="gend" id="gend"></div>';
+  let b=Array(9).fill(""), over=false, w=0, c=0, d=0, tm; const cells=[];
+  const L=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  const win=a=>{ for(const [x,y,z] of L) if(a[x]&&a[x]===a[y]&&a[y]===a[z]) return a[x]; return a.every(Boolean)?"T":null; };
+  const draw=()=>cells.forEach((el,i)=>{ el.textContent=b[i]==="X"?"🦎":b[i]==="O"?"🐈":""; });
+  const find=m=>{ for(const [x,y,z] of L){ const t=[b[x],b[y],b[z]]; if(t.filter(v=>v===m).length===2&&t.includes("")) return [x,y,z][t.indexOf("")]; } return -1; };
+  function cpu(){
+    let i=find("O"); if(i<0) i=find("X");
+    if(Math.random()<.25) i=-1;
+    if(i<0&&!b[4]) i=4;
+    if(i<0){ const free=b.map((v,k)=>v?-1:k).filter(k=>k>=0); i=free[Math.floor(rnd(0,free.length))]; }
+    b[i]="O"; draw(); check();
+  }
+  function check(){
+    const r=win(b); if(!r){ $("tst").textContent="👆 ¡Es tu turno!"; return; }
+    over=true;
+    if(r==="X"){ w++; $("sw").textContent=w; $("tst").textContent="🎉 ¡Ganó la lagartija!"; confetti(35); }
+    else if(r==="O"){ c++; $("sc").textContent=c; $("tst").textContent="😼 Ganó el gato"; }
+    else { d++; $("sd").textContent=d; $("tst").textContent="🤝 ¡Empate!"; }
+    $("gend").innerHTML=ENDB; wireEnd();
+  }
+  for(let i=0;i<9;i++){ const el=document.createElement("button"); $("tt").appendChild(el); cells.push(el);
+    el.onclick=()=>{ if(over||b[i]) return; b[i]="X"; draw(); const r=win(b); if(r){ check(); return; } $("tst").textContent="🤔 Piensa el gato…"; over=true; tm=setTimeout(()=>{ over=false; cpu(); },450); }; }
+  stop=()=>clearTimeout(tm);
+}
+function pongGame(){
+  mt.textContent="🏓 Ping Pong: lagartija vs gato";
+  mb.innerHTML='<p class="hint2">Sos la lagartija 🦎 (abajo). Mové tu paleta con el dedo, el mouse o los botones y no dejes pasar el ovillo 🧶. ¡El primero en llegar a 5 gana!</p><div class="ghead"><span>🦎 <b id="ps">0</b></span><span>🐈 <b id="pcs">0</b></span></div><canvas id="cv" class="lcd pong" width="300" height="400"></canvas><div class="dpad2"><button id="pl">◀</button><button id="pr">▶</button></div><div class="gend" id="gend"></div>';
+  const cv=$("cv"), g=cv.getContext("2d"), W=300,H=400,PW=64,PH=10; let px=118,cx=118,ps=0,cs=0,over=false,raf,mv=0,last=0;
+  const ball={x:150,y:200,vx:2,vy:3.2};
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const serve=down=>{ ball.x=150; ball.y=200; ball.vx=(Math.random()<.5?-1:1)*rnd(1.4,2.4); ball.vy=down?3.2:-3.2; };
+  const setPx=x=>{ const r=cv.getBoundingClientRect(); px=clamp((x-r.left)*(W/r.width)-PW/2,0,W-PW); };
+  cv.addEventListener("pointermove",e=>setPx(e.clientX)); cv.addEventListener("pointerdown",e=>setPx(e.clientX));
+  const hold=(id,v)=>{ const el=$(id); el.addEventListener("pointerdown",e=>{ e.preventDefault(); mv=v; }); ["pointerup","pointerleave","pointercancel"].forEach(ev=>el.addEventListener(ev,()=>{ if(mv===v) mv=0; })); };
+  hold("pl",-1); hold("pr",1);
+  const kd=e=>{ if(e.key==="ArrowLeft"){ e.preventDefault(); mv=-1; } if(e.key==="ArrowRight"){ e.preventDefault(); mv=1; } }, ku=e=>{ if(e.key==="ArrowLeft"||e.key==="ArrowRight") mv=0; };
+  addEventListener("keydown",kd); addEventListener("keyup",ku);
+  function draw(){
+    g.fillStyle="#111"; g.fillRect(0,0,W,H);
+    g.fillStyle="#555"; for(let x=0;x<W;x+=20) g.fillRect(x+4,H/2-1,10,2);
+    g.fillStyle="#fff"; g.fillRect(cx,12,PW,PH); g.fillRect(px,H-22,PW,PH);
+    g.font="22px serif"; g.textAlign="center"; g.textBaseline="middle"; g.fillText("🐈",cx+PW/2,32); g.fillText("🦎",px+PW/2,H-34); g.font="18px serif"; g.fillText("🧶",ball.x,ball.y);
+  }
+  function cleanup(){ over=true; cancelAnimationFrame(raf); removeEventListener("keydown",kd); removeEventListener("keyup",ku); }
+  function end(){
+    cleanup(); const won=ps>cs;
+    $("gend").innerHTML=(won?"🏆 ¡Ganó la lagartija "+ps+" a "+cs+"! Como en el Atari 🕹️":"😼 Ganó el gato "+cs+" a "+ps+". ¡Revancha!")+ENDB; wireEnd(); if(won) confetti(45);
+  }
+  function frame(t){
+    if(over) return; const k=Math.min(2.5,(t-(last||t))/16.67||1); last=t;
+    px=clamp(px+mv*6*k,0,W-PW);
+    cx=clamp(cx+clamp(ball.x-PW/2-cx,-2.7*k,2.7*k),0,W-PW);
+    ball.x+=ball.vx*k; ball.y+=ball.vy*k;
+    if(ball.x<5||ball.x>W-5){ ball.vx*=-1; ball.x=clamp(ball.x,5,W-5); }
+    if(ball.vy>0&&ball.y>=H-27&&ball.y<=H-12&&ball.x>=px-5&&ball.x<=px+PW+5){ ball.vy=-Math.min(7,Math.abs(ball.vy)*1.05); ball.vx=clamp(ball.vx+((ball.x-(px+PW/2))/(PW/2))*2,-5,5); }
+    if(ball.vy<0&&ball.y<=27&&ball.y>=12&&ball.x>=cx-5&&ball.x<=cx+PW+5){ ball.vy=Math.min(7,Math.abs(ball.vy)*1.05); ball.vx=clamp(ball.vx+((ball.x-(cx+PW/2))/(PW/2))*2,-5,5); }
+    if(ball.y>H+8){ cs++; $("pcs").textContent=cs; serve(false); }
+    else if(ball.y<-8){ ps++; $("ps").textContent=ps; serve(true); }
+    draw(); if(ps>=5||cs>=5) return end();
+    raf=requestAnimationFrame(frame);
+  }
+  stop=cleanup; draw(); raf=requestAnimationFrame(frame);
+}
+function petGame(){
+  mt.textContent="🥚 Mascota virtual";
+  mb.innerHTML='<p class="hint2">¿Con quién querés jugar? Elegí tu mascota.</p><div class="pbtn" style="margin:16px 0 6px"><button class="btn solid" id="pl1">🦎 Lagartito</button><button class="btn solid" id="pl2">🐈 Gatito</button></div>';
+  $("pl1").onclick=()=>startPet(false); $("pl2").onclick=()=>startPet(true);
+}
+function startPet(cat){
+  const base=cat?"🐈":"🦎", sad=cat?"😿":"😢", nm=cat?"gatito":"lagartito";
+  mt.textContent=base+" Mascota virtual";
+  mb.innerHTML='<p class="hint2">Cuidá a tu '+nm+' como en los años 90. Mantené las tres barras arriba.</p><div class="pet"><div class="face" id="pf">'+base+'</div><div class="say" id="psay">¡Hola! Soy tu '+nm+'.</div><div class="bars"><div>COMIDA<div class="bar2"><i id="b1"></i></div></div><div>DIVERSIÓN<div class="bar2"><i id="b2"></i></div></div><div>ENERGÍA<div class="bar2"><i id="b3"></i></div></div></div><div>Nivel <b id="plv">1</b></div></div><div class="pbtn"><button class="btn solid" id="pe">'+(cat?"🐟":"🪰")+' Comer</button><button class="btn solid" id="pj">'+(cat?"🧶":"🎾")+' Jugar</button><button class="btn solid" id="pd">😴 Dormir</button></div>';
+  let h=70,f=70,e=70,lv=1,good=0,sleep=0; const cl=v=>Math.max(0,Math.min(100,v)), food=cat?"🐟":"🪰", toy=cat?"🧶":"🎾";
+  function show(){
+    $("b1").style.width=h+"%"; $("b2").style.width=f+"%"; $("b3").style.width=e+"%";
+    const low=Math.min(h,f,e); let face=base,say="¡Estoy feliz! Seguí así.";
+    if(sleep>0){ face="😴"; say="Zzz… recargando energía."; }
+    else if(low<20){ face=sad; say=h===low?"¡Tengo hambre! Dame comida "+food:f===low?"Me aburro… ¡juguemos! "+toy:"Estoy agotado… quiero dormir 😴"; }
+    else if(low<45){ face="😐"; say=h===low?"Ya me dio un poquito de hambre.":f===low?"¿Jugamos un ratito?":"Me estoy cansando un poco."; }
+    $("pf").textContent=face; $("psay").textContent=say; $("plv").textContent=lv;
+  }
+  $("pe").onclick=()=>{ if(sleep>0) return; h=cl(h+25); e=cl(e-1); show(); };
+  $("pj").onclick=()=>{ if(sleep>0) return; f=cl(f+25); e=cl(e-6); h=cl(h-4); show(); };
+  $("pd").onclick=()=>{ sleep=4; show(); };
+  const tick=setInterval(()=>{
+    if(sleep>0){ e=cl(e+10); h=cl(h-1); sleep--; }
+    else { h=cl(h-3); f=cl(f-2.5); e=cl(e-2); }
+    if(Math.min(h,f,e)>=40){ good++; if(good>=25){ good=0; lv++; confetti(35); say("🎉 ¡Tu "+nm+" subió al nivel "+lv+"!"); } } else good=Math.max(0,good-1);
+    show();
+  },1500);
+  stop=()=>clearInterval(tick); show();
+}
+function rpsGame(){
+  mt.textContent="✊✋✌️ Piedra, papel o tijera";
+  mb.innerHTML='<p class="hint2">Vos sos la lagartija 🦎 y la compu es el gato 🐈. Elegí una opción: gana el primero que llegue a 3 puntos.</p><div class="ghead"><span>🦎 <b id="rw">0</b></span><span>🐈 <b id="rc">0</b></span></div><div class="duel" id="duel">🦎❔ vs ❔🐈</div><div class="status" id="rst">👆 ¡Elegí!</div><div class="rps"><button data-m="0">✊</button><button data-m="1">✋</button><button data-m="2">✌️</button></div><div class="gend" id="gend"></div>';
+  const E=["✊","✋","✌️"]; let w=0,c=0,done=false,tm;
+  mb.querySelectorAll(".rps button").forEach(btn=>btn.onclick=()=>{
+    if(done) return; const a=+btn.dataset.m, b=Math.floor(rnd(0,3)); $("duel").textContent="🦎"+E[a]+" vs "+E[b]+"🐈";
+    if(a===b) $("rst").textContent="🤝 Empate, ¡otra vez!";
+    else if((a-b+3)%3===1){ w++; $("rw").textContent=w; $("rst").textContent="✅ ¡Punto para la lagartija!"; }
+    else { c++; $("rc").textContent=c; $("rst").textContent="😼 Punto para el gato"; }
+    if(w>=3||c>=3){ done=true; $("gend").innerHTML=(w>c?"🏆 ¡Ganó la lagartija!":"😼 Ganó el gato. ¡Revancha!")+ENDB; wireEnd(); if(w>c) confetti(40); }
+  });
+  stop=()=>clearTimeout(tm);
+}
+
+const GAMES=[
+ {n:"Atrapá a la lagartija",e:"🦎",run:catGame,how:["Van apareciendo 🦎 en los huecos.","Tocalas antes de que se escondan.","Tenés 20 segundos. ¡Cada una vale 1 punto!"]},
+ {n:"El ovillo",e:"🧶",run:yarnGame,how:["Tocá el ovillo 🧶 lo más rápido que puedas.","Tenés 10 segundos. ¡Cada toque suma un punto!"]},
+ {n:"Reflejos felinos",e:"🐟",run:fishGame,how:["Esperá: el botón dice «esperá…».","Cuando se ponga verde y aparezca el 🐟, tocalo rapidísimo.","Si tocás antes de tiempo, perdés esa ronda. Son 5 rondas."]},
+ {n:"Memoria",e:"🃏",run:lizGame,how:["Tocá dos cartas para darlas vuelta.","Si son iguales, se quedan a la vista. Si no, se tapan.","Encontrá las 6 parejas con los menos intentos."]},
+ {n:"Simón dice",e:"🎨",run:simonGame,how:["Mirá cómo se iluminan los colores.","Cuando diga «¡Tu turno!», tocalos en el mismo orden.","En cada ronda se suma un paso más."]},
+ {n:"Cazamoscas",e:"🪰",run:flyGame,how:["Van apareciendo 🪰 en la pantalla.","Tocalas antes de que se vayan.","Tenés 15 segundos. ¡Cada una suma un punto!"]},
+ {n:"Lagartija veloz",e:"🦎",retro:true,run:snakeGame,how:["Guiá a la lagartija con las flechas, el teclado o deslizando el dedo.","Comé las moscas 🪰: cada una la hace más larga.","Si te chocás con tu propia cola, termina. Las paredes no importan: se sale por el otro lado."]},
+ {n:"Ta-Te-Ti",e:"🐈",retro:true,run:tttGame,how:["Vos sos la lagartija 🦎 y la compu es el gato 🐈.","Tocá un casillero vacío para poner tu 🦎.","Gana quien junte tres en línea: horizontal, vertical o diagonal."]},
+ {n:"Ping Pong",e:"🏓",retro:true,run:pongGame,how:["Sos la lagartija 🦎, abajo. Movela con el dedo, el mouse o los botones ◀ ▶.","Hacé rebotar el ovillo 🧶 para que no pase. El gato 🐈 juega arriba.","El primero que llegue a 5 puntos gana."]},
+ {n:"Mascota virtual",e:"🥚",retro:true,run:petGame,how:["Elegí si querés cuidar a un lagartito 🦎 o a un gatito 🐈.","Necesita comida, diversión y energía: tocá Comer, Jugar o 😴 Dormir cuando una barra baje.","Si las tres barras se mantienen altas un rato, ¡sube de nivel!"]},
+ {n:"Piedra, papel o tijera",e:"✌️",retro:true,run:rpsGame,how:["Vos sos la lagartija 🦎 y la compu es el gato 🐈.","Elegí ✊ piedra, ✋ papel o ✌️ tijera: la piedra gana a la tijera, la tijera al papel y el papel a la piedra.","El primero en llegar a 3 puntos gana."]}
+];
+function openMenu(){
+  stop(); stop=()=>{}; modal.hidden=false; $("mbk").style.display="none"; mt.textContent="🎮 Sala de juegos";
+  const tile=(g,i)=>'<button class="tile'+(g.retro?' retro':'')+'" data-i="'+i+'"><span class="te">'+g.e+'</span><span class="tn'+(g.retro?' px':'')+'" style="'+(g.retro?'font-size:10px;line-height:1.5':'')+'">'+g.n+'</span></button>';
+  mb.innerHTML='<p class="hint2">Elegí un juego. Todos explican cómo se juega antes de empezar.</p><div class="sec">Clásicos de Maia</div><div class="tiles">'+GAMES.map((g,i)=>g.retro?'':tile(g,i)).join("")+'</div><div class="sec">Recuerdos retro · años 80 y 90</div><div class="tiles">'+GAMES.map((g,i)=>g.retro?tile(g,i):'').join("")+'</div>';
+  mb.querySelectorAll(".tile").forEach(t=>t.onclick=()=>openGame(+t.dataset.i));
+}
+function showHow(g){
+  mt.textContent=g.e+" "+g.n;
+  mb.innerHTML='<div class="how"><div class="how-t">Cómo se juega</div><ol>'+g.how.map(x=>'<li>'+x+'</li>').join("")+'</ol></div><button class="btn solid" id="gogo">¡Jugar!</button>';
+  $("gogo").onclick=()=>{ g.run(); };
+}
+function openGame(i,skip){ stop(); stop=()=>{}; cur.i=i; modal.hidden=false; $("mbk").style.display=""; if(skip) GAMES[i].run(); else showHow(GAMES[i]); }
+$("mbk").addEventListener("click",openMenu);
+document.querySelectorAll(".peek,.sitcat").forEach(el=>el.addEventListener("click",()=>animalTap()));
+document.querySelectorAll(".peekliz,.lizard").forEach(el=>el.addEventListener("click",()=>animalTap()));
 setTab("liz"); $("prov").textContent="Tocá «Otra historia» para leer una 📖";
 
 
@@ -773,7 +977,7 @@ async function revealAdmin(d){
 }
 let keyFails=0, keyBusy=false;
 function openKey(){
-  stop(); stop=()=>{}; modal.hidden=false; mt.textContent="🔑 ¿Tenés una clave?";
+  stop(); stop=()=>{}; modal.hidden=false; $("mbk").style.display="none"; mt.textContent="🔑 ¿Tenés una clave?";
   mb.innerHTML='<p class="hint2">Escribila para abrir tus mensajes.</p><form id="kform" autocomplete="off" style="margin-top:12px"><input id="kpw" type="password" placeholder="Clave" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="btn solid" id="kgo" type="submit">Abrir</button></form><p class="lerr" id="kerr"></p>';
   $("kform").addEventListener("submit",async e=>{
     e.preventDefault(); if(keyBusy) return; const pw=$("kpw").value; if(!pw) return;
