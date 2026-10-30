@@ -269,6 +269,14 @@ body{-webkit-tap-highlight-color:transparent}
 .rkrow.me{background:rgba(244,154,200,.18);border-radius:10px}
 .rkrow .rm{border:0;background:none;cursor:pointer;font-size:16px}
 .who{font-family:Montserrat,sans-serif;font-size:12px;color:var(--muted);margin:2px 0 6px}
+.lcd.sp{background:#0b0720;border-color:#7c5cff;box-shadow:0 0 26px rgba(124,92,255,.55)}
+.rksec{margin:12px 0 4px;text-align:left}.rkh{font-family:Montserrat,sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;color:var(--gold);padding:4px 6px;border-bottom:2px solid var(--line)}
+.rkempty{font-size:15px;color:var(--muted);padding:8px 6px}
+.cvwrap{position:relative;width:fit-content;max-width:100%;margin:10px auto}.cvwrap .lcd{margin:0}
+.upg{position:absolute;inset:6px;background:rgba(11,7,32,.93);border-radius:8px;display:flex;flex-direction:column;gap:8px;align-items:stretch;justify-content:center;padding:12px;z-index:2;color:#fff}
+.upg[hidden]{display:none}.upgt{font-family:Montserrat,sans-serif;font-weight:600;font-size:15px;text-align:center;color:#ffd54f;margin-bottom:2px}
+.upg button{display:flex;gap:10px;align-items:center;text-align:left;border:1px solid #7c5cff;background:rgba(124,92,255,.18);color:#fff;border-radius:12px;padding:8px 10px;cursor:pointer;font:inherit;font-size:14px;line-height:1.25;touch-action:manipulation}
+.upg button .ue{font-size:28px}.upg button small{color:#cdbff0;font-size:12px}
 </style>
 <script>document.documentElement.classList.add("js")</script>
 </head>
@@ -875,6 +883,29 @@ async function showRanking(id,title,high,fmt,back){
     box.appendChild(row);
   });
 }
+
+async function openAllRankings(back){
+  stop(); stop=()=>{}; modal.hidden=false; $("mbk").style.display="none"; mt.textContent="🏆 Todos los rankings";
+  mb.innerHTML='<p class="hint2">Los mejores de cada juego, todo en un solo lugar.</p><div id="allrk">Cargando…</div><div id="rkfoot"></div>';
+  const foot=$("rkfoot"); foot.appendChild(nameRow(n=>{ if(hearts>0) rkSubmit("corazones",n,hearts,true).then(()=>openAllRankings(back)).catch(()=>{}); }));
+  const bk=document.createElement("button"); bk.className="btn"; bk.textContent="Cerrar"; bk.style.marginTop="12px"; bk.onclick=back||closeGame; foot.appendChild(bk);
+  const cats=[{id:"corazones",e:"❤️",n:"Más corazones",high:true,fmt:n=>n+" ❤"}].concat(GAMES.filter(x=>x.rk).map(x=>({id:x.rk.id,e:x.e,n:x.n,high:x.rk.high,fmt:x.rk.fmt})));
+  const lists=await Promise.all(cats.map(c=>rkGet(c.id).then(l=>c.id==="corazones"?rigHearts(l):l)));
+  const box=$("allrk"); if(!box) return; box.textContent=""; const me=getName().toLowerCase();
+  cats.forEach((c,ci)=>{
+    const sec=document.createElement("div"); sec.className="rksec";
+    const h=document.createElement("div"); h.className="rkh"; h.textContent=c.e+" "+c.n; sec.appendChild(h);
+    const list=lists[ci];
+    if(!list.length){ const em=document.createElement("div"); em.className="rkempty"; em.textContent="Todavía sin puntajes. ¡Sé el primero!"; sec.appendChild(em); }
+    else {
+      const mk=(it,k)=>{ const row=document.createElement("div"); row.className="rkrow"+(it.n.toLowerCase()===me?" me":""); const pos=document.createElement("span"); pos.className="pos"; pos.textContent=MEDAL[k]||String(k+1); const nm=document.createElement("span"); nm.className="nm"; nm.textContent=it.n; const sc=document.createElement("span"); sc.className="sc"; sc.textContent=c.fmt(it.s); row.append(pos,nm,sc); return row; };
+      list.slice(0,5).forEach((it,k)=>sec.appendChild(mk(it,k)));
+      if(list.length>5){ const more=document.createElement("button"); more.className="btn"; more.style.cssText="margin-top:6px;padding:6px 12px;font-size:10px"; more.textContent="Ver más ▾"; let open=false; const extra=[];
+        more.onclick=()=>{ open=!open; if(open){ list.slice(5,10).forEach((it,k)=>{ const r=mk(it,k+5); extra.push(r); more.before(r); }); more.textContent="Ver menos ▴"; } else { extra.splice(0).forEach(r=>r.remove()); more.textContent="Ver más ▾"; } }; sec.appendChild(more); }
+    }
+    box.appendChild(sec);
+  });
+}
 async function rankAfter(i,score){
   const g=GAMES[i], r=g.rk; if(!r) return; const area=$("gend"); if(!area) return;
   if(r.high && score<=0) return;
@@ -904,53 +935,136 @@ function scheduleHeartRank(){
   clearTimeout(heartTimer);
   heartTimer=setTimeout(()=>{ const n=getName(); if(n&&hearts>0) rkSubmit("corazones",n,hearts,true).catch(()=>{}); },6000);
 }
-$("trophy").addEventListener("click",()=>{ const n=getName(); if(n&&hearts>0) rkSubmit("corazones",n,hearts,true).catch(()=>{}).finally(()=>openHeartsRank()); else openHeartsRank(); });
+$("trophy").addEventListener("click",()=>{ const n=getName(); if(n&&hearts>0) rkSubmit("corazones",n,hearts,true).catch(()=>{}).finally(()=>openAllRankings(closeGame)); else openAllRankings(closeGame); });
 
 function spaceGame(){
   mt.textContent="🚀 Lagartija espacial";
-  mb.innerHTML='<p class="hint2">Tu lagartija 🦎 dispara sola. Deslizá el dedo (o mové el mouse) arriba y abajo para esquivar y derribar bichos. ¡Cuidado con el gato jefe!</p><div class="ghead"><span>Puntos <b id="gs">0</b></span><span>Vidas <b id="gl">3</b></span></div><canvas id="cv" class="lcd" width="320" height="240"></canvas><div class="dpad2"><button id="up">▲ Subir</button><button id="dn">▼ Bajar</button></div><div class="gend" id="gend"></div>';
-  const cv=$("cv"), g=cv.getContext("2d"), W=320, H=240;
-  let y=H/2, mv=0, bullets=[], foes=[], shots=[], boss=null, score=0, lives=3, over=false, raf, last=0, lastShot=0, spawnAt=0, invul=0, nextBoss=12;
-  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-  const hold=(id,v)=>{ const el=$(id); el.addEventListener("pointerdown",e=>{ e.preventDefault(); mv=v; }); ["pointerup","pointerleave","pointercancel"].forEach(ev=>el.addEventListener(ev,()=>{ if(mv===v) mv=0; })); };
-  hold("up",-1); hold("dn",1);
-  const setY=cy=>{ const r=cv.getBoundingClientRect(); y=clamp((cy-r.top)*(H/r.height),14,H-14); };
-  cv.addEventListener("pointermove",e=>setY(e.clientY)); cv.addEventListener("pointerdown",e=>{ setY(e.clientY); try{ cv.setPointerCapture(e.pointerId); }catch(_){} });
-  const kd=e=>{ if(e.key==="ArrowUp"||e.key==="w"||e.key==="W"){ e.preventDefault(); mv=-1; } if(e.key==="ArrowDown"||e.key==="s"||e.key==="S"){ e.preventDefault(); mv=1; } }, ku=e=>{ if(["ArrowUp","ArrowDown","w","W","s","S"].includes(e.key)) mv=0; };
+  mb.innerHTML='<p class="hint2">Tu lagartija 🦎 vuela en un cohete y dispara sola. Movela con el dedo, el mouse, las flechas o WASD. ¡Enfrentá a los gatos meme y mejorá a tu lagartija!</p><div class="ghead"><span>Puntos <b id="gs">0</b></span><span>Vidas <b id="gl">3</b></span><span>💥 <b id="gbm">2</b></span></div><div class="cvwrap"><canvas id="cv" class="lcd sp" width="360" height="260"></canvas><div class="upg" id="upg" hidden></div></div><div class="dpad"><button class="u" data-d="u">▲</button><button class="l" data-d="l">◀</button><button class="d" data-d="d">▼</button><button class="r" data-d="r">▶</button></div><div class="dpad2"><button id="bomb" style="width:230px">💥 BOMBA</button></div><div class="gend" id="gend"></div>';
+  const cv=$("cv"), g=cv.getContext("2d"), W=360, H=260, R=(a,b)=>rnd(a,b), clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const ship={x:70,y:H/2}; let tx=null,ty=null; const keys={l:0,r:0,u:0,d:0};
+  let bullets=[],foes=[],eshots=[],items=[],parts=[],pops=[],boss=null,paused=false;
+  let score=0,lives=3,bombs=2,weapon=1,shield=false,rapid=0,wave=1,waveKills=0,need=16,combo=0,lastKill=-9e9,mult=1,shake=0,flash=0,invul=0,over=false,raf,last=0,fireAt=0,spawnAt=900,time=0,kills=0,banner={t:"OLEADA 1",life:130};
+  const up={speed:1,pierce:0,magnet:0,armor:0,rate:1,acc:[]};
+  const UPG=[
+    {id:"cap",e:"🧢",n:"Gorra veloz",d:"Tu lagartija se mueve más rápido.",f:()=>{ up.speed*=1.22; }},
+    {id:"glasses",e:"🕶️",n:"Lentes láser",d:"Tus disparos atraviesan un enemigo más.",f:()=>{ up.pierce++; }},
+    {id:"magnet",e:"🧲",n:"Lengua imán",d:"Atrae los poderes que andan cerca.",f:()=>{ up.magnet++; }},
+    {id:"armor",e:"🛡️",n:"Armadura",d:"Empezás cada oleada con escudo.",f:()=>{ up.armor=1; shield=true; }},
+    {id:"turbo",e:"🔥",n:"Cohete turbo",d:"Disparás más rápido.",f:()=>{ up.rate*=.82; }},
+    {id:"heart",e:"💚",n:"Corazón extra",d:"+1 vida.",f:()=>{ lives=Math.min(6,lives+1); }},
+    {id:"bag",e:"🎒",n:"Mochila de bombas",d:"+2 bombas.",f:()=>{ bombs=Math.min(6,bombs+2); }}
+  ];
+  const BO=[{id:"grumpy",n:"Gato Grumpy",e:"😾"},{id:"nyan",n:"Nyan Cat",e:"🐱"},{id:"oiia",n:"Gato Oiia",e:"🐈"},{id:"chipi",n:"Gato Chipi Chipi",e:"😹"},{id:"banana",n:"Gato Banana",e:"😼"},{id:"huh",n:"Gato Huh",e:"🙀"}];
+  const stars=Array.from({length:80},()=>({x:R(0,W),y:R(0,H),z:Math.floor(R(0,3))}));
+  const d2=(ax,ay,bx,by)=>(ax-bx)*(ax-bx)+(ay-by)*(ay-by);
+  const boom=(x,y,col,n,sp)=>{ n=n||14; sp=sp||3; for(let i=0;i<n;i++){ const a=R(0,6.283),v=R(.5,sp); parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:R(22,42),max:42,col,s:R(1.5,3.6)}); } };
+  const pop=(x,y,txt,col)=>pops.push({x,y,txt,col,life:55});
+  const hold=(el,fn)=>{ el.addEventListener("pointerdown",e=>{ e.preventDefault(); fn(1); }); ["pointerup","pointerleave","pointercancel"].forEach(ev=>el.addEventListener(ev,()=>fn(0))); };
+  mb.querySelectorAll(".dpad button").forEach(b=>hold(b,v=>{ keys[{u:"u",d:"d",l:"l",r:"r"}[b.dataset.d]]=v; }));
+  $("bomb").addEventListener("pointerdown",e=>{ e.preventDefault(); useBomb(); });
+  const setT=e=>{ const r=cv.getBoundingClientRect(); tx=clamp((e.clientX-r.left)*(W/r.width),24,W*.45); ty=clamp((e.clientY-r.top)*(H/r.height),18,H-18); };
+  cv.addEventListener("pointermove",setT); cv.addEventListener("pointerdown",e=>{ setT(e); try{ cv.setPointerCapture(e.pointerId); }catch(_){} });
+  const kmap={ArrowLeft:"l",a:"l",A:"l",ArrowRight:"r",d:"r",D:"r",ArrowUp:"u",w:"u",W:"u",ArrowDown:"d",s:"d",S:"d"};
+  const kd=e=>{ if(e.key===" "||e.key==="b"||e.key==="B"){ e.preventDefault(); useBomb(); return; } const m=kmap[e.key]; if(m){ e.preventDefault(); keys[m]=1; tx=null; } };
+  const ku=e=>{ const m=kmap[e.key]; if(m) keys[m]=0; };
   addEventListener("keydown",kd); addEventListener("keyup",ku);
-  const hit=(ax,ay,bx,by,r)=>Math.abs(ax-bx)<r&&Math.abs(ay-by)<r;
+  function addScore(base,x,y){ combo=(time-lastKill<1500)?combo+1:1; lastKill=time; mult=Math.min(8,1+Math.floor((combo-1)/3)); const v=base*mult; score+=v; pop(x,y-12,"+"+v+(mult>1?"  x"+mult:""),mult>1?"#ffd54f":"#ffffff"); }
+  function drop(x,y,c){ if(Math.random()<c) items.push({x,y,t:["⭐","⭐","🛡️","💥","❤️","⚡"][Math.floor(R(0,6))]}); }
+  function kill(f){ f.dead=true; boom(f.x,f.y,f.rock?"#b8b0d0":"#ffd54f",f.rock?18:12); addScore(f.pts,f.x,f.y); kills++; waveKills++; drop(f.x,f.y,.14); }
+  function hurt(){ if(invul>0) return; if(shield){ shield=false; boom(ship.x,ship.y,"#7fe0ff",20,3.5); invul=45; pop(ship.x,ship.y-20,"🛡️ ¡Salvada!","#7fe0ff"); return; } lives--; shake=18; invul=110; combo=0; mult=1; weapon=Math.max(1,weapon-1); boom(ship.x,ship.y,"#ff6b6b",26,4.2); }
+  function useBomb(){ if(bombs<=0||over||paused) return; bombs--; flash=1; shake=16; foes.forEach(f=>{ if(!f.dead){ f.dead=true; boom(f.x,f.y,"#ffd54f",10); score+=f.pts*2; kills++; waveKills++; } }); eshots=[]; if(boss){ boss.hp-=9; boss.hit=8; } pop(ship.x+50,ship.y-10,"💥 ¡BOMBA!","#ffd54f"); }
+  function spawnFoe(){
+    const r=Math.random(), y=R(26,H-26);
+    if(wave>=2&&r>.9) foes.push({x:W+20,y,t:"😼",hp:2,r:16,vx:-1.1,pts:6,sz:30,shoot:R(50,110)});
+    else if(wave>=2&&r>.72) foes.push({x:W+20,y,t:"🙀",hp:1,r:12,vx:-(2.3+wave*.12),pts:3,sz:24,ph:R(0,6),zig:1});
+    else if(r>.62) foes.push({x:W+26,y,t:"🪨",hp:3,r:17,vx:-(.9+wave*.07),pts:4,sz:34,rock:true});
+    else if(r>.3) foes.push({x:W+20,y,t:"😹",hp:1,r:13,vx:-(1.2+wave*.1),pts:2,sz:26,ph:R(0,6)});
+    else foes.push({x:W+20,y,t:"🪰",hp:1,r:12,vx:-(1.4+wave*.1),pts:1,sz:22,ph:R(0,6)});
+  }
+  const shoot=()=>{ const x=ship.x+20,y=ship.y,pc=up.pierce,mk=(yy,vy,vx)=>({x,y:yy,vx:vx||7.5,vy,pc,hit:new Set()}); if(weapon===1) bullets.push(mk(y,0)); else if(weapon===2) bullets.push(mk(y-6,0),mk(y+6,0)); else bullets.push(mk(y,0),mk(y-8,-1.2,7),mk(y+8,1.2,7)); };
+  function spawnBoss(){ const b=BO[(wave-1)%BO.length], hp=30+wave*10; boss={...b,hp,max:hp,x:W+70,y:H/2,dir:1,fire:0,hit:0,in:true,t:0,ang:0,st:0,sc:0}; banner={t:"¡"+b.n.toUpperCase()+"!",life:130}; pop(W-100,H/2-54,"¡MIAU!","#ff9ecb"); }
+  function bossAct(k){
+    const q=boss.hp/boss.max, ph=q>.66?1:q>.33?2:3; boss.t+=k; boss.fire+=k; const bx=boss.x-36, by=boss.y, rate=(ph===1?85:ph===2?72:56);
+    const shot=(vx,vy,e,gv)=>eshots.push({x:bx,y:by,vx,vy,e:e||"🧶",g:gv||0});
+    if(boss.id==="grumpy"){ boss.y+=boss.dir*(1.2+(1-q)*1.5)*k; if(boss.y<48||boss.y>H-48) boss.dir*=-1; if(boss.fire>rate){ boss.fire=0; shot(-3.4,0); if(ph>=2){ shot(-3.1,-1.4); shot(-3.1,1.4); } } }
+    else if(boss.id==="nyan"){ boss.y=H/2+Math.sin(boss.t*.05*(1+(1-q)*.6))*(H/2-52); boss.x=W-62+Math.sin(boss.t*.03)*20; if(boss.fire>rate*.8){ boss.fire=0; shot(-3.3,0,"🌈"); if(ph>=2){ shot(-3,-1.5,"🌈"); shot(-3,1.5,"🌈"); } } }
+    else if(boss.id==="oiia"){ boss.ang+=.035*(1+(1-q)*1.2)*k; boss.x=W-96+Math.cos(boss.ang)*52; boss.y=H/2+Math.sin(boss.ang)*(H/2-52); if(boss.fire>rate*.9){ boss.fire=0; for(let i=0;i<(ph>=2?5:3);i++){ const a=Math.PI+(i-(ph>=2?2:1))*.42; eshots.push({x:boss.x-20,y:boss.y,vx:Math.cos(a)*3.1,vy:Math.sin(a)*3.1,e:"✨",g:0}); } } }
+    else if(boss.id==="chipi"){ boss.y=H/2+Math.sin(boss.t*.04)*(H/2-56); if(boss.fire>rate){ boss.fire=0; shot(-3.2,0); } boss.sc+=k; if(boss.sc>150-ph*15){ boss.sc=0; for(let i=0;i<2;i++) foes.push({x:W+10,y:R(26,H-26),t:"😹",hp:1,r:13,vx:-2,pts:2,sz:26,ph:R(0,6)}); pop(boss.x,boss.y-50,"♪ chipi chipi ♪","#ff9ecb"); } }
+    else if(boss.id==="banana"){ boss.y+=boss.dir*(1.3+(1-q)*1.4)*k; if(boss.y<48||boss.y>H-48) boss.dir*=-1; if(boss.fire>rate){ boss.fire=0; shot(-2.7,-2.4,"🍌",.07); shot(-3.2,0); if(ph>=2) shot(-2.2,-3.1,"🍌",.08); } }
+    else { // huh: embiste
+      if(boss.st===0){ boss.y+=clamp(ship.y-boss.y,-1.6*k,1.6*k); boss.sc+=k; if(boss.fire>rate*1.3){ boss.fire=0; shot(-3.2,0); } if(boss.sc>(170-ph*20)){ boss.st=1; boss.sc=0; } }
+      else if(boss.st===1){ boss.sc+=k; if(boss.sc>38){ boss.st=2; boss.sc=0; } }
+      else if(boss.st===2){ boss.x-=10*k; if(boss.x<24){ boss.st=3; shake=14; } }
+      else { boss.x+=3.2*k; if(boss.x>=W-62){ boss.x=W-62; boss.st=0; } } }
+  }
+  function offerUpgrades(){
+    paused=true; const box=$("upg"); box.hidden=false; box.textContent="";
+    const h=document.createElement("div"); h.className="upgt"; h.textContent="¡Mejorá a tu lagartija!"; box.appendChild(h);
+    const pool=UPG.slice().sort(()=>Math.random()-.5).slice(0,3);
+    pool.forEach(u=>{ const b=document.createElement("button"); b.type="button"; b.innerHTML='<span class="ue">'+u.e+'</span><span><b>'+u.n+'</b><br><small>'+u.d+'</small></span>';
+      b.onclick=()=>{ u.f(); if(!up.acc.includes(u.e)) up.acc.push(u.e); box.hidden=true; paused=false; last=0; pop(ship.x+40,ship.y-20,u.e+" "+u.n,"#ffd54f"); boom(ship.x,ship.y,"#ffd54f",16,3); }; box.appendChild(b); });
+  }
   function cleanup(){ over=true; cancelAnimationFrame(raf); removeEventListener("keydown",kd); removeEventListener("keyup",ku); }
-  function end(){ cleanup(); const m=score>=40?"¡Comandante de la galaxia! 🏆":score>=20?"¡Muy bien, piloto! 🚀":score>=8?"Buen vuelo 🦎":"Hay que practicar un poco más 😅"; $("gend").innerHTML=score+" puntos. "+m+ENDB; wireEnd(); if(score>=20) confetti(45); rankAfter(11,score); }
+  function end(){ cleanup(); const m=score>=1500?"¡Comandante de la galaxia! 🏆":score>=700?"¡Increíble, piloto estrella! 🌟":score>=250?"¡Muy bien, piloto! 🚀":"Buen vuelo, ¡otra vez! 🦎"; $("upg").hidden=true; $("gend").innerHTML=score+" puntos · "+kills+" bichos · oleada "+wave+". "+m+ENDB; wireEnd(); if(score>=700) confetti(55); rankAfter(11,score); }
   function frame(t){
-    if(over) return; const k=Math.min(2.5,(t-(last||t))/16.67||1); last=t;
-    y=clamp(y+mv*3.4*k,14,H-14);
-    if(t-lastShot>330){ lastShot=t; bullets.push({x:56,y}); }
-    if(!boss && t>spawnAt){ spawnAt=t+Math.max(420,1050-score*14); const rock=Math.random()<.28; foes.push({x:W+12,y:rnd(20,H-20),rock,hp:rock?2:1,ph:rnd(0,6)}); }
-    if(!boss && score>=nextBoss){ boss={x:W-34,y:H/2,hp:12,dir:1,fire:0}; foes=[]; }
-    bullets.forEach(b=>b.x+=6.5*k); bullets=bullets.filter(b=>b.x<W+10);
-    const sp=1.25+Math.min(2,score*0.025);
-    foes.forEach(f=>{ f.x-=sp*k; if(!f.rock) f.y+=Math.sin((f.x+f.ph*30)/22)*0.9*k; });
-    shots.forEach(b=>b.x-=3.4*k); shots=shots.filter(b=>b.x>-10);
-    if(boss){ boss.y+=boss.dir*1.4*k; if(boss.y<30||boss.y>H-30) boss.dir*=-1; boss.fire+=k; if(boss.fire>55){ boss.fire=0; shots.push({x:boss.x-22,y:boss.y}); } }
-    bullets.forEach(b=>{
-      foes.forEach(f=>{ if(!b.dead&&hit(b.x,b.y,f.x,f.y,16)){ b.dead=true; f.hp--; if(f.hp<=0){ f.dead=true; score+=f.rock?2:1; } } });
-      if(boss&&!b.dead&&hit(b.x,b.y,boss.x,boss.y,26)){ b.dead=true; boss.hp--; if(boss.hp<=0){ score+=8; boss=null; nextBoss=score+14; shots=[]; confetti(15); } }
-    });
-    bullets=bullets.filter(b=>!b.dead); foes=foes.filter(f=>!f.dead&&f.x>-14);
-    if(invul>0) invul-=k;
-    else {
-      const bump=foes.find(f=>hit(f.x,f.y,40,y,18))||shots.find(b=>hit(b.x,b.y,40,y,14))||(boss&&hit(boss.x,boss.y,40,y,28)?boss:null);
-      if(bump){ lives--; invul=90; foes=foes.filter(f=>f!==bump); shots=shots.filter(b=>b!==bump); }
-    }
-    $("gs").textContent=score; $("gl").textContent=Math.max(0,lives);
-    g.fillStyle="#c7f0d8"; g.fillRect(0,0,W,H); g.fillStyle="rgba(31,61,26,.18)"; for(let i=0;i<24;i++) g.fillRect((i*53+t*0.03)%W,(i*37)%H,2,2);
-    g.fillStyle="#1f3d1a"; g.font="26px serif"; g.textAlign="center"; g.textBaseline="middle";
-    if(!(invul>0&&Math.floor(invul/6)%2)) g.fillText("🦎",40,y);
-    g.fillStyle="#1f3d1a"; bullets.forEach(b=>g.fillRect(b.x-6,b.y-2,12,4));
-    foes.forEach(f=>{ g.font="24px serif"; g.fillText(f.rock?"🪨":"🪰",f.x,f.y); });
-    shots.forEach(b=>{ g.font="16px serif"; g.fillText("🧶",b.x,b.y); });
-    if(boss){ g.font="48px serif"; g.fillText("🐈",boss.x,boss.y); g.fillStyle="#1f3d1a"; g.fillRect(W-110,6,100,6); g.fillStyle="#b0413e"; g.fillRect(W-110,6,100*boss.hp/12,6); }
-    if(lives<=0) return end();
+    if(over) return; if(paused){ raf=requestAnimationFrame(frame); return; }
+    const k=Math.min(2.5,(t-(last||t))/16.67||1); last=t; time+=16.67*k;
+    if(tx!==null){ ship.x+=(tx-ship.x)*.22*k; ship.y+=(ty-ship.y)*.22*k; }
+    ship.x=clamp(ship.x+(keys.r-keys.l)*3.8*up.speed*k,24,W*.45); ship.y=clamp(ship.y+(keys.d-keys.u)*3.8*up.speed*k,18,H-18);
+    if(rapid>0) rapid-=16.67*k; if(invul>0) invul-=k; if(shake>0) shake-=k*0.9; if(flash>0) flash-=0.04*k;
+    if(time>fireAt){ fireAt=time+(rapid>0?140:(weapon>=3?230:290))*up.rate; shoot(); }
+    if(!boss&&time>spawnAt){ spawnAt=time+Math.max(330,950-wave*70-Math.min(220,kills*3)); spawnFoe(); }
+    if(!boss&&waveKills>=need) spawnBoss();
+    if(boss){ if(boss.in){ boss.x-=1.7*k; if(boss.x<=W-62) boss.in=false; } else bossAct(k); if(boss.hit>0) boss.hit-=k; }
+    bullets.forEach(b=>{ b.x+=b.vx*k; b.y+=b.vy*k; }); bullets=bullets.filter(b=>b.x<W+16&&b.y>-10&&b.y<H+10);
+    foes.forEach(f=>{ f.x+=f.vx*k; if(f.ph!==undefined){ f.ph+=.07*k; f.y+=Math.sin(f.ph*(f.zig?2.4:1))*(f.zig?2.6:1.1)*k; } f.y=clamp(f.y,16,H-16); if(f.shoot!==undefined){ f.shoot-=k; if(f.shoot<=0){ f.shoot=R(90,150); eshots.push({x:f.x-14,y:f.y,vx:-3.1,vy:(ship.y-f.y)*0.004,e:"🧶",g:0}); } } });
+    foes=foes.filter(f=>!f.dead&&f.x>-30);
+    eshots.forEach(b=>{ b.vy+=(b.g||0)*k; b.x+=b.vx*k; b.y+=b.vy*k; }); eshots=eshots.filter(b=>b.x>-12&&b.x<W+30&&b.y>-14&&b.y<H+14);
+    items.forEach(i=>{ i.x-=1.3*k; i.y+=Math.sin(time/200+i.x)*.4; if(up.magnet){ const dd=Math.sqrt(d2(i.x,i.y,ship.x,ship.y)); if(dd<80+up.magnet*50&&dd>1){ i.x+=(ship.x-i.x)/dd*2.8*k; i.y+=(ship.y-i.y)/dd*2.8*k; } } }); items=items.filter(i=>i.x>-16);
+    bullets.forEach(b=>{ for(const f of foes){ if(!f.dead&&!b.hit.has(f)&&d2(b.x,b.y,f.x,f.y)<(f.r+5)*(f.r+5)){ b.hit.add(f); f.hp--; boom(b.x,b.y,"#ffffff",3,1.6); if(f.hp<=0) kill(f); if(b.pc>0) b.pc--; else b.dead=true; if(b.dead) break; } }
+      if(!b.dead&&boss&&!b.hit.has(boss)&&d2(b.x,b.y,boss.x,boss.y)<34*34){ b.hit.add(boss); boss.hp--; boss.hit=5; boom(b.x,b.y,"#ff9ecb",3,2); score+=1; if(b.pc>0) b.pc--; else b.dead=true; } });
+    bullets=bullets.filter(b=>!b.dead);
+    if(boss&&boss.hp<=0){ boom(boss.x,boss.y,"#ffd54f",70,5.5); boom(boss.x,boss.y,"#ff6b9d",50,4); flash=1; shake=24; addScore(60*wave,boss.x,boss.y); items.push({x:boss.x,y:boss.y,t:"❤️"},{x:boss.x,y:boss.y-26,t:"⭐"},{x:boss.x,y:boss.y+26,t:"💥"}); pop(boss.x,boss.y-40,"¡"+boss.n+" derrotado!","#ffd54f"); boss=null; wave++; need=12+wave*4; waveKills=0; if(up.armor) shield=true; banner={t:"OLEADA "+wave,life:130}; foes.forEach(f=>boom(f.x,f.y,"#ffd54f",8)); foes=[]; eshots=[]; confetti(22); offerUpgrades(); }
+    foes.forEach(f=>{ if(!f.dead&&d2(f.x,f.y,ship.x,ship.y)<(f.r+11)*(f.r+11)){ f.dead=true; boom(f.x,f.y,"#ffd54f",10); hurt(); } });
+    eshots.forEach(b=>{ if(!b.dead&&d2(b.x,b.y,ship.x,ship.y)<18*18){ b.dead=true; hurt(); } }); eshots=eshots.filter(b=>!b.dead);
+    if(boss&&!boss.in&&d2(boss.x,boss.y,ship.x,ship.y)<40*40) hurt();
+    items.forEach(i=>{ if(!i.got&&d2(i.x,i.y,ship.x,ship.y)<22*22){ i.got=true;
+      if(i.t==="⭐"){ weapon=Math.min(3,weapon+1); pop(i.x,i.y-12,weapon>=3?"¡TRIPLE!":"¡DOBLE!","#ffd54f"); }
+      else if(i.t==="🛡️"){ shield=true; pop(i.x,i.y-12,"ESCUDO","#7fe0ff"); }
+      else if(i.t==="💥"){ bombs=Math.min(6,bombs+1); pop(i.x,i.y-12,"+1 BOMBA","#ffd54f"); }
+      else if(i.t==="❤️"){ lives=Math.min(6,lives+1); pop(i.x,i.y-12,"+1 VIDA","#ff8fb1"); }
+      else { rapid=6500; pop(i.x,i.y-12,"¡DISPARO RÁPIDO!","#ffee58"); }
+      boom(i.x,i.y,"#ffffff",10,2.4); } }); items=items.filter(i=>!i.got);
+    if(time-lastKill>1500){ combo=0; mult=1; }
+    parts.push({x:ship.x-18,y:ship.y+R(-3,3),vx:-R(1.2,2.6),vy:R(-.3,.3),life:14,max:14,col:"#ffb74d",s:2.6});
+    parts.forEach(p=>{ p.x+=p.vx*k; p.y+=p.vy*k; p.life-=k; }); parts=parts.filter(p=>p.life>0).slice(-220);
+    pops.forEach(p=>{ p.y-=.6*k; p.life-=k; }); pops=pops.filter(p=>p.life>0);
+    $("gs").textContent=score; $("gl").textContent=Math.max(0,lives); $("gbm").textContent=bombs;
+    g.save(); g.globalAlpha=1;
+    const gr=g.createLinearGradient(0,0,0,H); gr.addColorStop(0,"#0b0720"); gr.addColorStop(1,"#241046"); g.fillStyle=gr; g.fillRect(0,0,W,H);
+    g.fillStyle="rgba(124,92,255,.10)"; g.beginPath(); g.arc(((260-time*.01)%(W+200)+W+200)%(W+200)-100,70,70,0,6.283); g.fill(); g.fillStyle="rgba(244,154,200,.08)"; g.beginPath(); g.arc(((60-time*.018)%(W+240)+W+240)%(W+240)-120,190,90,0,6.283); g.fill();
+    if(shake>0) g.translate(R(-1,1)*shake*.5,R(-1,1)*shake*.5);
+    stars.forEach(s=>{ s.x-=(.35+s.z*.7+(wave*.05))*k; if(s.x<0){ s.x=W; s.y=R(0,H); } g.globalAlpha=.35+s.z*.25; g.fillStyle="#fff"; g.fillRect(s.x,s.y,1+s.z*.8,1+s.z*.8); }); g.globalAlpha=1;
+    g.textAlign="center"; g.textBaseline="middle";
+    if(boss&&boss.id==="nyan"){ ["#ff5252","#ffa726","#ffee58","#66bb6a","#42a5f5","#ab47bc"].forEach((c,i)=>{ g.fillStyle=c; g.globalAlpha=.8; g.fillRect(boss.x+10,boss.y-14+i*5,W-boss.x,5); }); g.globalAlpha=1; }
+    parts.forEach(p=>{ g.globalAlpha=Math.max(0,p.life/p.max); g.fillStyle=p.col; g.beginPath(); g.arc(p.x,p.y,p.s,0,6.283); g.fill(); }); g.globalAlpha=1;
+    bullets.forEach(b=>{ g.fillStyle="#7fe0ff"; g.shadowColor="#7fe0ff"; g.shadowBlur=8; g.fillRect(b.x-7,b.y-1.6,14,3.2); }); g.shadowBlur=0;
+    eshots.forEach(b=>{ g.globalAlpha=1; g.fillStyle="#fff"; g.font="17px serif"; g.fillText(b.e||"🧶",b.x,b.y); });
+    items.forEach(i=>{ g.globalAlpha=1; g.fillStyle="#fff"; g.shadowColor="#ffd54f"; g.shadowBlur=12; g.font="22px serif"; g.fillText(i.t,i.x,i.y); g.shadowBlur=0; });
+    foes.forEach(f=>{ g.globalAlpha=1; g.fillStyle="#fff"; g.font=f.sz+"px serif"; g.fillText(f.t,f.x,f.y); });
+    if(boss){ const warn=boss.id==="huh"&&boss.st===1&&Math.floor(boss.sc/4)%2; g.globalAlpha=((boss.hit>0&&Math.floor(boss.hit)%2)||warn)?.45:1; g.fillStyle="#fff"; g.shadowColor="#ff6b9d"; g.shadowBlur=18; g.save(); g.translate(boss.x,boss.y); if(boss.id==="oiia") g.rotate(boss.ang*3); g.font="70px serif"; g.fillText(boss.e,0,0); g.restore(); g.shadowBlur=0; g.globalAlpha=1;
+      g.fillStyle="rgba(255,255,255,.18)"; g.fillRect(W-132,10,120,8); g.fillStyle="#ff6b9d"; g.fillRect(W-132,10,120*Math.max(0,boss.hp/boss.max),8); g.fillStyle="#fff"; g.font="10px sans-serif"; g.fillText(boss.n.toUpperCase(),W-72,28); }
+    if(!(invul>0&&Math.floor(invul/5)%2)){ g.save(); g.translate(ship.x,ship.y); g.globalAlpha=1; g.fillStyle="#fff"; g.save(); g.rotate(Math.PI/4); g.font="34px serif"; g.fillText("🚀",0,0); g.restore(); g.font="19px serif"; g.fillText("🦎",-3,-10);
+      if(up.acc.includes("🧢")){ g.font="13px serif"; g.fillText("🧢",-4,-22); } if(up.acc.includes("🕶️")){ g.font="10px serif"; g.fillText("🕶️",2,-12); }
+      if(shield){ g.strokeStyle="rgba(127,224,255,.9)"; g.lineWidth=2.5; g.shadowColor="#7fe0ff"; g.shadowBlur=10; g.beginPath(); g.arc(0,0,24,0,6.283); g.stroke(); g.shadowBlur=0; } g.restore(); }
+    pops.forEach(p=>{ g.globalAlpha=Math.min(1,p.life/25); g.fillStyle=p.col; g.font="bold 13px sans-serif"; g.fillText(p.txt,p.x,p.y); }); g.globalAlpha=1;
+    g.fillStyle="#fff"; g.font="bold 12px sans-serif"; g.textAlign="left"; g.fillText("OLEADA "+wave,10,14);
+    if(mult>1){ g.fillStyle="#ffd54f"; g.font="bold "+(16+mult)+"px sans-serif"; g.fillText("COMBO x"+mult,10,36); g.fillStyle="rgba(255,255,255,.2)"; g.fillRect(10,42,90,4); g.fillStyle="#ffd54f"; g.fillRect(10,42,90*Math.max(0,1-(time-lastKill)/1500),4); }
+    g.fillStyle="#fff"; g.font="12px serif"; g.fillText((weapon>=3?"🔱":weapon===2?"✌️":"•")+(rapid>0?" ⚡":"")+(shield?" 🛡️":"")+(up.acc.length?"  "+up.acc.join(""):""),10,mult>1?62:30); g.textAlign="center";
+    if(banner.life>0){ banner.life-=k; const a=Math.min(1,banner.life/30); g.globalAlpha=a; g.fillStyle="#fff"; g.shadowColor="#7c5cff"; g.shadowBlur=20; g.font="bold "+(24+(130-banner.life)*.04)+"px sans-serif"; g.fillText(banner.t,W/2,H/2-30); g.shadowBlur=0; g.globalAlpha=1; }
+    if(flash>0){ g.globalAlpha=Math.min(.7,flash); g.fillStyle="#fff"; g.fillRect(-20,-20,W+40,H+40); g.globalAlpha=1; }
+    g.restore();
+    if(lives<=0){ boom(ship.x,ship.y,"#ffd54f",50,5); return end(); }
     raf=requestAnimationFrame(frame);
   }
   stop=cleanup; raf=requestAnimationFrame(frame);
@@ -1125,7 +1239,7 @@ const GAMES=[
  {n:"Ping Pong",e:"🏓",retro:true,run:pongGame,how:["Sos la lagartija 🦎, abajo. Movela con el dedo, el mouse o los botones ◀ ▶.","Hacé rebotar el ovillo 🧶 para que no pase. El gato 🐈 juega arriba.","El primero que llegue a 5 puntos gana."]},
  {n:"Mascota virtual",e:"🥚",retro:true,run:petGame,how:["Elegí si querés cuidar a un lagartito 🦎 o a un gatito 🐈.","Necesita comida, diversión y energía: tocá Comer, Jugar o 😴 Dormir cuando una barra baje.","Si las tres barras se mantienen altas un rato, ¡sube de nivel!"]},
  {n:"Piedra, papel o tijera",e:"✌️",retro:true,run:rpsGame,how:["Vos sos la lagartija 🦎 y la compu es el gato 🐈.","Elegí ✊ piedra, ✋ papel o ✌️ tijera: la piedra gana a la tijera, la tijera al papel y el papel a la piedra.","El primero en llegar a 3 puntos gana."]}
- ,{n:"Lagartija espacial",e:"🚀",retro:true,run:spaceGame,how:["Tu lagartija 🦎 dispara sola. Vos solo la movés: arrastrá el dedo, o usá los botones ▲ ▼.","Derribá las moscas 🪰 y esquivá las piedras 🪨. Cada tanto aparece el gato jefe 🐈: ¡cuidado con sus ovillos!","Tenés 3 vidas. Gana más puntos quien aguante más."]}
+ ,{n:"Lagartija espacial",e:"🚀",retro:true,run:spaceGame,how:["Tu lagartija 🦎 vuela en un cohete y dispara sola. Movela arrastrando el dedo, con el mouse, las flechas o WASD.","Enfrentá a los gatos meme 😹🙀😼 y a sus jefes (Grumpy, Nyan Cat, Oiia, Chipi Chipi, Banana y Huh). Derribá seguido para armar COMBOS.","Juntá ⭐ (más disparos), 🛡️ (escudo), ⚡ (rápido), ❤️ (vida) y 💥 (bombas). Al vencer a un jefe elegís una mejora para tu lagartija: 🧢 🕶️ 🧲 🛡️ 🔥 💚 🎒.","Usá 💥 BOMBA (botón o barra espaciadora) cuando todo se complique."]}
  ,{n:"Rompe-ladrillos",e:"🧱",retro:true,run:bricksGame,how:["Movés la paleta de la lagartija con el dedo, el mouse o los botones ◀ ▶.","Tocá para lanzar el ovillo 🧶 y hacelo rebotar para romper los ladrillos de colores.","Si el ovillo se cae, perdés una vida. Tenés 3."]}
  ,{n:"Bloques que caen",e:"🧩",retro:true,run:blocksGame,how:["Caen bloques de distintas formas. Movelos con ◀ ▶ y girálos con ⟳.","Tocá ▼ para que caigan más rápido.","Completá una fila sin huecos para borrarla y sumar puntos. Si se llenan hasta arriba, termina."]}
  ,{n:"Lagartija saltarina",e:"🦎",retro:true,run:runnerGame,how:["La lagartija corre sola por el desierto. Tocá la pantalla, el botón ⤴ SALTAR o la barra espaciadora para saltar.","Saltá los gatos 🐈, las piedras 🪨, los cactus 🌵 y los ovillos 🧶.","Cada vez corre más rápido. ¿Hasta dónde llegás?"]}
@@ -1149,7 +1263,7 @@ function openMenu(){
   mb.innerHTML='<p class="hint2">Elegí un juego: hay '+GAMES.length+'. ¡Deslizá hacia abajo para ver todos! Todos explican cómo se juega.</p><div class="sec">Con la lagartija y el gato</div><div class="tiles">'+GAMES.map((g,i)=>g.retro?'':tile(g,i)).join("")+'</div><div class="sec">Recuerdos retro · años 80 y 90</div><div class="tiles">'+GAMES.map((g,i)=>g.retro?tile(g,i):'').join("")+'</div>';
   mb.querySelectorAll(".tile").forEach(t=>t.onclick=()=>openGame(+t.dataset.i));
   mb.insertBefore(nameRow(()=>{}),mb.children[1]);
-  const rk=document.createElement("button"); rk.className="btn solid"; rk.textContent="🏆 Ver rankings"; rk.style.marginTop="6px"; rk.onclick=openRankMenu; mb.appendChild(rk);
+  const rk=document.createElement("button"); rk.className="btn solid"; rk.textContent="🏆 Ver todos los rankings"; rk.style.marginTop="6px"; rk.onclick=()=>openAllRankings(openMenu); mb.appendChild(rk);
 }
 function openRankMenu(){
   stop(); stop=()=>{}; modal.hidden=false; $("mbk").style.display="none"; mt.textContent="🏆 Rankings";
