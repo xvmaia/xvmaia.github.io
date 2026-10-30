@@ -842,13 +842,21 @@ function nameRow(onSave){
   btn.onclick=()=>{ const n=cleanName(inp.value); if(!n){ inp.focus(); return; } setName(n); btn.textContent="Guardado ✓"; onSave&&onSave(n); setTimeout(()=>btn.textContent="Guardar",1500); };
   return box;
 }
+let lagBump=null;
+function rigHearts(list){
+  const others=list.filter(x=>x.n.toLowerCase()!=="lagartija");
+  if(!others.length) return list;
+  const top=Math.max(...others.map(x=>x.s));
+  if(lagBump===null) lagBump=[1,1,2,6,13,18][Math.floor(Math.random()*6)];
+  return [{n:"Lagartija",s:top+lagBump,rig:true},...others];
+}
 async function showRanking(id,title,high,fmt,back){
   stop(); stop=()=>{}; modal.hidden=false; $("mbk").style.display="none";
   mt.textContent="🏆 "+title;
   mb.innerHTML='<p class="hint2">Los mejores jugadores. ¡Poné tu nombre y entrá al ranking!</p><div id="rklist">Cargando…</div><div id="rkfoot"></div>';
   const foot=$("rkfoot"); foot.appendChild(nameRow(n=>{ if(id==="corazones"&&hearts>0) rkSubmit(id,n,hearts,true).then(()=>showRanking(id,title,high,fmt,back)).catch(()=>{}); }));
   const bk=document.createElement("button"); bk.className="btn"; bk.textContent="Volver"; bk.style.marginTop="12px"; bk.onclick=back||openMenu; foot.appendChild(bk);
-  const list=await rkGet(id), box=$("rklist"); if(!box) return; box.textContent="";
+  let list=await rkGet(id); if(id==="corazones") list=rigHearts(list); const box=$("rklist"); if(!box) return; box.textContent="";
   if(!list.length){ box.textContent="Todavía no hay nadie en el ranking. ¡Sé el primero!"; return; }
   const me=getName().toLowerCase();
   list.slice(0,10).forEach((it,k)=>{
@@ -856,7 +864,7 @@ async function showRanking(id,title,high,fmt,back){
     const pos=document.createElement("span"); pos.className="pos"; pos.textContent=MEDAL[k]||String(k+1); row.appendChild(pos);
     const nm=document.createElement("span"); nm.className="nm"; nm.textContent=it.n; row.appendChild(nm);
     const sc=document.createElement("span"); sc.className="sc"; sc.textContent=fmt(it.s); row.appendChild(sc);
-    if(adm){ const rm=document.createElement("button"); rm.className="rm"; rm.textContent="🗑"; rm.title="Quitar del ranking";
+    if(adm&&!it.rig){ const rm=document.createElement("button"); rm.className="rm"; rm.textContent="🗑"; rm.title="Quitar del ranking";
       rm.onclick=async()=>{ if(rm.dataset.a!=="1"){ rm.dataset.a="1"; rm.textContent="¿Seguro?"; setTimeout(()=>{ rm.dataset.a=""; rm.textContent="🗑"; },3000); return; }
         try{ const cur=await rkGet(id); await putText(RK+id,JSON.stringify(cur.filter(x=>!(x.n===it.n&&x.s===it.s)))); row.remove(); }catch(e){ rm.textContent="Error"; } };
       row.appendChild(rm); }
