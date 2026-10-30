@@ -150,9 +150,11 @@ footer p{font-style:italic;color:var(--muted)}
 .peekliz .eyes{transform-box:fill-box;transform-origin:center;animation:blink 4.5s infinite}
 .peekliz .ptongue{transform-box:fill-box;transform-origin:top center;animation:flick 3.2s ease-in-out infinite}
 @keyframes flick{0%,70%,100%{transform:scaleY(0)}80%,90%{transform:scaleY(1)}}
-.name{cursor:pointer}
+.name{cursor:pointer;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;outline:none}
+.name:focus,.name:active{outline:none;background-color:transparent}
+body{-webkit-tap-highlight-color:transparent}
 .name.bless{animation:shine 6s linear infinite,blessing 1.4s ease}
-@keyframes blessing{0%{transform:scale(1) rotate(0)}30%{transform:scale(1.14) rotate(-4deg);filter:drop-shadow(0 0 18px var(--gold2)) hue-rotate(70deg)}60%{transform:scale(1.08) rotate(3deg);filter:drop-shadow(0 0 22px var(--rose)) hue-rotate(170deg)}100%{transform:none;filter:none}}
+@keyframes blessing{0%{transform:scale(1) rotate(0)}30%{transform:scale(1.12) rotate(-3deg)}60%{transform:scale(1.07) rotate(2deg)}100%{transform:none}}
 .hearts{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:35}
 .hrt{position:absolute;bottom:-60px;padding:18px;color:var(--gold);opacity:0;animation:rise linear infinite;pointer-events:auto;cursor:pointer;font-weight:400;line-height:1;text-shadow:0 0 10px var(--gold2)}
 .hrt.popped{visibility:hidden}
@@ -842,13 +844,14 @@ function nameRow(onSave){
   btn.onclick=()=>{ const n=cleanName(inp.value); if(!n){ inp.focus(); return; } setName(n); btn.textContent="Guardado ✓"; onSave&&onSave(n); setTimeout(()=>btn.textContent="Guardar",1500); };
   return box;
 }
-let lagBump=null;
+let lagMode=null;
 function rigHearts(list){
   const others=list.filter(x=>x.n.toLowerCase()!=="lagartija");
   if(!others.length) return list;
+  if(lagMode===null) lagMode=Math.random()<0.7?{win:true,d:[1,1,2,6,13,18][Math.floor(Math.random()*6)]}:{win:false,d:Math.floor(rnd(2,45))};
   const top=Math.max(...others.map(x=>x.s));
-  if(lagBump===null) lagBump=[1,1,2,6,13,18][Math.floor(Math.random()*6)];
-  return [{n:"Lagartija",s:top+lagBump,rig:true},...others];
+  if(lagMode.win) return [{n:"Lagartija",s:top+lagMode.d,rig:true},...others];
+  return [...others,{n:"Lagartija",s:Math.max(1,top-lagMode.d),rig:true}].sort((x,y)=>y.s-x.s);
 }
 async function showRanking(id,title,high,fmt,back){
   stop(); stop=()=>{}; modal.hidden=false; $("mbk").style.display="none";
@@ -902,6 +905,196 @@ function scheduleHeartRank(){
 }
 $("trophy").addEventListener("click",()=>{ const n=getName(); if(n&&hearts>0) rkSubmit("corazones",n,hearts,true).catch(()=>{}).finally(()=>openHeartsRank()); else openHeartsRank(); });
 
+function spaceGame(){
+  mt.textContent="🚀 Lagartija espacial";
+  mb.innerHTML='<p class="hint2">Tu lagartija 🦎 dispara sola. Subí y bajá para esquivar y derribar bichos. ¡Cuidado con el gato jefe!</p><div class="ghead"><span>Puntos <b id="gs">0</b></span><span>Vidas <b id="gl">3</b></span></div><canvas id="cv" class="lcd" width="320" height="240"></canvas><div class="dpad2"><button id="up">▲ Subir</button><button id="dn">▼ Bajar</button></div><div class="gend" id="gend"></div>';
+  const cv=$("cv"), g=cv.getContext("2d"), W=320, H=240;
+  let y=H/2, mv=0, bullets=[], foes=[], shots=[], boss=null, score=0, lives=3, over=false, raf, last=0, lastShot=0, spawnAt=0, invul=0, nextBoss=12;
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const hold=(id,v)=>{ const el=$(id); el.addEventListener("pointerdown",e=>{ e.preventDefault(); mv=v; }); ["pointerup","pointerleave","pointercancel"].forEach(ev=>el.addEventListener(ev,()=>{ if(mv===v) mv=0; })); };
+  hold("up",-1); hold("dn",1);
+  const setY=cy=>{ const r=cv.getBoundingClientRect(); y=clamp((cy-r.top)*(H/r.height),14,H-14); };
+  cv.addEventListener("pointermove",e=>{ if(e.buttons||e.pointerType==="touch") setY(e.clientY); }); cv.addEventListener("pointerdown",e=>setY(e.clientY));
+  const kd=e=>{ if(e.key==="ArrowUp"){ e.preventDefault(); mv=-1; } if(e.key==="ArrowDown"){ e.preventDefault(); mv=1; } }, ku=e=>{ if(e.key==="ArrowUp"||e.key==="ArrowDown") mv=0; };
+  addEventListener("keydown",kd); addEventListener("keyup",ku);
+  const hit=(ax,ay,bx,by,r)=>Math.abs(ax-bx)<r&&Math.abs(ay-by)<r;
+  function cleanup(){ over=true; cancelAnimationFrame(raf); removeEventListener("keydown",kd); removeEventListener("keyup",ku); }
+  function end(){ cleanup(); const m=score>=40?"¡Comandante de la galaxia! 🏆":score>=20?"¡Muy bien, piloto! 🚀":score>=8?"Buen vuelo 🦎":"Hay que practicar un poco más 😅"; $("gend").innerHTML=score+" puntos. "+m+ENDB; wireEnd(); if(score>=20) confetti(45); rankAfter(11,score); }
+  function frame(t){
+    if(over) return; const k=Math.min(2.5,(t-(last||t))/16.67||1); last=t;
+    y=clamp(y+mv*3.4*k,14,H-14);
+    if(t-lastShot>330){ lastShot=t; bullets.push({x:56,y}); }
+    if(!boss && t>spawnAt){ spawnAt=t+Math.max(420,1050-score*14); const rock=Math.random()<.28; foes.push({x:W+12,y:rnd(20,H-20),rock,hp:rock?2:1,ph:rnd(0,6)}); }
+    if(!boss && score>=nextBoss){ boss={x:W-34,y:H/2,hp:12,dir:1,fire:0}; foes=[]; }
+    bullets.forEach(b=>b.x+=6.5*k); bullets=bullets.filter(b=>b.x<W+10);
+    const sp=1.25+Math.min(2,score*0.025);
+    foes.forEach(f=>{ f.x-=sp*k; if(!f.rock) f.y+=Math.sin((f.x+f.ph*30)/22)*0.9*k; });
+    shots.forEach(b=>b.x-=3.4*k); shots=shots.filter(b=>b.x>-10);
+    if(boss){ boss.y+=boss.dir*1.4*k; if(boss.y<30||boss.y>H-30) boss.dir*=-1; boss.fire+=k; if(boss.fire>55){ boss.fire=0; shots.push({x:boss.x-22,y:boss.y}); } }
+    bullets.forEach(b=>{
+      foes.forEach(f=>{ if(!b.dead&&hit(b.x,b.y,f.x,f.y,16)){ b.dead=true; f.hp--; if(f.hp<=0){ f.dead=true; score+=f.rock?2:1; } } });
+      if(boss&&!b.dead&&hit(b.x,b.y,boss.x,boss.y,26)){ b.dead=true; boss.hp--; if(boss.hp<=0){ score+=8; boss=null; nextBoss=score+14; shots=[]; confetti(15); } }
+    });
+    bullets=bullets.filter(b=>!b.dead); foes=foes.filter(f=>!f.dead&&f.x>-14);
+    if(invul>0) invul-=k;
+    else {
+      const bump=foes.find(f=>hit(f.x,f.y,40,y,18))||shots.find(b=>hit(b.x,b.y,40,y,14))||(boss&&hit(boss.x,boss.y,40,y,28)?boss:null);
+      if(bump){ lives--; invul=90; foes=foes.filter(f=>f!==bump); shots=shots.filter(b=>b!==bump); }
+    }
+    $("gs").textContent=score; $("gl").textContent=Math.max(0,lives);
+    g.fillStyle="#c7f0d8"; g.fillRect(0,0,W,H); g.fillStyle="rgba(31,61,26,.18)"; for(let i=0;i<24;i++) g.fillRect((i*53+t*0.03)%W,(i*37)%H,2,2);
+    g.font="26px serif"; g.textAlign="center"; g.textBaseline="middle";
+    if(!(invul>0&&Math.floor(invul/6)%2)) g.fillText("🦎",40,y);
+    g.fillStyle="#1f3d1a"; bullets.forEach(b=>g.fillRect(b.x-6,b.y-2,12,4));
+    foes.forEach(f=>{ g.font="24px serif"; g.fillText(f.rock?"🪨":"🪰",f.x,f.y); });
+    shots.forEach(b=>{ g.font="16px serif"; g.fillText("🧶",b.x,b.y); });
+    if(boss){ g.font="48px serif"; g.fillText("🐈",boss.x,boss.y); g.fillStyle="#1f3d1a"; g.fillRect(W-110,6,100,6); g.fillStyle="#b0413e"; g.fillRect(W-110,6,100*boss.hp/12,6); }
+    if(lives<=0) return end();
+    raf=requestAnimationFrame(frame);
+  }
+  stop=cleanup; raf=requestAnimationFrame(frame);
+}
+function bricksGame(){
+  mt.textContent="🧱 Rompe-ladrillos";
+  mb.innerHTML='<p class="hint2">Movés la paleta de la lagartija 🦎 con el dedo, el mouse o los botones. Hacé rebotar el ovillo 🧶 y rompé todos los ladrillos.</p><div class="ghead"><span>Puntos <b id="gs">0</b></span><span>Vidas <b id="gl">3</b></span></div><canvas id="cv" class="lcd pong" width="300" height="400"></canvas><div class="dpad2"><button id="pl">◀</button><button id="pr">▶</button></div><div class="gend" id="gend"></div>';
+  const cv=$("cv"), g=cv.getContext("2d"), W=300, H=400, PW=64, PH=10, COLS=8, ROWS=6, BW=34, BH=14;
+  const colors=["#f49ac8","#f0a35e","#f7e07a","#7fe0b6","#7fb8f0","#c4b5fd"];
+  let bricks=[]; for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) bricks.push({x:6+c*36,y:46+r*(BH+4),r,alive:true});
+  let px=118, mv=0, score=0, lives=3, over=false, raf, last=0, launched=false;
+  const ball={x:150,y:H-40,vx:2.2,vy:-3.4};
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const setPx=x=>{ const r=cv.getBoundingClientRect(); px=clamp((x-r.left)*(W/r.width)-PW/2,0,W-PW); };
+  cv.addEventListener("pointermove",e=>setPx(e.clientX)); cv.addEventListener("pointerdown",e=>{ setPx(e.clientX); launched=true; });
+  const hold=(id,v)=>{ const el=$(id); el.addEventListener("pointerdown",e=>{ e.preventDefault(); mv=v; launched=true; }); ["pointerup","pointerleave","pointercancel"].forEach(ev=>el.addEventListener(ev,()=>{ if(mv===v) mv=0; })); };
+  hold("pl",-1); hold("pr",1);
+  const kd=e=>{ if(e.key==="ArrowLeft"){ e.preventDefault(); mv=-1; launched=true; } if(e.key==="ArrowRight"){ e.preventDefault(); mv=1; launched=true; } }, ku=e=>{ if(e.key==="ArrowLeft"||e.key==="ArrowRight") mv=0; };
+  addEventListener("keydown",kd); addEventListener("keyup",ku);
+  function cleanup(){ over=true; cancelAnimationFrame(raf); removeEventListener("keydown",kd); removeEventListener("keyup",ku); }
+  function finish(win){ cleanup(); if(win) score+=lives*50; $("gs").textContent=score; $("gend").innerHTML=(win?"🏆 ¡Rompiste todos los ladrillos! ":"😅 Se acabaron las vidas. ")+score+" puntos."+ENDB; wireEnd(); if(win) confetti(50); rankAfter(12,score); }
+  function frame(t){
+    if(over) return; const k=Math.min(2.5,(t-(last||t))/16.67||1); last=t;
+    px=clamp(px+mv*6*k,0,W-PW);
+    if(launched){ ball.x+=ball.vx*k; ball.y+=ball.vy*k; } else { ball.x=px+PW/2; ball.y=H-40; }
+    if(ball.x<6||ball.x>W-6){ ball.vx*=-1; ball.x=clamp(ball.x,6,W-6); }
+    if(ball.y<6){ ball.vy=Math.abs(ball.vy); ball.y=6; }
+    if(ball.vy>0&&ball.y>=H-34&&ball.y<=H-20&&ball.x>=px-6&&ball.x<=px+PW+6){ ball.vy=-Math.min(7,Math.abs(ball.vy)*1.02); ball.vx=clamp(ball.vx+((ball.x-(px+PW/2))/(PW/2))*2.2,-5,5); }
+    for(const b of bricks){ if(!b.alive) continue;
+      if(ball.x>b.x-5&&ball.x<b.x+BW+5&&ball.y>b.y-5&&ball.y<b.y+BH+5){ b.alive=false; score+=10+(ROWS-b.r)*2; $("gs").textContent=score;
+        const ox=Math.min(ball.x-(b.x-5),b.x+BW+5-ball.x), oy=Math.min(ball.y-(b.y-5),b.y+BH+5-ball.y); if(ox<oy) ball.vx*=-1; else ball.vy*=-1; break; } }
+    if(ball.y>H+8){ lives--; $("gl").textContent=Math.max(0,lives); launched=false; ball.vx=(Math.random()<.5?-1:1)*2.2; ball.vy=-3.4; if(lives<=0) return finish(false); }
+    if(bricks.every(b=>!b.alive)) return finish(true);
+    g.fillStyle="#1b1426"; g.fillRect(0,0,W,H);
+    bricks.forEach(b=>{ if(!b.alive) return; g.fillStyle=colors[b.r%colors.length]; g.fillRect(b.x,b.y,BW,BH); g.fillStyle="rgba(255,255,255,.35)"; g.fillRect(b.x,b.y,BW,3); });
+    g.fillStyle="#7fe0b6"; g.fillRect(px,H-22,PW,PH); g.font="22px serif"; g.textAlign="center"; g.textBaseline="middle"; g.fillText("🦎",px+PW/2,H-34);
+    g.font="18px serif"; g.fillText("🧶",ball.x,ball.y);
+    if(!launched){ g.fillStyle="#fff"; g.font="12px sans-serif"; g.fillText("Tocá o mové para lanzar",W/2,H-70); }
+    raf=requestAnimationFrame(frame);
+  }
+  stop=cleanup; raf=requestAnimationFrame(frame);
+}
+function blocksGame(){
+  mt.textContent="🧩 Bloques que caen";
+  mb.innerHTML='<p class="hint2">La lagartija 🦎 y el gato 🐈 construyen una torre: acomodá los bloques que caen y completá filas sin huecos.</p><div class="ghead"><span>Puntos <b id="gs">0</b></span><span>Nivel <b id="gl">1</b></span></div><canvas id="cv" class="lcd" width="200" height="320" style="background:#1b1426"></canvas><div class="dpad2"><button id="bl">◀</button><button id="br">▶</button><button id="bt">⟳</button><button id="bd">▼</button></div><div class="gend" id="gend"></div>';
+  const cv=$("cv"), g=cv.getContext("2d"), COLS=10, ROWS=16, C=20;
+  const SH=[[[1,1,1,1]],[[1,1],[1,1]],[[0,1,0],[1,1,1]],[[1,0,0],[1,1,1]],[[0,0,1],[1,1,1]],[[0,1,1],[1,1,0]],[[1,1,0],[0,1,1]]];
+  const COL=["#7fb8f0","#f7e07a","#c4b5fd","#f0a35e","#7fb8f0","#7fe0b6","#f49ac8"];
+  let board=Array.from({length:ROWS},()=>Array(COLS).fill(0)), piece, score=0, lines=0, level=1, over=false, timer;
+  const rot=m=>m[0].map((_,i)=>m.map(r=>r[i]).reverse());
+  const ok=(m,x,y)=>m.every((row,r)=>row.every((v,c)=>!v||(x+c>=0&&x+c<COLS&&y+r<ROWS&&(y+r<0||!board[y+r][x+c]))));
+  function spawn(){ const i=Math.floor(rnd(0,SH.length)); piece={m:SH[i],c:COL[i],x:Math.floor((COLS-SH[i][0].length)/2),y:0}; if(!ok(piece.m,piece.x,piece.y)) end(); }
+  function draw(){
+    g.fillStyle="#1b1426"; g.fillRect(0,0,200,320); g.fillStyle="rgba(255,255,255,.04)"; for(let i=0;i<=COLS;i++) g.fillRect(i*C,0,1,320); for(let i=0;i<=ROWS;i++) g.fillRect(0,i*C,200,1);
+    const cell=(x,y,c)=>{ g.fillStyle=c; g.fillRect(x*C+1,y*C+1,C-2,C-2); g.fillStyle="rgba(255,255,255,.3)"; g.fillRect(x*C+1,y*C+1,C-2,3); };
+    board.forEach((row,y)=>row.forEach((v,x)=>{ if(v) cell(x,y,v); }));
+    if(piece) piece.m.forEach((row,r)=>row.forEach((v,c)=>{ if(v) cell(piece.x+c,piece.y+r,piece.c); }));
+  }
+  function lock(){
+    piece.m.forEach((row,r)=>row.forEach((v,c)=>{ if(v&&piece.y+r>=0) board[piece.y+r][piece.x+c]=piece.c; }));
+    let n=0; board=board.filter(row=>{ if(row.every(Boolean)){ n++; return false; } return true; }); while(board.length<ROWS) board.unshift(Array(COLS).fill(0));
+    if(n){ score+=[0,100,300,500,800][n]*level; lines+=n; level=1+Math.floor(lines/6); $("gs").textContent=score; $("gl").textContent=level; }
+    spawn();
+  }
+  const move=dx=>{ if(!over&&ok(piece.m,piece.x+dx,piece.y)){ piece.x+=dx; draw(); } };
+  const turn=()=>{ if(over) return; const m=rot(piece.m); for(const dx of [0,-1,1,-2,2]) if(ok(m,piece.x+dx,piece.y)){ piece.m=m; piece.x+=dx; draw(); return; } };
+  const down=()=>{ if(over) return; if(ok(piece.m,piece.x,piece.y+1)) piece.y++; else lock(); draw(); };
+  const press=(id,fn)=>{ const el=$(id); el.addEventListener("pointerdown",e=>{ e.preventDefault(); fn(); }); };
+  press("bl",()=>move(-1)); press("br",()=>move(1)); press("bt",turn); press("bd",down);
+  const key=e=>{ const m={ArrowLeft:()=>move(-1),ArrowRight:()=>move(1),ArrowUp:turn,ArrowDown:down}[e.key]; if(m){ e.preventDefault(); m(); } };
+  addEventListener("keydown",key);
+  function cleanup(){ over=true; clearTimeout(timer); removeEventListener("keydown",key); }
+  function end(){ cleanup(); const m=score>=2000?"¡Maestra de los bloques! 🏆":score>=800?"¡Muy bien! Como en los celulares de antes 📱":"Buen intento 🧩"; $("gend").innerHTML=score+" puntos. "+m+ENDB; wireEnd(); if(score>=800) confetti(40); rankAfter(13,score); }
+  const loop=()=>{ if(over) return; down(); if(!over) timer=setTimeout(loop,Math.max(110,650-(level-1)*70)); };
+  stop=cleanup; spawn(); draw(); timer=setTimeout(loop,650);
+}
+
+function runnerGame(){
+  mt.textContent="🦎 Lagartija saltarina";
+  mb.innerHTML='<p class="hint2">La lagartija corre sola. Tocá la pantalla (o el botón, o la barra espaciadora) para saltar a los gatos y las piedras.</p><div class="ghead"><span>Puntos <b id="gs">0</b></span><span>Récord <b id="gb">'+runBest+'</b></span></div><canvas id="cv" class="lcd" width="320" height="180"></canvas><div class="dpad2"><button id="jmp" style="width:200px">⤴ SALTAR</button></div><div class="gend" id="gend"></div>';
+  const cv=$("cv"), g=cv.getContext("2d"), W=320, H=180, GY=146;
+  let y=0, vy=0, obs=[], dist=0, score=0, over=false, raf, last=0, gap=170, started=false;
+  const types=[{e:"🐈",w:24,h:26},{e:"🪨",w:22,h:20},{e:"🌵",w:20,h:30},{e:"🧶",w:20,h:20},{e:"🐈‍⬛",w:24,h:26}];
+  const jump=()=>{ if(over) return; started=true; if(y===0) vy=9.4; };
+  cv.addEventListener("pointerdown",e=>{ e.preventDefault(); jump(); }); $("jmp").addEventListener("pointerdown",e=>{ e.preventDefault(); jump(); });
+  const kd=e=>{ if(e.key===" "||e.key==="ArrowUp"){ e.preventDefault(); jump(); } }; addEventListener("keydown",kd);
+  function cleanup(){ over=true; cancelAnimationFrame(raf); removeEventListener("keydown",kd); }
+  function end(){ cleanup(); runBest=Math.max(runBest,score); $("gb").textContent=runBest; const m=score>=400?"¡Imparable! Más rápida que un gato 🏆":score>=200?"¡Muy bien! Saltás como una campeona 🦎":score>=80?"Nada mal, seguí practicando 😄":"Los gatos te alcanzaron 😼"; $("gend").innerHTML=score+" puntos. "+m+ENDB; wireEnd(); if(score>=200) confetti(45); rankAfter(14,score); }
+  function frame(t){
+    if(over) return; const k=Math.min(2.5,(t-(last||t))/16.67||1); last=t;
+    const sp=3.2+Math.min(4.2,dist/1400);
+    if(started){
+      vy-=0.52*k; y=Math.max(0,y+vy*k); if(y===0&&vy<0) vy=0;
+      dist+=sp*k; score=Math.floor(dist/9); $("gs").textContent=score;
+      gap-=sp*k; if(gap<=0){ const ty=types[Math.floor(rnd(0,types.length))]; obs.push({x:W+20,...ty}); gap=rnd(150,280)-Math.min(60,dist/80); }
+      obs.forEach(o=>o.x-=sp*k); obs=obs.filter(o=>o.x>-40);
+      const lx=48, lw=22, lh=24;
+      if(obs.some(o=>lx+lw-4>o.x-o.w/2+3&&lx+4<o.x+o.w/2-3&&y<o.h-6)) return end();
+    }
+    g.fillStyle="#c7f0d8"; g.fillRect(0,0,W,H);
+    g.fillStyle="rgba(31,61,26,.15)"; for(let i=0;i<5;i++){ const cx=((i*97-dist*0.15)%(W+60)+W+60)%(W+60)-30; g.fillRect(cx,24+i*9%40,28,6); }
+    g.fillStyle="#1f3d1a"; g.fillRect(0,GY+2,W,2); for(let i=0;i<20;i++){ const gx=((i*37-dist)%W+W)%W; g.fillRect(gx,GY+9+(i%3)*5,6,2); }
+    g.textAlign="center"; g.textBaseline="bottom";
+    g.font="30px serif"; g.fillText("🦎",48,GY-y+4);
+    obs.forEach(o=>{ g.font=(o.h+6)+"px serif"; g.fillText(o.e,o.x,GY+4); });
+    if(!started){ g.fillStyle="#1f3d1a"; g.font="13px sans-serif"; g.textBaseline="middle"; g.fillText("Tocá para empezar a correr",W/2,60); }
+    raf=requestAnimationFrame(frame);
+  }
+  stop=cleanup; raf=requestAnimationFrame(frame);
+}
+function dodgeGame(){
+  mt.textContent="🐈 Esquivá a los gatos";
+  mb.innerHTML='<p class="hint2">Movete entre los 3 carriles (◀ ▶, tocá un costado o deslizá). Esquivá gatos, piedras y ovillos. ¡Juntá las moscas 🪰!</p><div class="ghead"><span>Puntos <b id="gs">0</b></span><span>Vidas <b id="gl">3</b></span></div><canvas id="cv" class="lcd" width="240" height="360" style="background:#2a1f3a;border-color:#f49ac8"></canvas><div class="dpad2"><button id="dl">◀</button><button id="dr">▶</button></div><div class="gend" id="gend"></div>';
+  const cv=$("cv"), g=cv.getContext("2d"), W=240, H=360, L=80;
+  let lane=1, things=[], score=0, lives=3, over=false, raf, last=0, spawn=0, dist=0, invul=0;
+  const go=d=>{ if(!over) lane=Math.max(0,Math.min(2,lane+d)); };
+  [["dl",-1],["dr",1]].forEach(([id,d])=>$(id).addEventListener("pointerdown",e=>{ e.preventDefault(); go(d); }));
+  cv.addEventListener("pointerdown",e=>{ const r=cv.getBoundingClientRect(); go(e.clientX<r.left+r.width/2?-1:1); });
+  let sx=0; cv.addEventListener("touchstart",e=>{ sx=e.touches[0].clientX; },{passive:true}); cv.addEventListener("touchend",e=>{ const dx=e.changedTouches[0].clientX-sx; if(Math.abs(dx)>25) go(dx>0?1:-1); },{passive:true});
+  const kd=e=>{ if(e.key==="ArrowLeft"){ e.preventDefault(); go(-1); } if(e.key==="ArrowRight"){ e.preventDefault(); go(1); } }; addEventListener("keydown",kd);
+  function cleanup(){ over=true; cancelAnimationFrame(raf); removeEventListener("keydown",kd); }
+  function end(){ cleanup(); const m=score>=150?"¡Reina de la ruta! 🏆":score>=70?"¡Muy bien, esquivaste de todo! 🦎":score>=25?"Nada mal 😄":"Los gatos ganaron esta vez 😼"; $("gend").innerHTML=score+" puntos. "+m+ENDB; wireEnd(); if(score>=70) confetti(45); rankAfter(15,score); }
+  function frame(t){
+    if(over) return; const k=Math.min(2.5,(t-(last||t))/16.67||1); last=t;
+    const sp=2.6+Math.min(2.6,dist/2400); dist+=sp*k; score=Math.floor(dist/12)+bonus; $("gs").textContent=score;
+    spawn-=sp*k; if(spawn<=0){ spawn=rnd(170,240)-Math.min(60,dist/150);
+      const free=Math.max(0,Math.min(2,pf+Math.floor(rnd(-1,2)))); pf=free; const r=Math.random();
+      for(let c=0;c<3;c++){ if(c===free&&r<.45){ things.push({lane:c,y:-30,e:"🪰",good:true}); continue; } if(c!==free||r<.2){ if(Math.random()<.65||c!==free) things.push({lane:c,y:-30,e:["🐈","🐈","🪨","🧶","🐈‍⬛"][Math.floor(rnd(0,5))]}); } } }
+    things.forEach(o=>o.y+=sp*k); things=things.filter(o=>o.y<H+30);
+    if(invul>0) invul-=k;
+    const py=H-60;
+    for(const o of things){ if(o.hit) continue; if(o.lane===lane&&Math.abs(o.y-py)<26){ o.hit=true; if(o.good){ bonus+=5; } else if(invul<=0){ lives--; invul=70; $("gl").textContent=Math.max(0,lives); } } }
+    things=things.filter(o=>!o.hit||!o.good); things.forEach(o=>{ if(o.hit&&!o.good) o.e=o.e; });
+    g.fillStyle="#2a1f3a"; g.fillRect(0,0,W,H);
+    g.fillStyle="rgba(255,255,255,.35)"; for(let i=1;i<3;i++) for(let y=((dist*1.2)%40)-40;y<H;y+=40) g.fillRect(i*L-2,y,4,20);
+    g.textAlign="center"; g.textBaseline="middle";
+    things.forEach(o=>{ g.font="34px serif"; g.fillText(o.e,o.lane*L+L/2,o.y); });
+    if(!(invul>0&&Math.floor(invul/5)%2)){ g.font="38px serif"; g.fillText("🦎",lane*L+L/2,py); }
+    if(lives<=0) return end();
+    raf=requestAnimationFrame(frame);
+  }
+  let bonus=0, pf=1; stop=cleanup; raf=requestAnimationFrame(frame);
+}
+
+let runBest=0;
 const GAMES=[
  {n:"Atrapá a la lagartija",e:"🦎",run:catGame,how:["Van apareciendo 🦎 en los huecos.","Tocalas antes de que se escondan.","Tenés 20 segundos. ¡Cada una vale 1 punto!"]},
  {n:"El ovillo",e:"🧶",run:yarnGame,how:["Tocá el ovillo 🧶 lo más rápido que puedas.","Tenés 10 segundos. ¡Cada toque suma un punto!"]},
@@ -914,6 +1107,11 @@ const GAMES=[
  {n:"Ping Pong",e:"🏓",retro:true,run:pongGame,how:["Sos la lagartija 🦎, abajo. Movela con el dedo, el mouse o los botones ◀ ▶.","Hacé rebotar el ovillo 🧶 para que no pase. El gato 🐈 juega arriba.","El primero que llegue a 5 puntos gana."]},
  {n:"Mascota virtual",e:"🥚",retro:true,run:petGame,how:["Elegí si querés cuidar a un lagartito 🦎 o a un gatito 🐈.","Necesita comida, diversión y energía: tocá Comer, Jugar o 😴 Dormir cuando una barra baje.","Si las tres barras se mantienen altas un rato, ¡sube de nivel!"]},
  {n:"Piedra, papel o tijera",e:"✌️",retro:true,run:rpsGame,how:["Vos sos la lagartija 🦎 y la compu es el gato 🐈.","Elegí ✊ piedra, ✋ papel o ✌️ tijera: la piedra gana a la tijera, la tijera al papel y el papel a la piedra.","El primero en llegar a 3 puntos gana."]}
+ ,{n:"Lagartija espacial",e:"🚀",retro:true,run:spaceGame,how:["Tu lagartija 🦎 dispara sola. Vos solo la movés: arrastrá el dedo, o usá los botones ▲ ▼.","Derribá las moscas 🪰 y esquivá las piedras 🪨. Cada tanto aparece el gato jefe 🐈: ¡cuidado con sus ovillos!","Tenés 3 vidas. Gana más puntos quien aguante más."]}
+ ,{n:"Rompe-ladrillos",e:"🧱",retro:true,run:bricksGame,how:["Movés la paleta de la lagartija con el dedo, el mouse o los botones ◀ ▶.","Tocá para lanzar el ovillo 🧶 y hacelo rebotar para romper los ladrillos de colores.","Si el ovillo se cae, perdés una vida. Tenés 3."]}
+ ,{n:"Bloques que caen",e:"🧩",retro:true,run:blocksGame,how:["Caen bloques de distintas formas. Movelos con ◀ ▶ y girálos con ⟳.","Tocá ▼ para que caigan más rápido.","Completá una fila sin huecos para borrarla y sumar puntos. Si se llenan hasta arriba, termina."]}
+ ,{n:"Lagartija saltarina",e:"🦎",retro:true,run:runnerGame,how:["La lagartija corre sola por el desierto. Tocá la pantalla, el botón ⤴ SALTAR o la barra espaciadora para saltar.","Saltá los gatos 🐈, las piedras 🪨, los cactus 🌵 y los ovillos 🧶.","Cada vez corre más rápido. ¿Hasta dónde llegás?"]}
+ ,{n:"Esquivá a los gatos",e:"🐈",retro:true,run:dodgeGame,how:["Estás en una ruta de 3 carriles. Movete con ◀ ▶, tocando un costado de la pantalla o deslizando el dedo.","Esquivá los gatos 🐈, las piedras 🪨 y los ovillos 🧶. Si te chocás, perdés una vida.","Juntá las moscas 🪰 para sumar puntos extra. Tenés 3 vidas."]}
 ];
 GAMES[0].rk={id:"lagartijas",high:true,fmt:s=>s+" lagartijas"};
 GAMES[1].rk={id:"ovillo",high:true,fmt:s=>s+" toques"};
@@ -922,6 +1120,11 @@ GAMES[3].rk={id:"memoria",high:false,fmt:s=>s+" intentos"};
 GAMES[4].rk={id:"simon",high:true,fmt:s=>s+" rondas"};
 GAMES[5].rk={id:"moscas",high:true,fmt:s=>s+" moscas"};
 GAMES[6].rk={id:"veloz",high:true,fmt:s=>s+" moscas"};
+GAMES[11].rk={id:"espacial",high:true,fmt:s=>s+" puntos"};
+GAMES[12].rk={id:"ladrillos",high:true,fmt:s=>s+" puntos"};
+GAMES[13].rk={id:"bloques",high:true,fmt:s=>s+" puntos"};
+GAMES[14].rk={id:"saltarina",high:true,fmt:s=>s+" puntos"};
+GAMES[15].rk={id:"esquiva",high:true,fmt:s=>s+" puntos"};
 function openMenu(){
   stop(); stop=()=>{}; modal.hidden=false; $("mbk").style.display="none"; mt.textContent="🎮 Sala de juegos";
   const tile=(g,i)=>'<button class="tile'+(g.retro?' retro':'')+'" data-i="'+i+'"><span class="te">'+g.e+'</span><span class="tn'+(g.retro?' px':'')+'" style="'+(g.retro?'font-size:10px;line-height:1.5':'')+'">'+g.n+'</span></button>';
