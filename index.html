@@ -244,7 +244,7 @@ body{-webkit-tap-highlight-color:transparent}
 .dpad{display:grid;grid-template-columns:repeat(3,66px);grid-template-rows:repeat(2,54px);gap:6px;justify-content:center;margin:8px 0}
 .dpad button,.dpad2 button{border:0;border-radius:14px;background:linear-gradient(180deg,var(--gold),var(--rose));color:#fff;font-size:24px;cursor:pointer;touch-action:manipulation;user-select:none;-webkit-user-select:none}
 .dpad .u{grid-column:2;grid-row:1}.dpad .l{grid-column:1;grid-row:2}.dpad .d{grid-column:2;grid-row:2}.dpad .r{grid-column:3;grid-row:2}
-.dpad2{display:flex;gap:12px;justify-content:center;margin:8px 0}.dpad2 button{width:96px;height:52px}
+.dpad2{display:flex;gap:12px;justify-content:center;margin:8px 0;flex-wrap:wrap}.dpad2 button{width:96px;height:52px}
 .ttt{display:grid;grid-template-columns:repeat(3,84px);gap:8px;justify-content:center;margin:12px 0}
 .ttt button{height:84px;border-radius:16px;border:2px solid var(--line);background:var(--bg);font-size:42px;color:inherit;cursor:pointer;font-family:inherit}
 .rps{display:flex;gap:10px;justify-content:center;margin:12px 0}.rps button{font-size:40px;width:84px;height:84px;border-radius:20px;border:2px solid var(--line);background:var(--bg);cursor:pointer;touch-action:manipulation}
@@ -1380,11 +1380,11 @@ function blocksGame(){
 }
 function runnerGame(){
   mt.textContent="🦎 Lagartija saltarina";
-  mb.innerHTML='<p class="hint2">La lagartija corre sola. Tocá para saltar (¡tocá otra vez en el aire para un salto doble!). Deslizá hacia abajo o usá ⬇ para agacharte y esquivar a las águilas 🦅.</p><div class="ghead"><span>Puntos <b id="gs">0</b></span><span>Combo <b id="gc">0</b></span><span>Récord <b id="gb">'+runBest+'</b></span></div><canvas id="cv" class="lcd" width="320" height="180"></canvas><div class="dpad2"><button id="jmp" style="width:150px;font-size:18px">⤴ SALTAR</button><button id="dck" style="width:150px;font-size:18px">⬇ AGACHAR</button></div><div class="gend" id="gend"></div>';
+  mb.innerHTML='<p class="hint2">La lagartija corre sola. Tocá para saltar (¡tocá otra vez en el aire para un salto doble!). Deslizá hacia abajo o usá ⬇ para agacharte y esquivar a las águilas 🦅.</p><div class="ghead"><span>Puntos <b id="gs">0</b></span><span>Vidas <b id="gl">3</b></span><span>Récord <b id="gb">'+runBest+'</b></span></div><canvas id="cv" class="lcd" width="320" height="180"></canvas><div class="dpad2"><button id="jmp" style="flex:1 1 130px;max-width:170px;font-size:18px">⤴ SALTAR</button><button id="dck" style="flex:1 1 130px;max-width:170px;font-size:18px">⬇ AGACHAR</button></div><div class="gend" id="gend"></div>';
   const cv=$("cv"), g=cv.getContext("2d"), W=320, H=180, GY=146, fx=makeFX(); let seenTh=AMB.thunderId;
-  let y=0, vy=0, jumps=0, duck=0, duckHold=false, obs=[], coins=[], dist=0, bonus=0, score=0, combo=0, shield=false, over=false, raf, last=0, gap=170, coinGap=120, started=false, banner=null, nextShield=900;
+  let lives=3, invul=0, buf=0, y=0, vy=0, jumps=0, duck=0, duckHold=false, obs=[], coins=[], dist=0, bonus=0, score=0, combo=0, shield=false, over=false, raf, last=0, gap=260, coinGap=120, started=false, banner=null, nextShield=900;
   const types=[{e:"🐈",w:24,h:26,b:0},{e:"🪨",w:22,h:20,b:0},{e:"🌵",w:20,h:30,b:0},{e:"🧶",w:20,h:20,b:0},{e:"🐈‍⬛",w:24,h:26,b:0},{e:"🦅",w:28,h:22,b:16,bird:true}];
-  const jump=()=>{ if(over) return; if(!started){ started=true; banner={t:"¡CORRÉ!",life:60}; } if(y===0){ vy=9.4; jumps=1; sfx.tick(); fx.boom(48,GY,"#8d8d8d",4,1.6); } else if(jumps<2){ vy=8.2; jumps=2; sfx.power(); fx.boom(48,GY-y,"#7fe0ff",8,2); fx.pop(60,GY-y-20,"SALTO DOBLE","#1f3d1a"); } };
+  const jump=()=>{ if(over) return; if(!started){ started=true; banner={t:"¡CORRÉ!",life:60}; } if(y===0){ vy=9.6; jumps=1; sfx.tick(); fx.boom(48,GY,"#8d8d8d",4,1.6); } else if(jumps<2){ vy=8.4; jumps=2; sfx.power(); fx.boom(48,GY-y,"#7fe0ff",8,2); fx.pop(62,GY-y-26,"SALTO DOBLE","#ffffff"); } else buf=8; };
   const doDuck=ms=>{ if(over) return; started=true; duck=ms||600; if(y>0) vy=Math.min(vy,-3); };
   cv.addEventListener("pointerdown",e=>{ e.preventDefault(); jump(); }); swipe(cv,d=>{ if(d==="d") doDuck(650); else if(d==="u") jump(); },26);
   $("jmp").addEventListener("pointerdown",e=>{ e.preventDefault(); jump(); });
@@ -1400,11 +1400,11 @@ function runnerGame(){
     fx.begin(g); g.globalAlpha=1; const nt=AMB.sky(g,W,H,1), sk={night:nt>.5}; if(AMB.rainy()>.4){ g.fillStyle="rgba(255,255,255,.08)"; g.fillRect(0,GY+3,W,H); }
     const ink=sk.night?"#cdbff0":"#1f3d1a";
     g.fillStyle=sk.night?"rgba(205,191,240,.10)":"rgba(31,61,26,.10)"; for(let i=0;i<4;i++){ const bx=((i*120-dist*.3)%(W+160)+W+160)%(W+160)-80; g.beginPath(); g.moveTo(bx-60,GY+2); g.lineTo(bx,GY-34-(i%2)*14); g.lineTo(bx+60,GY+2); g.fill(); } g.fillStyle=ink; g.fillRect(0,GY+2,W,2); for(let i=0;i<20;i++){ const gx=((i*37-dist)%W+W)%W; g.fillRect(gx,GY+9+(i%3)*5,6,2); }
-    const sp=3.2+Math.min(5.2,dist/1300); if(started&&sp>5.5){ g.fillStyle=sk.night?"rgba(255,255,255,.18)":"rgba(31,61,26,.2)"; for(let i=0;i<5;i++){ const lx=((i*83-dist*2.2)%W+W)%W; g.fillRect(lx,40+i*17,26,1.5); } }
+    const sp=2.9+Math.min(3.4,dist/2200); if(started&&sp>5.5){ g.fillStyle=sk.night?"rgba(255,255,255,.18)":"rgba(31,61,26,.2)"; for(let i=0;i<5;i++){ const lx=((i*83-dist*2.2)%W+W)%W; g.fillRect(lx,40+i*17,26,1.5); } }
     g.textAlign="center"; g.textBaseline="bottom"; g.fillStyle="#fff";
     coins.forEach(c=>{ g.font="18px serif"; g.shadowColor="#ffd54f"; g.shadowBlur=10; g.fillText(c.shield?"🛡️":"✨",c.x,GY+4-c.h); }); g.shadowBlur=0;
     obs.forEach(o=>{ const fl=o.bird?(Math.floor(dist/14)%2?4:0):0; g.font=(o.h+6+fl)+"px serif"; g.fillText(o.e,o.x,GY+4-o.b); });
-    const bob=(y===0&&started)?(Math.floor(dist/9)%2?-1.5:0):0; g.font=(duck>0?"22px":"30px")+" serif"; if(shield){ g.shadowColor="#7fe0ff"; g.shadowBlur=14; } g.fillText("🦎",48,GY-y+4+bob); g.shadowBlur=0;
+    const bob=(y===0&&started)?(Math.floor(dist/9)%2?-1.5:0):0; g.font=(duck>0?"22px":"30px")+" serif"; if(shield){ g.shadowColor="#7fe0ff"; g.shadowBlur=14; } if(!(invul>0&&Math.floor(invul/5)%2)) g.fillText("🦎",48,GY-y+4+bob); g.shadowBlur=0;
     fx.parts(g); fx.pops(g);
     g.textAlign="left"; g.textBaseline="middle"; if(combo>=3){ g.fillStyle=ink; g.font="bold 12px sans-serif"; g.fillText("RACHA x"+combo,8,14); } if(shield){ g.fillStyle=ink; g.font="12px serif"; g.fillText("🛡️",8,32); }
     g.textAlign="center"; if(!started){ g.fillStyle=ink; g.font="13px sans-serif"; g.fillText("Tocá para empezar a correr",W/2,60); }
@@ -1415,20 +1415,20 @@ function runnerGame(){
   function frame(t){
     if(over) return; const k=Math.min(2.5,(t-(last||t))/16.67||1); last=t;
     if(started){
-      const sp=3.2+Math.min(5.2,dist/1300);
-      if(y>0||vy>0){ vy-=0.52*k; y=Math.max(0,y+vy*k); if(y===0){ if(vy<-2) fx.boom(48,GY,"#8d8d8d",5,1.8); vy=0; jumps=0; } }
+      const sp=2.9+Math.min(3.4,dist/2200);
+      if(y>0||vy>0){ vy-=0.5*k; y=Math.max(0,y+vy*k); if(y===0){ if(vy<-2) fx.boom(48,GY,"#8d8d8d",5,1.8); vy=0; jumps=0; if(buf>0){ buf=0; vy=9.6; jumps=1; } } } if(buf>0) buf-=k;
       if(duck>0){ duck-=16.67*k; if(duckHold) duck=Math.max(duck,60); }
-      dist+=sp*k; score=Math.floor(dist/9)+bonus; $("gs").textContent=score; $("gc").textContent=combo;
-      gap-=sp*k; if(gap<=0){ const ty=types[Math.floor(rnd(0,dist<400?5:6))]; const nb={x:W+20,...ty,passed:false}; if(nb.bird) nb.b=[6,18,18,42][Math.floor(rnd(0,4))]; obs.push(nb); if(dist>1500&&Math.random()<.22) obs.push({x:W+20+rnd(34,48),...types[Math.floor(rnd(0,5))],passed:false}); gap=rnd(150,280)-Math.min(70,dist/70); }
+      dist+=sp*k; score=Math.floor(dist/9)+bonus; $("gs").textContent=score; 
+      gap-=sp*k; if(gap<=0){ let ti=Math.floor(rnd(0,5)); if(dist>1100&&Math.random()<.22) ti=5; const ty=types[ti]; const nb={x:W+20,...ty,passed:false}; if(nb.bird) nb.b=[6,18,18,42][Math.floor(rnd(0,4))]; obs.push(nb); if(dist>3200&&Math.random()<.12&&!nb.bird) obs.push({x:W+20+rnd(40,54),...types[Math.floor(rnd(0,5))],passed:false}); gap=rnd(210,340)-Math.min(60,dist/90); }
       coinGap-=sp*k; if(coinGap<=0){ coins.push({x:W+20,h:Math.random()<.5?8:rnd(46,66),shield:false}); coinGap=rnd(90,190); }
       nextShield-=sp*k; if(nextShield<=0){ coins.push({x:W+20,h:rnd(20,50),shield:true}); nextShield=rnd(1400,2400); }
       obs.forEach(o=>o.x-=sp*k); coins.forEach(c=>c.x-=sp*k); coins=coins.filter(c=>c.x>-20);
-      const lx=48, lw=20, lh=duck>0?12:25;
-      for(const c of coins){ if(!c.got&&Math.abs(c.x-lx)<18&&(c.h<y+lh+10&&c.h+16>y-4)){ c.got=true; if(c.shield){ shield=true; fx.pop(c.x,GY-c.h-24,"ESCUDO","#1f3d1a"); sfx.power(); } else { bonus+=5; fx.pop(c.x,GY-c.h-24,"+5","#1f3d1a"); sfx.score(); } fx.boom(c.x,GY-c.h-8,"#ffd54f",8,2.6); } } coins=coins.filter(c=>!c.got);
-      for(const o of obs){ if(!o.passed&&o.x+o.w/2<lx-lw/2){ o.passed=true; combo++; if(combo%5===0){ bonus+=10; fx.pop(lx+20,GY-60,"RACHA x"+combo+" +10","#1f3d1a"); sfx.win(); fx.flash(.3); } }
-        const overlapX=lx+lw/2-4>o.x-o.w/2+3&&lx-lw/2+4<o.x+o.w/2-3, overlapY=(y<o.b+o.h-5)&&(y+lh>o.b+4);
-        if(overlapX&&overlapY){ if(shield){ shield=false; o.x=-99; fx.boom(lx,GY-y-10,"#7fe0ff",16,3.4); fx.flash(.5); fx.pop(lx,GY-y-30,"¡Salvada!","#1f3d1a"); sfx.power(); } else return end(); }
-        else if(!o.near&&Math.abs(o.x-lx)<10&&y>0&&Math.abs(y-(o.b+o.h))<8&&!o.bird){ o.near=true; bonus+=3; fx.pop(lx,GY-y-30,"¡Casi! +3","#1f3d1a"); } }
+      const lx=48, lw=16, lh=duck>0?11:22; if(invul>0) invul-=k;
+      for(const c of coins){ if(!c.got&&Math.abs(c.x-lx)<18&&(c.h<y+lh+10&&c.h+16>y-4)){ c.got=true; if(c.shield){ shield=true; fx.pop(c.x,GY-c.h-24,"ESCUDO","#ffffff"); sfx.power(); } else { bonus+=5; fx.pop(c.x,GY-c.h-24,"+5","#ffffff"); sfx.score(); } fx.boom(c.x,GY-c.h-8,"#ffd54f",8,2.6); } } coins=coins.filter(c=>!c.got);
+      for(const o of obs){ if(!o.passed&&o.x+o.w/2<lx-lw/2){ o.passed=true; combo++; if(combo%5===0){ bonus+=10; fx.pop(lx+20,GY-60,"RACHA x"+combo+" +10","#ffffff"); sfx.win(); fx.flash(.3); } }
+        const overlapX=lx+lw/2-2>o.x-o.w/2+6&&lx-lw/2+2<o.x+o.w/2-6, overlapY=(y<o.b+o.h-8)&&(y+lh>o.b+6);
+        if(overlapX&&overlapY&&invul<=0){ o.x=-99; if(shield){ shield=false; fx.boom(lx,GY-y-10,"#7fe0ff",16,3.4); fx.flash(.5); fx.pop(lx,GY-y-34,"¡Salvada!","#ffffff"); sfx.power(); invul=40; } else { lives--; combo=0; invul=100; $("gl").textContent=Math.max(0,lives); fx.boom(lx,GY-y-10,"#ff6b6b",16,3.6); fx.shake(10); fx.flash(.4); sfx.bad(); if(lives<=0) return end(); } }
+        else if(!o.near&&Math.abs(o.x-lx)<10&&y>0&&Math.abs(y-(o.b+o.h))<8&&!o.bird){ o.near=true; bonus+=3; fx.pop(lx,GY-y-30,"¡Casi! +3","#ffffff"); } }
       obs=obs.filter(o=>o.x>-40);
     }
     draw(k); raf=requestAnimationFrame(frame);
@@ -1512,7 +1512,7 @@ function makeFX(){
     update(k){ P.forEach(p=>{ p.x+=p.vx*k; p.y+=p.vy*k; p.vy+=.03*k; p.life-=k; }); P=P.filter(p=>p.life>0); T.forEach(t=>{ t.y-=.6*k; t.life-=k; }); T=T.filter(t=>t.life>0); sh=Math.max(0,sh-k*.9); fl=Math.max(0,fl-.05*k); },
     begin(g){ g.save(); if(sh>0) g.translate(rnd(-1,1)*sh*.5,rnd(-1,1)*sh*.5); },
     parts(g){ P.forEach(p=>{ g.globalAlpha=Math.max(0,p.life/p.max); g.fillStyle=p.col; g.beginPath(); g.arc(p.x,p.y,p.s,0,6.283); g.fill(); }); g.globalAlpha=1; },
-    pops(g){ g.textAlign="center"; g.textBaseline="middle"; T.forEach(t=>{ g.globalAlpha=Math.min(1,t.life/22); g.fillStyle=t.col; g.font="bold 13px sans-serif"; g.fillText(t.txt,t.x,t.y); }); g.globalAlpha=1; },
+    pops(g){ g.textAlign="center"; g.textBaseline="middle"; T.forEach(t=>{ g.globalAlpha=Math.min(1,t.life/22); g.font="bold 13px sans-serif"; g.lineWidth=3; g.lineJoin="round"; g.strokeStyle="rgba(0,0,0,.6)"; g.strokeText(t.txt,t.x,t.y); g.fillStyle=t.col; g.fillText(t.txt,t.x,t.y); }); g.globalAlpha=1; },
     end(g,W,H){ if(fl>0){ g.globalAlpha=Math.min(.55,fl); g.fillStyle="#fff"; g.fillRect(-20,-20,W+40,H+40); g.globalAlpha=1; } g.restore(); }
   };
 }
@@ -1602,7 +1602,7 @@ const GAMES=[
  ,{n:"Lagartija espacial",e:"🚀",retro:true,run:spaceGame,how:["Tu lagartija 🦎 vuela en un cohete y dispara sola. Movela arrastrando el dedo, con el mouse, las flechas o WASD.","Enfrentá a los gatos meme 😹🙀😼 y a sus jefes (Grumpy, Nyan Cat, Oiia, Chipi Chipi, Banana y Huh). Derribá seguido para armar COMBOS.","Juntá ⭐ (más disparos), 🛡️ (escudo), ⚡ (rápido), ❤️ (vida) y 💥 (bombas). Al vencer a un jefe elegís una mejora para tu lagartija: 🧢 🕶️ 🧲 🛡️ 🔥 💚 🎒.","Usá 💥 BOMBA (botón o barra espaciadora) cuando todo se complique."]}
  ,{n:"Rompe-ladrillos",e:"🧱",retro:true,run:bricksGame,how:["Movés la paleta con el dedo, el mouse o las flechas. Tocá para lanzar el ovillo 🧶.", "Rompé todos los ladrillos. Algunos aguantan más golpes y otros explotan 💥.", "Atrapá lo que cae: 🔥 bola de fuego, 🧶 multibola, 📏 paleta grande, 🐌 cámara lenta, 🔫 láser, ❤️ vida y 💥 bomba."]}
  ,{n:"Bloques que caen",e:"🧩",retro:true,run:blocksGame,how:["Los bloques caen: movelos con ◀ ▶ (o deslizando) y girálos con ⟳ (o tocando).", "Verás una sombra donde va a caer y cuál viene después. Tocá ▼ o la barra espaciadora para bajarlo rápido.", "Completá filas sin huecos para borrarlas. ¡Varias seguidas arman COMBOS!"]}
- ,{n:"Lagartija saltarina",e:"🦎",retro:true,run:runnerGame,how:["La lagartija corre sola por el desierto. Tocá la pantalla, el botón ⤴ SALTAR o la barra espaciadora para saltar (¡y otra vez en el aire: salto doble!).","Saltá los gatos 🐈, las piedras 🪨, los cactus 🌵 y los ovillos 🧶. Las águilas 🦅 vuelan a distintas alturas: las bajas se saltan, las del medio se esquivan agachándote (deslizá hacia abajo o ⬇) y las altas pasan por encima.","Cada vez corre más rápido. ¿Hasta dónde llegás?"]}
+ ,{n:"Lagartija saltarina",e:"🦎",retro:true,run:runnerGame,how:["La lagartija corre sola por el desierto. Tocá la pantalla, el botón ⤴ SALTAR o la barra espaciadora para saltar (¡y otra vez en el aire: salto doble!).","Saltá los gatos 🐈, las piedras 🪨, los cactus 🌵 y los ovillos 🧶. Las águilas 🦅 vuelan a distintas alturas: las bajas se saltan, las del medio se esquivan agachándote (deslizá hacia abajo o ⬇) y las altas pasan por encima.","Tenés 3 vidas y, si te chocás, unos segundos de protección. Cada vez corre más rápido: ¿hasta dónde llegás?"]}
  ,{n:"Esquivá a los gatos",e:"🐈",retro:true,run:dodgeGame,how:["Estás en una ruta de 3 carriles: deslizá el dedo, tocá un costado o usá ◀ ▶.", "Esquivá gatos 🐈, piedras 🪨 y ovillos 🧶, y juntá moscas 🪰 (cargan el ⚡ NITRO) y escudos 🛡️.", "Con el NITRO sos invencible y arrollás todo. Cuidado con la estampida de gatos."]}
 ];
 GAMES[0].rk={id:"lagartijas",high:true,fmt:s=>s+" lagartijas"};
