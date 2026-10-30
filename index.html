@@ -222,6 +222,8 @@ body{-webkit-tap-highlight-color:transparent}
 .inl .st{font-family:Montserrat,sans-serif;font-size:11px;color:var(--muted)}
 .inbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.inbar .del{margin-top:0}
 
+.btn,.dpad button,.dpad2 button,.pad,.tile,.rps button{touch-action:manipulation}
+.mbox{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .mbox .bk{position:absolute;top:8px;left:10px;border:0;background:none;font-size:22px;cursor:pointer;padding:8px}
 .ghead span{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px 14px}
 .how{background:var(--bg);border:1px dashed var(--gold);border-radius:18px;padding:14px 14px 8px;text-align:left;margin:12px 0 16px}
@@ -230,9 +232,9 @@ body{-webkit-tap-highlight-color:transparent}
 .how li{counter-increment:s;display:flex;gap:10px;align-items:flex-start;margin:8px 0;font-size:18px;line-height:1.35}
 .how li::before{content:counter(s);flex:0 0 26px;height:26px;border-radius:50%;background:var(--gold);color:#fff;font-family:Montserrat,sans-serif;font-weight:600;font-size:13px;display:grid;place-items:center;margin-top:1px}
 .tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:8px 0 14px}
-.tile{border:1px solid var(--line);border-radius:16px;background:var(--bg);color:inherit;padding:12px 6px;cursor:pointer;font:inherit;display:flex;flex-direction:column;align-items:center;gap:4px;transition:transform .15s}
+.tile{border:1px solid var(--line);border-radius:16px;background:var(--bg);color:inherit;padding:9px 6px;cursor:pointer;font:inherit;display:flex;flex-direction:column;align-items:center;gap:4px;transition:transform .15s}
 .tile:active{transform:scale(.95)}
-.tile .te{font-size:30px;line-height:1}.tile .tn{font-family:Montserrat,sans-serif;font-size:12px;font-weight:500;line-height:1.2}
+.tile .te{font-size:26px;line-height:1}.tile .tn{font-family:Montserrat,sans-serif;font-size:12px;font-weight:500;line-height:1.2}
 .tile.retro{background:#c7f0d8;color:#1f3d1a;border:2px solid #1f3d1a}
 .sec{font-family:Montserrat,sans-serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:14px 0 4px}
 .px{font-family:"Press Start 2P",monospace}
@@ -680,10 +682,9 @@ function snakeGame(){
   const dirs={u:{x:0,y:-1},d:{x:0,y:1},l:{x:-1,y:0},r:{x:1,y:0}};
   const turn=d=>{ if(d.x===-dir.x&&d.y===-dir.y) return; nd=d; };
   mb.querySelectorAll(".dpad button").forEach(b=>b.addEventListener("pointerdown",e=>{ e.preventDefault(); turn(dirs[b.dataset.d]); }));
-  const key=e=>{ const m={ArrowUp:"u",ArrowDown:"d",ArrowLeft:"l",ArrowRight:"r"}[e.key]; if(m){ e.preventDefault(); turn(dirs[m]); } };
+  const key=e=>{ const m={ArrowUp:"u",ArrowDown:"d",ArrowLeft:"l",ArrowRight:"r",w:"u",s:"d",a:"l",d:"r",W:"u",S:"d",A:"l",D:"r"}[e.key]; if(m){ e.preventDefault(); turn(dirs[m]); } };
   addEventListener("keydown",key);
-  let sx=0,sy=0; cv.addEventListener("touchstart",e=>{ sx=e.touches[0].clientX; sy=e.touches[0].clientY; },{passive:true});
-  cv.addEventListener("touchend",e=>{ const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy; if(Math.max(Math.abs(dx),Math.abs(dy))<20) return; turn(Math.abs(dx)>Math.abs(dy)?(dx>0?dirs.r:dirs.l):(dy>0?dirs.d:dirs.u)); },{passive:true});
+  swipe(cv,d=>turn(dirs[d]));
   function draw(){
     g.fillStyle="#c7f0d8"; g.fillRect(0,0,300,300);
     g.fillStyle="rgba(31,61,26,.07)"; for(let i=0;i<N;i++){ g.fillRect(i*C,0,1,300); g.fillRect(0,i*C,300,1); }
@@ -743,10 +744,10 @@ function pongGame(){
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
   const serve=down=>{ ball.x=150; ball.y=200; ball.vx=(Math.random()<.5?-1:1)*rnd(1.4,2.4); ball.vy=down?3.2:-3.2; };
   const setPx=x=>{ const r=cv.getBoundingClientRect(); px=clamp((x-r.left)*(W/r.width)-PW/2,0,W-PW); };
-  cv.addEventListener("pointermove",e=>setPx(e.clientX)); cv.addEventListener("pointerdown",e=>setPx(e.clientX));
+  cv.addEventListener("pointermove",e=>setPx(e.clientX)); cv.addEventListener("pointerdown",e=>{ setPx(e.clientX); try{ cv.setPointerCapture(e.pointerId); }catch(_){} });
   const hold=(id,v)=>{ const el=$(id); el.addEventListener("pointerdown",e=>{ e.preventDefault(); mv=v; }); ["pointerup","pointerleave","pointercancel"].forEach(ev=>el.addEventListener(ev,()=>{ if(mv===v) mv=0; })); };
   hold("pl",-1); hold("pr",1);
-  const kd=e=>{ if(e.key==="ArrowLeft"){ e.preventDefault(); mv=-1; } if(e.key==="ArrowRight"){ e.preventDefault(); mv=1; } }, ku=e=>{ if(e.key==="ArrowLeft"||e.key==="ArrowRight") mv=0; };
+  const kd=e=>{ if(e.key==="ArrowLeft"||e.key==="a"||e.key==="A"){ e.preventDefault(); mv=-1; } if(e.key==="ArrowRight"||e.key==="d"||e.key==="D"){ e.preventDefault(); mv=1; } }, ku=e=>{ if(["ArrowLeft","ArrowRight","a","A","d","D"].includes(e.key)) mv=0; };
   addEventListener("keydown",kd); addEventListener("keyup",ku);
   function draw(){
     g.fillStyle="#111"; g.fillRect(0,0,W,H);
@@ -907,15 +908,15 @@ $("trophy").addEventListener("click",()=>{ const n=getName(); if(n&&hearts>0) rk
 
 function spaceGame(){
   mt.textContent="🚀 Lagartija espacial";
-  mb.innerHTML='<p class="hint2">Tu lagartija 🦎 dispara sola. Subí y bajá para esquivar y derribar bichos. ¡Cuidado con el gato jefe!</p><div class="ghead"><span>Puntos <b id="gs">0</b></span><span>Vidas <b id="gl">3</b></span></div><canvas id="cv" class="lcd" width="320" height="240"></canvas><div class="dpad2"><button id="up">▲ Subir</button><button id="dn">▼ Bajar</button></div><div class="gend" id="gend"></div>';
+  mb.innerHTML='<p class="hint2">Tu lagartija 🦎 dispara sola. Deslizá el dedo (o mové el mouse) arriba y abajo para esquivar y derribar bichos. ¡Cuidado con el gato jefe!</p><div class="ghead"><span>Puntos <b id="gs">0</b></span><span>Vidas <b id="gl">3</b></span></div><canvas id="cv" class="lcd" width="320" height="240"></canvas><div class="dpad2"><button id="up">▲ Subir</button><button id="dn">▼ Bajar</button></div><div class="gend" id="gend"></div>';
   const cv=$("cv"), g=cv.getContext("2d"), W=320, H=240;
   let y=H/2, mv=0, bullets=[], foes=[], shots=[], boss=null, score=0, lives=3, over=false, raf, last=0, lastShot=0, spawnAt=0, invul=0, nextBoss=12;
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
   const hold=(id,v)=>{ const el=$(id); el.addEventListener("pointerdown",e=>{ e.preventDefault(); mv=v; }); ["pointerup","pointerleave","pointercancel"].forEach(ev=>el.addEventListener(ev,()=>{ if(mv===v) mv=0; })); };
   hold("up",-1); hold("dn",1);
   const setY=cy=>{ const r=cv.getBoundingClientRect(); y=clamp((cy-r.top)*(H/r.height),14,H-14); };
-  cv.addEventListener("pointermove",e=>{ if(e.buttons||e.pointerType==="touch") setY(e.clientY); }); cv.addEventListener("pointerdown",e=>setY(e.clientY));
-  const kd=e=>{ if(e.key==="ArrowUp"){ e.preventDefault(); mv=-1; } if(e.key==="ArrowDown"){ e.preventDefault(); mv=1; } }, ku=e=>{ if(e.key==="ArrowUp"||e.key==="ArrowDown") mv=0; };
+  cv.addEventListener("pointermove",e=>setY(e.clientY)); cv.addEventListener("pointerdown",e=>{ setY(e.clientY); try{ cv.setPointerCapture(e.pointerId); }catch(_){} });
+  const kd=e=>{ if(e.key==="ArrowUp"||e.key==="w"||e.key==="W"){ e.preventDefault(); mv=-1; } if(e.key==="ArrowDown"||e.key==="s"||e.key==="S"){ e.preventDefault(); mv=1; } }, ku=e=>{ if(["ArrowUp","ArrowDown","w","W","s","S"].includes(e.key)) mv=0; };
   addEventListener("keydown",kd); addEventListener("keyup",ku);
   const hit=(ax,ay,bx,by,r)=>Math.abs(ax-bx)<r&&Math.abs(ay-by)<r;
   function cleanup(){ over=true; cancelAnimationFrame(raf); removeEventListener("keydown",kd); removeEventListener("keyup",ku); }
@@ -943,7 +944,7 @@ function spaceGame(){
     }
     $("gs").textContent=score; $("gl").textContent=Math.max(0,lives);
     g.fillStyle="#c7f0d8"; g.fillRect(0,0,W,H); g.fillStyle="rgba(31,61,26,.18)"; for(let i=0;i<24;i++) g.fillRect((i*53+t*0.03)%W,(i*37)%H,2,2);
-    g.font="26px serif"; g.textAlign="center"; g.textBaseline="middle";
+    g.fillStyle="#1f3d1a"; g.font="26px serif"; g.textAlign="center"; g.textBaseline="middle";
     if(!(invul>0&&Math.floor(invul/6)%2)) g.fillText("🦎",40,y);
     g.fillStyle="#1f3d1a"; bullets.forEach(b=>g.fillRect(b.x-6,b.y-2,12,4));
     foes.forEach(f=>{ g.font="24px serif"; g.fillText(f.rock?"🪨":"🪰",f.x,f.y); });
@@ -964,10 +965,10 @@ function bricksGame(){
   const ball={x:150,y:H-40,vx:2.2,vy:-3.4};
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
   const setPx=x=>{ const r=cv.getBoundingClientRect(); px=clamp((x-r.left)*(W/r.width)-PW/2,0,W-PW); };
-  cv.addEventListener("pointermove",e=>setPx(e.clientX)); cv.addEventListener("pointerdown",e=>{ setPx(e.clientX); launched=true; });
+  cv.addEventListener("pointermove",e=>setPx(e.clientX)); cv.addEventListener("pointerdown",e=>{ setPx(e.clientX); launched=true; try{ cv.setPointerCapture(e.pointerId); }catch(_){} });
   const hold=(id,v)=>{ const el=$(id); el.addEventListener("pointerdown",e=>{ e.preventDefault(); mv=v; launched=true; }); ["pointerup","pointerleave","pointercancel"].forEach(ev=>el.addEventListener(ev,()=>{ if(mv===v) mv=0; })); };
   hold("pl",-1); hold("pr",1);
-  const kd=e=>{ if(e.key==="ArrowLeft"){ e.preventDefault(); mv=-1; launched=true; } if(e.key==="ArrowRight"){ e.preventDefault(); mv=1; launched=true; } }, ku=e=>{ if(e.key==="ArrowLeft"||e.key==="ArrowRight") mv=0; };
+  const kd=e=>{ if(e.key==="ArrowLeft"||e.key==="a"||e.key==="A"){ e.preventDefault(); mv=-1; launched=true; } if(e.key==="ArrowRight"||e.key==="d"||e.key==="D"){ e.preventDefault(); mv=1; launched=true; } }, ku=e=>{ if(["ArrowLeft","ArrowRight","a","A","d","D"].includes(e.key)) mv=0; };
   addEventListener("keydown",kd); addEventListener("keyup",ku);
   function cleanup(){ over=true; cancelAnimationFrame(raf); removeEventListener("keydown",kd); removeEventListener("keyup",ku); }
   function finish(win){ cleanup(); if(win) score+=lives*50; $("gs").textContent=score; $("gend").innerHTML=(win?"🏆 ¡Rompiste todos los ladrillos! ":"😅 Se acabaron las vidas. ")+score+" puntos."+ENDB; wireEnd(); if(win) confetti(50); rankAfter(12,score); }
@@ -994,7 +995,7 @@ function bricksGame(){
 }
 function blocksGame(){
   mt.textContent="🧩 Bloques que caen";
-  mb.innerHTML='<p class="hint2">La lagartija 🦎 y el gato 🐈 construyen una torre: acomodá los bloques que caen y completá filas sin huecos.</p><div class="ghead"><span>Puntos <b id="gs">0</b></span><span>Nivel <b id="gl">1</b></span></div><canvas id="cv" class="lcd" width="200" height="320" style="background:#1b1426"></canvas><div class="dpad2"><button id="bl">◀</button><button id="br">▶</button><button id="bt">⟳</button><button id="bd">▼</button></div><div class="gend" id="gend"></div>';
+  mb.innerHTML='<p class="hint2">La lagartija 🦎 y el gato 🐈 construyen una torre. Deslizá el dedo para mover y bajar los bloques, y tocá para girarlos. En la compu: flechas y barra espaciadora.</p><div class="ghead"><span>Puntos <b id="gs">0</b></span><span>Nivel <b id="gl">1</b></span></div><canvas id="cv" class="lcd" width="200" height="320" style="background:#1b1426"></canvas><div class="dpad2"><button id="bl">◀</button><button id="br">▶</button><button id="bt">⟳</button><button id="bd">▼</button></div><div class="gend" id="gend"></div>';
   const cv=$("cv"), g=cv.getContext("2d"), COLS=10, ROWS=16, C=20;
   const SH=[[[1,1,1,1]],[[1,1],[1,1]],[[0,1,0],[1,1,1]],[[1,0,0],[1,1,1]],[[0,0,1],[1,1,1]],[[0,1,1],[1,1,0]],[[1,1,0],[0,1,1]]];
   const COL=["#7fb8f0","#f7e07a","#c4b5fd","#f0a35e","#7fb8f0","#7fe0b6","#f49ac8"];
@@ -1019,7 +1020,15 @@ function blocksGame(){
   const down=()=>{ if(over) return; if(ok(piece.m,piece.x,piece.y+1)) piece.y++; else lock(); draw(); };
   const press=(id,fn)=>{ const el=$(id); el.addEventListener("pointerdown",e=>{ e.preventDefault(); fn(); }); };
   press("bl",()=>move(-1)); press("br",()=>move(1)); press("bt",turn); press("bd",down);
-  const key=e=>{ const m={ArrowLeft:()=>move(-1),ArrowRight:()=>move(1),ArrowUp:turn,ArrowDown:down}[e.key]; if(m){ e.preventDefault(); m(); } };
+  const hard=()=>{ if(over) return; const cur=piece; let n=0; while(!over&&piece===cur&&n<30){ down(); n++; } };
+  const key=e=>{ const m={ArrowLeft:()=>move(-1),ArrowRight:()=>move(1),ArrowUp:turn,ArrowDown:down,a:()=>move(-1),A:()=>move(-1),d:()=>move(1),D:()=>move(1),w:turn,W:turn,s:down,S:down," ":hard}[e.key]; if(m){ e.preventDefault(); m(); } };
+  { let sx=0,sy=0,tot=0,on=false,lx=0,ly=0;
+    cv.addEventListener("pointerdown",e=>{ on=true; sx=lx=e.clientX; sy=ly=e.clientY; tot=0; try{ cv.setPointerCapture(e.pointerId); }catch(_){} });
+    cv.addEventListener("pointermove",e=>{ if(!on) return; const dx=e.clientX-lx, dy=e.clientY-ly; tot=Math.max(tot,Math.abs(e.clientX-sx),Math.abs(e.clientY-sy));
+      if(Math.abs(dx)>=22&&Math.abs(dx)>Math.abs(dy)){ move(dx>0?1:-1); lx=e.clientX; ly=e.clientY; }
+      else if(dy>=26&&Math.abs(dy)>Math.abs(dx)){ down(); ly=e.clientY; lx=e.clientX; } });
+    cv.addEventListener("pointerup",()=>{ if(on&&tot<10) turn(); on=false; });
+    cv.addEventListener("pointercancel",()=>{ on=false; }); }
   addEventListener("keydown",key);
   function cleanup(){ over=true; clearTimeout(timer); removeEventListener("keydown",key); }
   function end(){ cleanup(); const m=score>=2000?"¡Maestra de los bloques! 🏆":score>=800?"¡Muy bien! Como en los celulares de antes 📱":"Buen intento 🧩"; $("gend").innerHTML=score+" puntos. "+m+ENDB; wireEnd(); if(score>=800) confetti(40); rankAfter(13,score); }
@@ -1035,7 +1044,7 @@ function runnerGame(){
   const types=[{e:"🐈",w:24,h:26},{e:"🪨",w:22,h:20},{e:"🌵",w:20,h:30},{e:"🧶",w:20,h:20},{e:"🐈‍⬛",w:24,h:26}];
   const jump=()=>{ if(over) return; started=true; if(y===0) vy=9.4; };
   cv.addEventListener("pointerdown",e=>{ e.preventDefault(); jump(); }); $("jmp").addEventListener("pointerdown",e=>{ e.preventDefault(); jump(); });
-  const kd=e=>{ if(e.key===" "||e.key==="ArrowUp"){ e.preventDefault(); jump(); } }; addEventListener("keydown",kd);
+  const kd=e=>{ if(e.key===" "||e.key==="ArrowUp"||e.key==="w"||e.key==="W"){ e.preventDefault(); jump(); } }; addEventListener("keydown",kd);
   function cleanup(){ over=true; cancelAnimationFrame(raf); removeEventListener("keydown",kd); }
   function end(){ cleanup(); runBest=Math.max(runBest,score); $("gb").textContent=runBest; const m=score>=400?"¡Imparable! Más rápida que un gato 🏆":score>=200?"¡Muy bien! Saltás como una campeona 🦎":score>=80?"Nada mal, seguí practicando 😄":"Los gatos te alcanzaron 😼"; $("gend").innerHTML=score+" puntos. "+m+ENDB; wireEnd(); if(score>=200) confetti(45); rankAfter(14,score); }
   function frame(t){
@@ -1062,14 +1071,16 @@ function runnerGame(){
 }
 function dodgeGame(){
   mt.textContent="🐈 Esquivá a los gatos";
-  mb.innerHTML='<p class="hint2">Movete entre los 3 carriles (◀ ▶, tocá un costado o deslizá). Esquivá gatos, piedras y ovillos. ¡Juntá las moscas 🪰!</p><div class="ghead"><span>Puntos <b id="gs">0</b></span><span>Vidas <b id="gl">3</b></span></div><canvas id="cv" class="lcd" width="240" height="360" style="background:#2a1f3a;border-color:#f49ac8"></canvas><div class="dpad2"><button id="dl">◀</button><button id="dr">▶</button></div><div class="gend" id="gend"></div>';
+  mb.innerHTML='<p class="hint2">Movete entre los 3 carriles: deslizá el dedo, tocá un costado, usá ◀ ▶ o las flechas del teclado. Esquivá gatos, piedras y ovillos. ¡Juntá las moscas 🪰!</p><div class="ghead"><span>Puntos <b id="gs">0</b></span><span>Vidas <b id="gl">3</b></span></div><canvas id="cv" class="lcd" width="240" height="360" style="background:#2a1f3a;border-color:#f49ac8"></canvas><div class="dpad2"><button id="dl">◀</button><button id="dr">▶</button></div><div class="gend" id="gend"></div>';
   const cv=$("cv"), g=cv.getContext("2d"), W=240, H=360, L=80;
   let lane=1, things=[], score=0, lives=3, over=false, raf, last=0, spawn=0, dist=0, invul=0;
   const go=d=>{ if(!over) lane=Math.max(0,Math.min(2,lane+d)); };
   [["dl",-1],["dr",1]].forEach(([id,d])=>$(id).addEventListener("pointerdown",e=>{ e.preventDefault(); go(d); }));
-  cv.addEventListener("pointerdown",e=>{ const r=cv.getBoundingClientRect(); go(e.clientX<r.left+r.width/2?-1:1); });
-  let sx=0; cv.addEventListener("touchstart",e=>{ sx=e.touches[0].clientX; },{passive:true}); cv.addEventListener("touchend",e=>{ const dx=e.changedTouches[0].clientX-sx; if(Math.abs(dx)>25) go(dx>0?1:-1); },{passive:true});
-  const kd=e=>{ if(e.key==="ArrowLeft"){ e.preventDefault(); go(-1); } if(e.key==="ArrowRight"){ e.preventDefault(); go(1); } }; addEventListener("keydown",kd);
+  let swiped=false, downX=0, downY=0;
+  swipe(cv,d=>{ swiped=true; if(d==="l") go(-1); else if(d==="r") go(1); },20);
+  cv.addEventListener("pointerdown",e=>{ swiped=false; downX=e.clientX; downY=e.clientY; });
+  cv.addEventListener("pointerup",e=>{ if(swiped||Math.hypot(e.clientX-downX,e.clientY-downY)>12) return; const r=cv.getBoundingClientRect(); go(e.clientX<r.left+r.width/2?-1:1); });
+  const kd=e=>{ if(e.key==="ArrowLeft"||e.key==="a"||e.key==="A"){ e.preventDefault(); go(-1); } if(e.key==="ArrowRight"||e.key==="d"||e.key==="D"){ e.preventDefault(); go(1); } }; addEventListener("keydown",kd);
   function cleanup(){ over=true; cancelAnimationFrame(raf); removeEventListener("keydown",kd); }
   function end(){ cleanup(); const m=score>=150?"¡Reina de la ruta! 🏆":score>=70?"¡Muy bien, esquivaste de todo! 🦎":score>=25?"Nada mal 😄":"Los gatos ganaron esta vez 😼"; $("gend").innerHTML=score+" puntos. "+m+ENDB; wireEnd(); if(score>=70) confetti(45); rankAfter(15,score); }
   function frame(t){
@@ -1085,13 +1096,20 @@ function dodgeGame(){
     things=things.filter(o=>!o.hit||!o.good); things.forEach(o=>{ if(o.hit&&!o.good) o.e=o.e; });
     g.fillStyle="#2a1f3a"; g.fillRect(0,0,W,H);
     g.fillStyle="rgba(255,255,255,.35)"; for(let i=1;i<3;i++) for(let y=((dist*1.2)%40)-40;y<H;y+=40) g.fillRect(i*L-2,y,4,20);
-    g.textAlign="center"; g.textBaseline="middle";
+    g.fillStyle="#fff"; g.textAlign="center"; g.textBaseline="middle";
     things.forEach(o=>{ g.font="34px serif"; g.fillText(o.e,o.lane*L+L/2,o.y); });
     if(!(invul>0&&Math.floor(invul/5)%2)){ g.font="38px serif"; g.fillText("🦎",lane*L+L/2,py); }
     if(lives<=0) return end();
     raf=requestAnimationFrame(frame);
   }
   let bonus=0, pf=1; stop=cleanup; raf=requestAnimationFrame(frame);
+}
+
+function swipe(el,cb,th){
+  th=th||22; let sx=0,sy=0,on=false;
+  el.addEventListener("pointerdown",e=>{ on=true; sx=e.clientX; sy=e.clientY; try{ el.setPointerCapture(e.pointerId); }catch(_){} });
+  el.addEventListener("pointermove",e=>{ if(!on) return; const dx=e.clientX-sx, dy=e.clientY-sy; if(Math.max(Math.abs(dx),Math.abs(dy))<th) return; cb(Math.abs(dx)>Math.abs(dy)?(dx>0?"r":"l"):(dy>0?"d":"u")); sx=e.clientX; sy=e.clientY; });
+  ["pointerup","pointercancel"].forEach(ev=>el.addEventListener(ev,()=>{ on=false; }));
 }
 
 let runBest=0;
@@ -1128,7 +1146,7 @@ GAMES[15].rk={id:"esquiva",high:true,fmt:s=>s+" puntos"};
 function openMenu(){
   stop(); stop=()=>{}; modal.hidden=false; $("mbk").style.display="none"; mt.textContent="🎮 Sala de juegos";
   const tile=(g,i)=>'<button class="tile'+(g.retro?' retro':'')+'" data-i="'+i+'"><span class="te">'+g.e+'</span><span class="tn'+(g.retro?' px':'')+'" style="'+(g.retro?'font-size:10px;line-height:1.5':'')+'">'+g.n+'</span></button>';
-  mb.innerHTML='<p class="hint2">Elegí un juego. Todos explican cómo se juega antes de empezar.</p><div class="sec">Con la lagartija y el gato</div><div class="tiles">'+GAMES.map((g,i)=>g.retro?'':tile(g,i)).join("")+'</div><div class="sec">Recuerdos retro · años 80 y 90</div><div class="tiles">'+GAMES.map((g,i)=>g.retro?tile(g,i):'').join("")+'</div>';
+  mb.innerHTML='<p class="hint2">Elegí un juego: hay '+GAMES.length+'. ¡Deslizá hacia abajo para ver todos! Todos explican cómo se juega.</p><div class="sec">Con la lagartija y el gato</div><div class="tiles">'+GAMES.map((g,i)=>g.retro?'':tile(g,i)).join("")+'</div><div class="sec">Recuerdos retro · años 80 y 90</div><div class="tiles">'+GAMES.map((g,i)=>g.retro?tile(g,i):'').join("")+'</div>';
   mb.querySelectorAll(".tile").forEach(t=>t.onclick=()=>openGame(+t.dataset.i));
   mb.insertBefore(nameRow(()=>{}),mb.children[1]);
   const rk=document.createElement("button"); rk.className="btn solid"; rk.textContent="🏆 Ver rankings"; rk.style.marginTop="6px"; rk.onclick=openRankMenu; mb.appendChild(rk);
@@ -1145,6 +1163,7 @@ function showHow(g){
   mb.innerHTML='<div class="how"><div class="how-t">Cómo se juega</div><ol>'+g.how.map(x=>'<li>'+x+'</li>').join("")+'</ol></div><button class="btn solid" id="gogo">¡Jugar!</button>';
   $("gogo").onclick=()=>{ g.run(); };
   if(g.rk){ const b=document.createElement("button"); b.className="btn"; b.textContent="🏆 Ver ranking"; b.style.marginLeft="6px"; b.onclick=()=>showRanking(g.rk.id,g.n,g.rk.high,g.rk.fmt,()=>openGame(cur.i)); $("gogo").after(b); }
+  const dv=document.createElement("div"); dv.className="who"; dv.textContent="📱 Celular: tocá o deslizá el dedo · 💻 Compu: mouse y flechas del teclado"; mb.appendChild(dv);
   const w=getName(); const who=document.createElement("div"); who.className="who"; who.textContent=w?"👤 Jugás como "+w:"👤 Poné tu nombre en la sala de juegos para entrar a los rankings"; mb.appendChild(who);
 }
 function openGame(i,skip){ stop(); stop=()=>{}; cur.i=i; modal.hidden=false; $("mbk").style.display=""; if(skip) GAMES[i].run(); else showHow(GAMES[i]); }
