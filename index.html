@@ -224,6 +224,7 @@ body{-webkit-tap-highlight-color:transparent}
 
 .btn,.dpad button,.dpad2 button,.pad,.tile,.rps button{touch-action:manipulation}
 .mbox{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.mbox .sn{position:absolute;top:8px;left:50px;border:0;background:none;font-size:20px;cursor:pointer;padding:8px}
 .mbox .bk{position:absolute;top:8px;left:10px;border:0;background:none;font-size:22px;cursor:pointer;padding:8px}
 .ghead span{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px 14px}
 .how{background:var(--bg);border:1px dashed var(--gold);border-radius:18px;padding:14px 14px 8px;text-align:left;margin:12px 0 16px}
@@ -278,6 +279,24 @@ body{-webkit-tap-highlight-color:transparent}
 .upg button{display:flex;gap:10px;align-items:center;text-align:left;border:1px solid #7c5cff;background:rgba(124,92,255,.18);color:#fff;border-radius:12px;padding:8px 10px;cursor:pointer;font:inherit;font-size:14px;line-height:1.25;touch-action:manipulation}
 .upg button .ue{font-size:28px}.upg button small{color:#cdbff0;font-size:12px}
 .rkwhat{font-size:13px;color:var(--muted);padding:2px 6px 0;line-height:1.3}.rklead{padding:6px 8px;font-weight:600;color:var(--gold);font-size:17px}
+.tbar2{height:8px;border-radius:999px;background:var(--line);overflow:hidden;margin:4px 0 8px}.tbar2 i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#4fbf8f,#f49ac8);transition:width .3s linear}
+.shakeit{animation:shk .35s}@keyframes shk{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
+.hole.gold{background:radial-gradient(circle,#fff6b0,#ffd54f)}.hole.dog{background:rgba(255,107,107,.25)}
+.yarnbox{position:relative;height:170px;display:flex;align-items:center;justify-content:center}.yarn.fever{filter:drop-shadow(0 0 16px #ff9800);animation:fevp .5s infinite alternate}@keyframes fevp{to{filter:drop-shadow(0 0 28px #ff5252)}}
+.fishbonus{position:absolute;font-size:30px;border:0;background:none;cursor:pointer;animation:pop2 .25s;padding:6px}
+.fish.bad{background:#ff6b6b;border-style:solid;color:#fff}
+.fly2.gold{filter:drop-shadow(0 0 8px #ffd54f)}.mc.flip{animation:flipc .28s}@keyframes flipc{0%{transform:rotateY(90deg)}100%{transform:rotateY(0)}}
+.ttt button.win{background:rgba(79,191,143,.4);border-color:#4fbf8f}.chips{display:flex;gap:6px;justify-content:center;margin:6px 0}.chips button{padding:6px 12px;font-size:11px}
+.petev{position:absolute;font-size:30px;border:0;background:none;cursor:pointer;animation:pop2 .25s;padding:6px;z-index:2}.pet{position:relative}
+.ambcv{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.modal{background:rgba(8,5,18,.40)!important;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+.mbox{position:relative;z-index:1;background:color-mix(in srgb,var(--card) 84%,transparent)!important;-webkit-backdrop-filter:blur(14px) saturate(1.25);backdrop-filter:blur(14px) saturate(1.25);border:1px solid rgba(255,255,255,.22)!important;box-shadow:0 30px 80px -20px rgba(0,0,0,.7),0 0 0 6px rgba(244,154,200,.10)!important}
+.mbox .wx{position:absolute;top:13px;right:48px;font-size:15px;z-index:3;opacity:.9}
+.lcd{border:1px solid rgba(255,255,255,.22)!important;border-radius:16px!important;box-shadow:0 14px 34px -12px rgba(0,0,0,.65)}
+.ghead span{background:rgba(255,255,255,.09)!important;border-color:rgba(255,255,255,.16)!important;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.tile{transition:transform .18s,box-shadow .18s}.tile:hover{transform:translateY(-2px);box-shadow:0 10px 22px -12px rgba(0,0,0,.6)}
+.tile.retro{background:linear-gradient(160deg,#cdf5dc,#9fd8b6)!important;border:1px solid rgba(255,255,255,.5)!important}
+.mbox .btn{border-radius:999px}.how{backdrop-filter:blur(6px)}
 </style>
 <script>document.documentElement.classList.add("js")</script>
 </head>
@@ -445,7 +464,7 @@ body{-webkit-tap-highlight-color:transparent}
 <button class="trophy" id="trophy" aria-label="Ranking de corazones">🏆</button>
 <button class="keybtn" id="keybtn" aria-label="Clave" style="display:none">🔑</button>
 <div class="pill" id="pill">♡ <b id="hc">0</b></div>
-<div class="modal" id="modal" hidden><div class="mbox"><button class="bk" id="mbk" aria-label="Más juegos" style="display:none">🎮</button><button class="x" id="mx" aria-label="Cerrar">✕</button><h3 id="mt"></h3><div id="mb"></div></div></div>
+<div class="modal" id="modal" hidden><canvas id="mamb" class="ambcv"></canvas><div class="mbox"><span class="wx" id="wxc"></span><button class="bk" id="mbk" aria-label="Más juegos" style="display:none">🎮</button><button class="sn" id="msn" aria-label="Sonido">🔇</button><button class="x" id="mx" aria-label="Cerrar">✕</button><h3 id="mt"></h3><div id="mb"></div></div></div>
 <div class="toast" id="toast"></div>
 <script>
 
@@ -595,194 +614,299 @@ function wireEnd(){ $("again").onclick=()=>openGame(cur.i,true); $("other").oncl
 
 function catGame(){
   mt.textContent="🐈 ¡Atrapá a la lagartija!";
-  mb.innerHTML='<p class="hint2">Tocá las 🦎 antes de que se escondan. Tenés 20 segundos.</p><div class="ghead"><span>⏱ <b id="gt">20</b></span><span>🦎 <b id="gs">0</b></span></div><div class="grid3" id="g3"></div><div class="gend" id="gend"></div>';
-  const g=$("g3"), holes=[]; let score=0,t=20,c=-1;
-  for (let i=0;i<9;i++){ const h=document.createElement("button"); h.className="hole"; g.appendChild(h); holes.push(h);
-    h.onclick=()=>{ if(h.textContent==="🦎"){ score++; $("gs").textContent=score; h.textContent="💥"; } }; }
-  const mice=setInterval(()=>{ if(c>=0&&holes[c].textContent==="🦎") holes[c].textContent=""; let n; do{ n=Math.floor(rnd(0,9)); }while(n===c); c=n; holes[c].textContent="🦎"; setTimeout(()=>{ if(holes[n].textContent==="💥") holes[n].textContent=""; },300); },700);
-  const clock=setInterval(()=>{ t--; $("gt").textContent=t; if(t<=0) end(); },1000);
-  stop=()=>{ clearInterval(mice); clearInterval(clock); };
+  mb.innerHTML='<p class="hint2">Tocá las 🦎 antes de que se escondan. La 🌟 vale 5 y suma tiempo. ¡No toques al 🐕! Si tocás seguido, armás COMBOS.</p><div class="ghead"><span>⏱ <b id="gt">20</b></span><span>🦎 <b id="gs">0</b></span><span id="gcmb">Combo x1</span></div><div class="tbar2"><i id="tb"></i></div><div class="grid3" id="g3"></div><div class="gend" id="gend"></div>';
+  const g=$("g3"), holes=[]; let score=0,time=20,combo=0,lastHit=0,over=false,clock,spawnT; const timers=new Set();
+  const later=(f,ms)=>{ const t=setTimeout(()=>{ timers.delete(t); f(); },ms); timers.add(t); return t; };
+  const mult=()=>Math.min(5,1+Math.floor((combo-1)/3));
+  const upd=()=>{ $("gs").textContent=score; $("gt").textContent=time; $("tb").style.width=Math.max(0,Math.min(100,time/20*100))+"%"; $("gcmb").textContent="Combo x"+(combo?mult():1); $("gcmb").style.color=combo>=4?"#ffd54f":""; };
+  const shakeBox=()=>{ g.classList.remove("shakeit"); void g.offsetWidth; g.classList.add("shakeit"); };
+  const clear=h=>{ h.textContent=""; h.dataset.k=""; h.classList.remove("gold","dog"); };
+  for(let i=0;i<9;i++){ const h=document.createElement("button"); h.className="hole"; g.appendChild(h); holes.push(h);
+    h.onclick=e=>{
+      if(over) return; const k=h.dataset.k, r=h.getBoundingClientRect(), x=r.left+r.width/2, y=r.top+r.height/2, now=Date.now();
+      if(!k){ combo=0; sfx.bad(); upd(); return; }
+      if(k==="dog"){ score=Math.max(0,score-3); combo=0; time=Math.max(0,time-1); h.textContent="💢"; sfx.bad(); shakeBox(); burst(x,y,["💢","🐕"],4,60); }
+      else { combo=(now-lastHit<1300)?combo+1:1; lastHit=now; const m=mult(); if(k==="gold"){ score+=5*m; time=Math.min(30,time+2); sfx.power(); burst(x,y,["🌟","✨","⭐"],8,90); } else { score+=m; sfx.hit(); burst(x,y,["💥","✨"],4,60); } h.textContent="💥"; }
+      h.dataset.k=""; h.classList.remove("gold","dog"); later(()=>{ if(h.textContent==="💥"||h.textContent==="💢") clear(h); },300); upd();
+    }; }
+  function spawn(){
+    if(over) return; const el=20-time; const free=holes.filter(h=>!h.dataset.k&&!h.textContent); const n=el>8&&Math.random()<.35?2:1;
+    for(let c=0;c<n&&free.length;c++){ const h=free.splice(Math.floor(rnd(0,free.length)),1)[0], r=Math.random(); let k="liz";
+      if(r<.12&&el<16) k="gold"; else if(r<.26&&el>4) k="dog"; h.dataset.k=k; h.textContent=k==="gold"?"🌟":k==="dog"?"🐕":"🦎"; h.classList.toggle("gold",k==="gold"); h.classList.toggle("dog",k==="dog");
+      later(()=>{ if(h.dataset.k===k){ clear(h); if(k==="liz"){ combo=0; upd(); } } },Math.max(480,950-el*22)); }
+    spawnT=later(spawn,Math.max(360,780-el*24));
+  }
+  clock=setInterval(()=>{ time--; upd(); if(time<=3&&time>0) sfx.tick(); if(time<=0) end(); },1000); upd(); spawn();
+  stop=()=>{ over=true; clearInterval(clock); timers.forEach(clearTimeout); timers.clear(); };
   function end(){
-    stop(); holes.forEach(h=>{h.disabled=true;h.textContent="";});
-    const m= score>=18 ? "¡Leyenda felina! Ninguna lagartija se te escapa 👑" : score>=12 ? "¡Excelente! Cazadora nata 🐾" : score>=6 ? "Nada mal. Las lagartijas ya tiemblan 🦎" : "Las lagartijas se burlan de vos… ¡revancha! 😛";
-    $("gend").innerHTML=score+" lagartijas. "+m+ENDB; wireEnd(); if(score>=12) confetti(40); rankAfter(0,score);
+    stop(); holes.forEach(h=>{ h.disabled=true; clear(h); });
+    const m= score>=45 ? "¡Leyenda felina! Ninguna lagartija se te escapa 👑" : score>=28 ? "¡Excelente! Cazadora nata 🐾" : score>=12 ? "Nada mal. Las lagartijas ya tiemblan 🦎" : "Las lagartijas se burlan de vos… ¡revancha! 😛";
+    $("gend").innerHTML=score+" puntos. "+m+ENDB; wireEnd(); if(score>=28){ confetti(40); sfx.win(); } rankAfter(0,score);
   }
 }
 function yarnGame(){
   mt.textContent="🐈 El ovillo";
-  mb.innerHTML='<p class="hint2">Tocá el ovillo lo más rápido que puedas. Tenés 10 segundos.</p><div class="ghead"><span>⏱ <b id="gt">10</b></span><span>🧶 <b id="gs">0</b></span></div><button class="yarn" id="yb">🧶</button><div class="gend" id="gend"></div>';
-  let score=0,t=10; const yb=$("yb");
-  yb.onclick=()=>{ score++; $("gs").textContent=score; yb.style.transform="rotate("+(score*35)+"deg) scale("+(1+(score%2)*.12)+")"; };
-  const clock=setInterval(()=>{ t--; $("gt").textContent=t; if(t<=0){ stop(); yb.disabled=true;
-    const m= score>=60?"¡Gato mareado, pero campeón! 🏆":score>=40?"¡Qué velocidad! El gato te mira con respeto 🐾":score>=25?"Buen ritmo. El ovillo quedó hecho un lío 🧶":"El ovillo ni se enteró… ¡otra vez! 😹";
-    $("gend").innerHTML=score+" toques. "+m+ENDB; wireEnd(); if(score>=40) confetti(40); rankAfter(1,score); } },1000);
-  stop=()=>clearInterval(clock);
+  mb.innerHTML='<p class="hint2">Tocá el ovillo lo más rápido que puedas durante 10 segundos. Cada 20 toques se activa el modo FIEBRE 🔥 (puntos dobles). ¡Atrapá los 🐟 que aparecen: valen 10!</p><div class="ghead"><span>⏱ <b id="gt">10</b></span><span>🧶 <b id="gs">0</b></span><span id="gfv">Fiebre: 0/20</span></div><div class="tbar2"><i id="tb"></i></div><div class="yarnbox" id="yb2"><button class="yarn" id="yb">🧶</button></div><div class="gend" id="gend"></div>';
+  let score=0,t=10,taps=0,fever=0,over=false,fishT=null,fishEl=null; const box=$("yb2"), yb=$("yb");
+  const upd=()=>{ $("gs").textContent=score; $("gt").textContent=Math.max(0,Math.ceil(t)); $("tb").style.width=Math.max(0,t/10*100)+"%"; $("gfv").textContent=fever>0?"🔥 FIEBRE x2":"Fiebre: "+(taps%20)+"/20"; yb.classList.toggle("fever",fever>0); };
+  yb.onclick=e=>{ if(over) return; const m=fever>0?2:1; taps++; score+=m; sfx.hit(); const r=yb.getBoundingClientRect(); burst(r.left+r.width/2,r.top+10,[fever>0?"🔥":"✨"],2,50);
+    yb.style.transform="rotate("+(taps*35)+"deg) scale("+(1.05+(taps%2)*.12)+")";
+    if(taps%20===0){ fever=4; sfx.power(); burst(r.left+r.width/2,r.top+r.height/2,["🔥","⭐","✨"],10,110); } upd(); };
+  function fish(){
+    if(over) return; fishEl=document.createElement("button"); fishEl.className="fishbonus"; fishEl.textContent="🐟"; fishEl.style.left=rnd(6,78)+"%"; fishEl.style.top=rnd(4,70)+"%";
+    fishEl.onclick=e=>{ if(over) return; score+=10; sfx.score(); const r=fishEl.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2,["🐟","⭐","+10"],6,80); fishEl.remove(); fishEl=null; upd(); };
+    box.appendChild(fishEl); const f=fishEl; fishT=setTimeout(()=>{ f.remove(); if(fishEl===f) fishEl=null; if(!over) fishT=setTimeout(fish,rnd(1200,2400)); },1500);
+  }
+  const clock=setInterval(()=>{ t-=.1; if(fever>0) fever-=.1; if(Math.abs(t-Math.round(t))<.05&&t<=3&&t>0.2) sfx.tick(); upd(); if(t<=0) end(); },100);
+  fishT=setTimeout(fish,1800); upd();
+  stop=()=>{ over=true; clearInterval(clock); clearTimeout(fishT); };
+  function end(){
+    stop(); yb.disabled=true; if(fishEl) fishEl.remove();
+    const m=score>=90?"¡Gato mareado, pero campeón! 🏆":score>=60?"¡Qué velocidad! El gato te mira con respeto 🐾":score>=35?"Buen ritmo. El ovillo quedó hecho un lío 🧶":"El ovillo ni se enteró… ¡otra vez! 😹";
+    $("gend").innerHTML=score+" puntos. "+m+ENDB; wireEnd(); if(score>=60){ confetti(40); sfx.win(); } rankAfter(1,score);
+  }
 }
 function fishGame(){
   mt.textContent="🐈 Reflejos felinos";
-  mb.innerHTML='<p class="hint2">Esperá a que aparezca el 🐟 y tocalo lo más rápido posible. Son 5 rondas. Si tocás antes de tiempo, perdés.</p><button class="fish wait" id="fb"></button><div class="gend" id="gend"></div>';
-  const fb=$("fb"); let round=0,times=[],ready=false,busy=true,t0=0,tm;
+  mb.innerHTML='<p class="hint2">Esperá a que el botón se ponga verde y aparezca el 🐟: tocalo rapidísimo. ¡Cuidado con el pez globo 🐡 rojo: NO lo toques! Son 5 rondas.</p><div class="ghead"><span>Ronda <b id="gr2">1</b>/5</span><span>Promedio <b id="gav">–</b></span></div><button class="fish wait" id="fb"></button><div class="gend" id="gend"></div>';
+  const fb=$("fb"); let round=0,times=[],ready=false,busy=true,t0=0,tm,decoy=false;
+  const avg=()=>times.length?Math.round(times.reduce((a,b)=>a+b,0)/times.length):0;
   function next(){
-    if(round===5) return end();
-    ready=false; busy=false; fb.textContent="🤫 esperá…"; fb.className="fish wait";
-    tm=setTimeout(()=>{ ready=true; t0=performance.now(); fb.textContent="🐟"; fb.className="fish go"; },rnd(1000,3000));
+    if(round===5) return end(); $("gr2").textContent=round+1; ready=false; busy=false; decoy=false; fb.textContent="🤫 esperá…"; fb.className="fish wait";
+    const useDecoy=round>=1&&Math.random()<.4, d1=rnd(900,2200);
+    tm=setTimeout(()=>{
+      if(useDecoy){ decoy=true; fb.textContent="🐡 ¡NO!"; fb.className="fish bad"; sfx.bad(); tm=setTimeout(()=>{ decoy=false; fb.textContent="🤫 esperá…"; fb.className="fish wait"; tm=setTimeout(show,rnd(700,1500)); },rnd(700,1000)); }
+      else show(); },d1);
   }
+  function show(){ ready=true; t0=performance.now(); fb.textContent="🐟"; fb.className="fish go"; sfx.power(); }
   fb.onclick=()=>{
-    if(busy) return; busy=true; clearTimeout(tm); round++;
-    if(!ready){ times.push(1000); fb.textContent="¡Muy pronto! 😾"; }
-    else { const ms=Math.round(performance.now()-t0); times.push(ms); fb.textContent="✔ "+ms+" ms"; }
-    ready=false; fb.className="fish"; tm=setTimeout(next,900);
+    if(busy) return; busy=true; clearTimeout(tm); round++; const r=fb.getBoundingClientRect();
+    if(decoy){ times.push(1000); fb.textContent="🐡 ¡Era trampa! +1000 ms"; sfx.bad(); }
+    else if(!ready){ times.push(1000); fb.textContent="¡Muy pronto! 😾 +1000 ms"; sfx.bad(); }
+    else { const ms=Math.round(performance.now()-t0); times.push(ms); fb.textContent="✔ "+ms+" ms"+(ms<300?" ⚡":""); sfx.score(); burst(r.left+r.width/2,r.top+30,ms<350?["⚡","🐟","✨"]:["🐟"],5,80); }
+    ready=false; decoy=false; fb.className="fish"; $("gav").textContent=avg()+" ms"; tm=setTimeout(next,900);
   };
   function end(){
-    const avg=Math.round(times.reduce((a,b)=>a+b,0)/times.length);
-    const m= avg<350?"Reflejos de ninja 🥷":avg<500?"¡Muy rápida! 🐾":avg<750?"Normalita. El gato bosteza 😺":"Más lenta que una siesta 😴";
-    fb.disabled=true; fb.textContent="🐟"; $("gend").innerHTML="Promedio: "+avg+" ms. "+m+ENDB; wireEnd(); if(avg<500) confetti(35); rankAfter(2,avg);
+    const a=avg(); const m= a<350?"Reflejos de ninja 🥷":a<500?"¡Muy rápida! 🐾":a<750?"Normalita. El gato bosteza 😺":"Más lenta que una siesta 😴";
+    fb.disabled=true; fb.textContent="🐟"; $("gend").innerHTML="Promedio: "+a+" ms. "+m+ENDB; wireEnd(); if(a<500){ confetti(35); sfx.win(); } rankAfter(2,a);
   }
   stop=()=>clearTimeout(tm); next();
 }
 function lizGame(){
   mt.textContent="🦎 Memoria de la lagartija";
   const em=["🦎","🐈","💗","🎂","🪰","✨"], deck=[...em,...em].sort(()=>Math.random()-.5);
-  mb.innerHTML='<p class="hint2">Encontrá las 6 parejas.</p><div class="ghead"><span>Intentos <b id="mm">0</b></span><span>Parejas <b id="mp">0</b>/6</span></div><div class="grid4" id="g4"></div><div class="gend" id="gend"></div>';
-  const g=$("g4"); let open=[],moves=0,pairs=0,lock=false;
+  mb.innerHTML='<p class="hint2">Encontrá las 6 parejas con los menos intentos. ¡Las rachas dan bonus de tiempo!</p><div class="ghead"><span>Intentos <b id="mm">0</b></span><span>Parejas <b id="mp">0</b>/6</span><span>⏱ <b id="mtm">0</b>s</span></div><div class="grid4" id="g4"></div><div class="gend" id="gend"></div>';
+  const g=$("g4"); let open=[],moves=0,pairs=0,lock=false,streak=0,secs=0,over=false; const timers=new Set(); const later=(f,ms)=>{ const t=setTimeout(()=>{ timers.delete(t); f(); },ms); timers.add(t); };
+  const clock=setInterval(()=>{ secs++; $("mtm").textContent=secs; },1000);
+  stop=()=>{ over=true; clearInterval(clock); timers.forEach(clearTimeout); timers.clear(); };
   deck.forEach(e=>{ const c=document.createElement("button"); c.className="mc"; c.textContent="?"; c.dataset.e=e; g.appendChild(c);
     c.onclick=()=>{
-      if(lock||c.classList.contains("up")||c.classList.contains("done")) return;
-      c.classList.add("up"); c.textContent=e; open.push(c);
+      if(lock||over||c.classList.contains("up")||c.classList.contains("done")) return;
+      c.classList.add("up","flip"); c.textContent=e; sfx.tick(); open.push(c);
       if(open.length===2){
-        moves++; $("mm").textContent=moves; const [a,b]=open;
-        if(a.dataset.e===b.dataset.e){ a.className=b.className="mc done"; open=[]; pairs++; $("mp").textContent=pairs;
-          if(pairs===6){ $("gend").innerHTML="¡Ganaste en "+moves+" intentos! "+(moves<=8?"Memoria de elefante 🐘":"¡Muy bien, lagartija lista! 🦎")+ENDB; wireEnd(); confetti(50); rankAfter(3,moves); } }
-        else { lock=true; setTimeout(()=>{ [a,b].forEach(x=>{x.className="mc";x.textContent="?";}); open=[]; lock=false; },700); }
+        moves++; $("mm").textContent=moves; const [a,b]=open; const r=b.getBoundingClientRect();
+        if(a.dataset.e===b.dataset.e){ streak++; a.className=b.className="mc done flip"; open=[]; pairs++; $("mp").textContent=pairs; sfx.score(); burst(r.left+r.width/2,r.top+r.height/2,[e,"✨","⭐"],7,90); if(streak>=2){ burst(r.left+r.width/2,r.top,["🔥"],1,10); }
+          if(pairs===6){ stop(); $("gend").innerHTML="¡Ganaste en "+moves+" intentos y "+secs+" segundos! "+(moves<=8?"Memoria de elefante 🐘":"¡Muy bien, lagartija lista! 🦎")+ENDB; wireEnd(); confetti(50); sfx.win(); rankAfter(3,moves); } }
+        else { streak=0; lock=true; sfx.bad(); a.classList.add("shakeit"); b.classList.add("shakeit"); later(()=>{ [a,b].forEach(x=>{ x.className="mc"; x.textContent="?"; }); open=[]; lock=false; },750); }
       }
     }; });
 }
 function simonGame(){
   mt.textContent="🎨 Simón dice";
-  mb.innerHTML='<p class="hint2">Mirá la secuencia y repetila en el mismo orden.</p><div class="status" id="sstat">👀 Mirá…</div><div class="ghead"><span>Rondas superadas <b id="sl">0</b></span></div><div class="grid2" id="g2"></div><div class="gend" id="gend"></div>';
-  const cols=["#4fbf8f","#f49ac8","#a78bfa","#f0a35e"], em=["🦎","💗","✨","🪰"], pads=[], seq=[]; let pos=0,lock=true,timers=[];
+  mb.innerHTML='<p class="hint2">Mirá la secuencia y repetila en el mismo orden. Se va poniendo más rápida.</p><div class="status" id="sstat">👀 Mirá…</div><div class="ghead"><span>Rondas superadas <b id="sl">0</b></span><span id="ssk">Racha 0</span></div><div class="grid2" id="g2"></div><div class="gend" id="gend"></div>';
+  const cols=["#4fbf8f","#f49ac8","#a78bfa","#f0a35e"], em=["🦎","💗","✨","🪰"], pads=[], seq=[]; let pos=0,lock=true,timers=[],done=0;
   const stat=t=>{ const e=$("sstat"); if(e) e.textContent=t; };
-  const flash=i=>{ pads[i].classList.add("lit"); setTimeout(()=>pads[i].classList.remove("lit"),350); };
-  const play=()=>{ lock=true; stat("👀 Mirá la secuencia…"); seq.push(Math.floor(rnd(0,4))); seq.forEach((v,k)=>timers.push(setTimeout(()=>flash(v),500+k*700))); timers.push(setTimeout(()=>{ lock=false; pos=0; stat("👆 ¡Tu turno! Repetí la secuencia"); },500+seq.length*700)); };
-  for (let i=0;i<4;i++){ const p=document.createElement("button"); p.className="pad"; p.style.background=cols[i]; p.style.color=cols[i]; p.textContent=em[i]; $("g2").appendChild(p); pads.push(p);
-    p.onclick=()=>{ if(lock) return; flash(i);
-      if(i===seq[pos]){ pos++; if(pos===seq.length){ $("sl").textContent=seq.length; lock=true; stat("✅ ¡Bien! Se viene otra ronda"); timers.push(setTimeout(play,900)); } }
-      else { lock=true; const n=seq.length-1; stat("❌ Ups, te equivocaste");
+  const flash=i=>{ pads[i].classList.add("lit"); sfx.pad(i); const ms=Math.max(160,350-seq.length*14); setTimeout(()=>pads[i].classList.remove("lit"),ms); };
+  const play=()=>{ lock=true; stat("👀 Mirá la secuencia…"); seq.push(Math.floor(rnd(0,4))); const gap=Math.max(320,700-seq.length*28); seq.forEach((v,k)=>timers.push(setTimeout(()=>flash(v),500+k*gap))); timers.push(setTimeout(()=>{ lock=false; pos=0; stat("👆 ¡Tu turno! Repetí la secuencia"); },500+seq.length*gap)); };
+  for(let i=0;i<4;i++){ const p=document.createElement("button"); p.className="pad"; p.style.background=cols[i]; p.style.color=cols[i]; p.textContent=em[i]; $("g2").appendChild(p); pads.push(p);
+    p.onclick=e=>{ if(lock) return; flash(i); const r=p.getBoundingClientRect();
+      if(i===seq[pos]){ pos++; if(pos===seq.length){ done=seq.length; $("sl").textContent=done; $("ssk").textContent="Racha "+done; lock=true; stat("✅ ¡Bien! Se viene otra ronda"); sfx.score(); burst(r.left+r.width/2,r.top+r.height/2,[em[i],"✨"],6,100); if(done%5===0){ confetti(18); sfx.win(); stat("🔥 ¡"+done+" seguidas!"); } timers.push(setTimeout(play,900)); } }
+      else { lock=true; sfx.bad(); const n=seq.length-1; stat("❌ Ups, te equivocaste"); pads[i].classList.add("shakeit");
         $("gend").innerHTML=(n>=8?"¡Memoria brillante! 🧠":n>=5?"¡Muy bien! 🦎":n>=3?"Nada mal 😄":"La lagartija se distrajo con una mosca 🪰")+" Superaste "+n+" rondas."+ENDB; wireEnd(); if(n>=5) confetti(35); rankAfter(4,n); } }; }
   stop=()=>timers.forEach(clearTimeout); play();
 }
 function flyGame(){
   mt.textContent="🦎 Cazamoscas";
-  mb.innerHTML='<p class="hint2">Tocá las 🪰 antes de que se vayan. Tenés 15 segundos.</p><div class="ghead"><span>⏱ <b id="gt">15</b></span><span>🪰 <b id="gs">0</b></span></div><div class="arena2" id="ar"></div><div class="gend" id="gend"></div>';
-  let score=0,t=15; const ar=$("ar");
-  const spawn=setInterval(()=>{ const f=document.createElement("button"); f.className="fly2"; f.textContent="🪰"; f.style.left=rnd(2,82)+"%"; f.style.top=rnd(2,78)+"%";
-    f.onclick=()=>{ score++; $("gs").textContent=score; f.textContent="😋"; f.onclick=null; setTimeout(()=>f.remove(),200); }; ar.appendChild(f); setTimeout(()=>f.remove(),1100); },550);
-  const clock=setInterval(()=>{ t--; $("gt").textContent=t; if(t<=0){ stop(); ar.innerHTML="";
-    const m= score>=18?"¡Lengua de campeona! 👑":score>=12?"¡Cazadora profesional! 🦎":score>=6?"Bien, hoy cenás liviano 🪰":"Las moscas se ríen de vos… ¡otra vez! 😛";
-    $("gend").innerHTML=score+" moscas. "+m+ENDB; wireEnd(); if(score>=12) confetti(40); rankAfter(5,score); } },1000);
-  stop=()=>{ clearInterval(spawn); clearInterval(clock); };
+  mb.innerHTML='<p class="hint2">Tocá las 🪰 antes de que se vayan. La ✨🪰 dorada vale 5 y suma tiempo. ¡No toques las 🐝 abejas! Los combos multiplican.</p><div class="ghead"><span>⏱ <b id="gt">15</b></span><span>🪰 <b id="gs">0</b></span><span id="gcmb">Combo x1</span></div><div class="tbar2"><i id="tb"></i></div><div class="arena2" id="ar"></div><div class="gend" id="gend"></div>';
+  let score=0,t=15,combo=0,lastHit=0,over=false,spawnT; const ar=$("ar"); const timers=new Set(); const later=(f,ms)=>{ const x=setTimeout(()=>{ timers.delete(x); f(); },ms); timers.add(x); return x; };
+  const mult=()=>Math.min(5,1+Math.floor((combo-1)/3));
+  const upd=()=>{ $("gs").textContent=score; $("gt").textContent=Math.max(0,t); $("tb").style.width=Math.max(0,Math.min(100,t/15*100))+"%"; $("gcmb").textContent="Combo x"+(combo?mult():1); $("gcmb").style.color=combo>=4?"#ffd54f":""; };
+  function spawn(){
+    if(over) return; const el=15-t, r=Math.random(); let k="fly"; if(r<.12&&el<12) k="gold"; else if(r<.28&&el>3) k="bee";
+    const f=document.createElement("button"); f.className="fly2"+(k==="gold"?" gold":""); f.textContent=k==="gold"?"🪰":k==="bee"?"🐝":"🪰"; f.style.left=rnd(2,82)+"%"; f.style.top=rnd(2,78)+"%";
+    f.onclick=e=>{ if(over||f.dataset.d) return; f.dataset.d="1"; const rc=f.getBoundingClientRect(), now=Date.now();
+      if(k==="bee"){ score=Math.max(0,score-3); combo=0; f.textContent="💢"; sfx.bad(); ar.classList.remove("shakeit"); void ar.offsetWidth; ar.classList.add("shakeit"); burst(rc.left+rc.width/2,rc.top+rc.height/2,["💢","🐝"],4,60); }
+      else { combo=(now-lastHit<1300)?combo+1:1; lastHit=now; const m=mult(); if(k==="gold"){ score+=5*m; t=Math.min(25,t+2); sfx.power(); burst(rc.left+rc.width/2,rc.top+rc.height/2,["🌟","✨","⭐"],8,90); } else { score+=m; sfx.hit(); burst(rc.left+rc.width/2,rc.top+rc.height/2,["💥","✨"],3,60); } f.textContent="😋"; }
+      upd(); later(()=>f.remove(),220); };
+    ar.appendChild(f); later(()=>{ if(!f.dataset.d){ f.remove(); if(k==="fly"){ combo=0; upd(); } } },Math.max(650,1150-el*28));
+    spawnT=later(spawn,Math.max(320,560-el*14));
+  }
+  const clock=setInterval(()=>{ t--; upd(); if(t<=3&&t>0) sfx.tick(); if(t<=0) end(); },1000); upd(); spawn();
+  stop=()=>{ over=true; clearInterval(clock); timers.forEach(clearTimeout); timers.clear(); };
+  function end(){
+    stop(); ar.innerHTML="";
+    const m= score>=40?"¡Lengua de campeona! 👑":score>=24?"¡Cazadora profesional! 🦎":score>=10?"Bien, hoy cenás liviano 🪰":"Las moscas se ríen de vos… ¡otra vez! 😛";
+    $("gend").innerHTML=score+" puntos. "+m+ENDB; wireEnd(); if(score>=24){ confetti(40); sfx.win(); } rankAfter(5,score);
+  }
 }
-
 function snakeGame(){
   mt.textContent="🦎 Lagartija veloz";
-  mb.innerHTML='<p class="hint2">Guiá a la lagartija con las flechas (o deslizá el dedo). ¡Comé las moscas!</p><div class="ghead"><span>Moscas <b id="gs">0</b></span><span>Récord <b id="gb">'+snakeBest+'</b></span></div><canvas id="cv" class="lcd" width="300" height="300"></canvas><div class="dpad"><button class="u" data-d="u">▲</button><button class="l" data-d="l">◀</button><button class="d" data-d="d">▼</button><button class="r" data-d="r">▶</button></div><div class="gend" id="gend"></div>';
-  const cv=$("cv"), g=cv.getContext("2d"), N=15, C=20; let snake=[{x:7,y:7},{x:6,y:7},{x:5,y:7}], dir={x:1,y:0}, nd={x:1,y:0}, apple, score=0, over=false, timer;
-  const place=()=>{ do{ apple={x:Math.floor(rnd(0,N)),y:Math.floor(rnd(0,N))}; }while(snake.some(s=>s.x===apple.x&&s.y===apple.y)); }; place();
+  mb.innerHTML='<p class="hint2">Guiá a la lagartija con el dedo (deslizá), las flechas o WASD. Comé moscas 🪰, juntá poderes y no te choques con las piedras 🪨 ni con tu cola.</p><div class="ghead"><span>Puntos <b id="gs">0</b></span><span>Nivel <b id="gv">1</b></span><span>Récord <b id="gb">'+snakeBest+'</b></span></div><canvas id="cv" class="lcd" width="300" height="300"></canvas><div class="dpad"><button class="u" data-d="u">▲</button><button class="l" data-d="l">◀</button><button class="d" data-d="d">▼</button><button class="r" data-d="r">▶</button></div><div class="gend" id="gend"></div>';
+  const cv=$("cv"), g=cv.getContext("2d"), N=15, C=20, fx=makeFX(), R=(a,b)=>rnd(a,b); let seenTh=AMB.thunderId;
+  let snake=[{x:7,y:7},{x:6,y:7},{x:5,y:7}], dir={x:1,y:0}, nd={x:1,y:0}, fly, rocks=[], item=null, score=0, eaten=0, level=1, over=false, raf, last=0, acc=0, combo=0, lastEat=-9e9, slow=0, ghost=0, banner={t:"¡A COMER!",life:90}, itemAt=Date.now()+8000;
+  const free=()=>{ let p,t=0; do{ p={x:Math.floor(R(0,N)),y:Math.floor(R(0,N))}; t++; }while(t<60&&(snake.some(s=>s.x===p.x&&s.y===p.y)||rocks.some(s=>s.x===p.x&&s.y===p.y)||(fly&&fly.x===p.x&&fly.y===p.y)||(item&&item.x===p.x&&item.y===p.y)||Math.hypot(p.x-snake[0].x,p.y-snake[0].y)<4)); return p; };
+  fly=free();
   const dirs={u:{x:0,y:-1},d:{x:0,y:1},l:{x:-1,y:0},r:{x:1,y:0}};
   const turn=d=>{ if(d.x===-dir.x&&d.y===-dir.y) return; nd=d; };
   mb.querySelectorAll(".dpad button").forEach(b=>b.addEventListener("pointerdown",e=>{ e.preventDefault(); turn(dirs[b.dataset.d]); }));
   const key=e=>{ const m={ArrowUp:"u",ArrowDown:"d",ArrowLeft:"l",ArrowRight:"r",w:"u",s:"d",a:"l",d:"r",W:"u",S:"d",A:"l",D:"r"}[e.key]; if(m){ e.preventDefault(); turn(dirs[m]); } };
-  addEventListener("keydown",key);
-  swipe(cv,d=>turn(dirs[d]));
-  function draw(){
-    g.fillStyle="#c7f0d8"; g.fillRect(0,0,300,300);
-    g.fillStyle="rgba(31,61,26,.07)"; for(let i=0;i<N;i++){ g.fillRect(i*C,0,1,300); g.fillRect(0,i*C,300,1); }
-    g.fillStyle="#1f3d1a"; snake.forEach((s,i)=>{ if(i>0) g.fillRect(s.x*C+2,s.y*C+2,C-4,C-4); });
-    g.font="19px serif"; g.textAlign="center"; g.textBaseline="middle";
-    g.fillText("🦎",snake[0].x*C+C/2,snake[0].y*C+C/2+1);
-    g.fillText("🪰",apple.x*C+C/2,apple.y*C+C/2+1);
+  addEventListener("keydown",key); swipe(cv,d=>turn(dirs[d]));
+  const px=c=>c*C+C/2;
+  function cleanup(){ over=true; cancelAnimationFrame(raf); removeEventListener("keydown",key); }
+  function die(){
+    fx.boom(px(snake[0].x),px(snake[0].y),"#ffd54f",30,4.5); fx.shake(16); fx.flash(.6); sfx.bad(); over=true; draw(0); cancelAnimationFrame(raf);
+    removeEventListener("keydown",key); snakeBest=Math.max(snakeBest,score); $("gb").textContent=snakeBest;
+    const m=score>=600?"¡Reina de las moscas! 🏆":score>=250?"¡Muy bien! Como en los viejos celulares 📱":score>=80?"Nada mal, seguí practicando 🦎":"La lagartija se enredó 😅";
+    $("gend").innerHTML=score+" puntos · nivel "+level+". "+m+ENDB; wireEnd(); if(score>=250) confetti(40); rankAfter(6,score);
   }
-  function cleanup(){ over=true; clearTimeout(timer); removeEventListener("keydown",key); }
-  function end(){
-    cleanup(); snakeBest=Math.max(snakeBest,score); $("gb").textContent=snakeBest;
-    const m=score>=20?"¡Reina de las moscas! 🏆":score>=10?"¡Muy bien! Como en los viejos celulares 📱":score>=4?"Nada mal, seguí practicando 🦎":"La lagartija se enredó 😅";
-    $("gend").innerHTML=score+" moscas. "+m+ENDB; wireEnd(); if(score>=10) confetti(40); rankAfter(6,score);
+  function eat(kind){
+    const hx=px(snake[0].x), hy=px(snake[0].y); const now=Date.now(); combo=(now-lastEat<4000)?combo+1:1; lastEat=now; const m=Math.min(5,1+Math.floor((combo-1)/2));
+    let pts=10*m, grow=1;
+    if(kind==="gold"){ pts=50*m; grow=3; fx.flash(.5); sfx.power(); fx.boom(hx,hy,"#ffd54f",22,4); } else { sfx.score(); fx.boom(hx,hy,"#7fe0b6",10,3); }
+    score+=pts; eaten++; fx.pop(hx,hy-10,"+"+pts+(m>1?" x"+m:""),m>1?"#ffd54f":"#ffffff");
+    for(let i=0;i<grow-1;i++) snake.push({...snake[snake.length-1]});
+    const nl=1+Math.floor(eaten/6); if(nl>level){ level=nl; banner={t:"NIVEL "+level,life:90}; fx.flash(.6); sfx.win(); }
+    if(kind==="fly"){ fly=free(); if(eaten%4===0&&rocks.length<9) rocks.push(free()); }
   }
   function step(){
     dir=nd; const h={x:(snake[0].x+dir.x+N)%N,y:(snake[0].y+dir.y+N)%N};
-    if (snake.some(s=>s.x===h.x&&s.y===h.y)) return end();
+    if(ghost<=0&&(snake.some(s=>s.x===h.x&&s.y===h.y)||rocks.some(r=>r.x===h.x&&r.y===h.y))) return die();
     snake.unshift(h);
-    if (h.x===apple.x&&h.y===apple.y){ score++; $("gs").textContent=score; place(); } else snake.pop();
-    draw();
+    let ate=false;
+    if(h.x===fly.x&&h.y===fly.y){ eat("fly"); ate=true; }
+    else if(item&&h.x===item.x&&h.y===item.y){
+      const t=item.t; item=null; itemAt=Date.now()+rnd(7000,11000);
+      if(t==="gold"){ eat("gold"); ate=true; } else { sfx.power(); fx.boom(px(h.x),px(h.y),"#fff",14,3.4);
+        if(t==="slow"){ slow=Date.now()+5000; fx.pop(px(h.x),px(h.y)-10,"CÁMARA LENTA","#ffffff"); }
+        else if(t==="ghost"){ ghost=Date.now()+6000; fx.pop(px(h.x),px(h.y)-10,"FANTASMA","#ffffff"); }
+        else { rocks=[]; fx.flash(.8); fx.shake(10); sfx.boom(); fx.pop(px(h.x),px(h.y)-10,"¡LIMPIEZA!","#ffffff"); } } }
+    if(!ate) snake.pop();
   }
-  const loop=()=>{ if(over) return; step(); if(!over) timer=setTimeout(loop,Math.max(70,150-score*4)); };
-  stop=cleanup; draw(); timer=setTimeout(loop,500);
+  function draw(k){
+    fx.update(k); const now=Date.now(); if(AMB.thunderId!==seenTh){ seenTh=AMB.thunderId; fx.shake(7); }
+    fx.begin(g); g.globalAlpha=1;
+    AMB.sky(g,300,300,1); g.fillStyle="rgba(6,12,28,.42)"; g.fillRect(0,0,300,300); g.fillStyle="rgba(255,255,255,.06)"; for(let i=0;i<N;i++){ g.fillRect(i*C,0,1,300); g.fillRect(0,i*C,300,1); }
+    if(slow>now){ g.fillStyle="rgba(120,160,255,.15)"; g.fillRect(0,0,300,300); }
+    g.textAlign="center"; g.textBaseline="middle";
+    rocks.forEach(r=>{ g.fillStyle="#fff"; g.font="19px serif"; g.fillText("🪨",px(r.x),px(r.y)+1); });
+    g.fillStyle="#fff"; g.font="19px serif"; g.fillText("🪰",px(fly.x),px(fly.y)+1);
+    if(item){ const left=item.exp-now; if(left<=0) item=null; else if(left>1500||Math.floor(now/150)%2){ g.shadowColor="#ffd54f"; g.shadowBlur=12; g.font="20px serif"; g.fillStyle="#fff"; g.fillText(item.t==="gold"?"🌟":item.t==="slow"?"🐌":item.t==="ghost"?"👻":"💥",px(item.x),px(item.y)+1); g.shadowBlur=0; } }
+    else if(now>itemAt&&!over){ const p=free(), t=["gold","gold","slow","ghost","bomb"][Math.floor(R(0,5))]; item={...p,t,exp:now+6500}; }
+    snake.forEach((s,i)=>{ if(i===0) return; g.globalAlpha=ghost>now?.55:1; g.fillStyle=i%2?"#5ee0a0":"#34b783"; g.fillRect(s.x*C+2,s.y*C+2,C-4,C-4); }); g.globalAlpha=1;
+    g.fillStyle="#fff"; g.font="20px serif"; if(ghost>now){ g.shadowColor="#7fe0ff"; g.shadowBlur=12; } g.fillText("🦎",px(snake[0].x),px(snake[0].y)+1); g.shadowBlur=0;
+    fx.parts(g); fx.pops(g);
+    g.textAlign="left"; g.fillStyle="#ffffff"; g.font="bold 11px sans-serif"; if(combo>=3&&now-lastEat<4000){ g.fillText("COMBO x"+Math.min(5,1+Math.floor((combo-1)/2)),6,12); }
+    let ix=294; g.textAlign="right"; g.font="12px serif"; if(slow>now){ g.fillText("🐌 "+Math.ceil((slow-now)/1000),ix,12); ix-=40; } if(ghost>now){ g.fillText("👻 "+Math.ceil((ghost-now)/1000),ix,12); }
+    g.textAlign="center"; if(banner.life>0){ banner.life-=k||1; g.globalAlpha=Math.min(1,banner.life/25); g.fillStyle="#ffffff"; g.font="bold 24px sans-serif"; g.fillText(banner.t,150,60); g.globalAlpha=1; }
+    AMB.front(g,300,300,1); g.textAlign="right"; g.textBaseline="middle"; g.font="14px serif"; g.fillStyle="#fff"; g.fillText(AMB.icon(),294,28);
+    fx.end(g,300,300);
+  }
+  function frame(t){
+    if(over) return; const dt=Math.min(60,t-(last||t)); last=t; const k=dt/16.67; acc+=dt; const now=Date.now();
+    const ms=Math.max(62,150-level*9)*(slow>now?1.7:1);
+    while(acc>=ms&&!over){ acc-=ms; step(); }
+    if(!over){ $("gs").textContent=score; $("gv").textContent=level; draw(k); raf=requestAnimationFrame(frame); }
+  }
+  stop=cleanup; raf=requestAnimationFrame(frame);
 }
 function tttGame(){
   mt.textContent="🦎🐈 Ta-Te-Ti";
-  mb.innerHTML='<p class="hint2">Vos sos la lagartija 🦎 y la compu es el gato 🐈. Tocá un casillero vacío.</p><div class="status" id="tst">👆 ¡Es tu turno!</div><div class="ghead"><span>🦎 <b id="sw">0</b></span><span>🐈 <b id="sc">0</b></span><span>Empates <b id="sd">0</b></span></div><div class="ttt" id="tt"></div><div class="gend" id="gend"></div>';
-  let b=Array(9).fill(""), over=false, w=0, c=0, d=0, tm; const cells=[];
+  mb.innerHTML='<p class="hint2">Vos sos la lagartija 🦎 y la compu es el gato 🐈. Tocá un casillero vacío. Gana quien junte tres en línea.</p><div class="chips"><button class="btn solid" id="dfe">Fácil</button><button class="btn" id="dfh">Difícil 😼</button></div><div class="status" id="tst">👆 ¡Es tu turno!</div><div class="ghead"><span>🦎 <b id="sw">0</b></span><span>🐈 <b id="sc">0</b></span><span>Empates <b id="sd">0</b></span><span id="stk">Racha 0</span></div><div class="ttt" id="tt"></div><div class="gend" id="gend"></div>';
+  let b=Array(9).fill(""), over=false, w=0, c=0, d=0, streak=0, hard=false, tm; const cells=[];
   const L=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-  const win=a=>{ for(const [x,y,z] of L) if(a[x]&&a[x]===a[y]&&a[y]===a[z]) return a[x]; return a.every(Boolean)?"T":null; };
+  const line=a=>{ for(const l of L){ const [x,y,z]=l; if(a[x]&&a[x]===a[y]&&a[y]===a[z]) return {who:a[x],l}; } return a.every(Boolean)?{who:"T"}:null; };
   const draw=()=>cells.forEach((el,i)=>{ el.textContent=b[i]==="X"?"🦎":b[i]==="O"?"🐈":""; });
   const find=m=>{ for(const [x,y,z] of L){ const t=[b[x],b[y],b[z]]; if(t.filter(v=>v===m).length===2&&t.includes("")) return [x,y,z][t.indexOf("")]; } return -1; };
+  function minimax(a,turn){ const r=line(a); if(r){ return r.who==="O"?{s:10}:r.who==="X"?{s:-10}:{s:0}; } let best=null; a.forEach((v,i)=>{ if(v) return; a[i]=turn; const res=minimax(a,turn==="O"?"X":"O"); a[i]=""; const s=res.s+(turn==="O"?-1:1)*0; if(best===null||(turn==="O"?s>best.s:s<best.s)) best={s,i}; }); return best; }
   function cpu(){
-    let i=find("O"); if(i<0) i=find("X");
-    if(Math.random()<.25) i=-1;
-    if(i<0&&!b[4]) i=4;
+    let i=-1;
+    if(hard){ const m=minimax(b.slice(),"O"); i=m?m.i:-1; }
+    else { i=find("O"); if(i<0) i=find("X"); if(Math.random()<.25) i=-1; if(i<0&&!b[4]) i=4; }
     if(i<0){ const free=b.map((v,k)=>v?-1:k).filter(k=>k>=0); i=free[Math.floor(rnd(0,free.length))]; }
-    b[i]="O"; draw(); check();
+    b[i]="O"; draw(); sfx.hit(); check();
   }
   function check(){
-    const r=win(b); if(!r){ $("tst").textContent="👆 ¡Es tu turno!"; return; }
-    over=true;
-    if(r==="X"){ w++; $("sw").textContent=w; $("tst").textContent="🎉 ¡Ganó la lagartija!"; confetti(35); }
-    else if(r==="O"){ c++; $("sc").textContent=c; $("tst").textContent="😼 Ganó el gato"; }
-    else { d++; $("sd").textContent=d; $("tst").textContent="🤝 ¡Empate!"; }
-    $("gend").innerHTML=ENDB; wireEnd();
+    const r=line(b); if(!r){ $("tst").textContent="👆 ¡Es tu turno!"; return; }
+    over=true; if(r.l) r.l.forEach(i=>cells[i].classList.add("win"));
+    if(r.who==="X"){ w++; streak++; $("sw").textContent=w; $("tst").textContent="🎉 ¡Ganó la lagartija!"; confetti(streak>=2?55:35); sfx.win(); }
+    else if(r.who==="O"){ c++; streak=0; $("sc").textContent=c; $("tst").textContent=hard?"😼 El gato es imbatible…":"😼 Ganó el gato"; sfx.bad(); }
+    else { d++; streak=0; $("sd").textContent=d; $("tst").textContent="🤝 ¡Empate!"; sfx.tick(); }
+    $("stk").textContent="Racha "+streak; $("gend").innerHTML=ENDB; wireEnd();
   }
+  const setHard=h=>{ hard=h; $("dfe").className="btn"+(h?"":" solid"); $("dfh").className="btn"+(h?" solid":""); };
+  $("dfe").onclick=()=>{ if(hard){ setHard(false); restart(); } }; $("dfh").onclick=()=>{ if(!hard){ setHard(true); restart(); } };
+  function restart(){ clearTimeout(tm); b=Array(9).fill(""); over=false; cells.forEach(x=>x.classList.remove("win")); draw(); $("tst").textContent="👆 ¡Es tu turno!"; $("gend").innerHTML=""; }
   for(let i=0;i<9;i++){ const el=document.createElement("button"); $("tt").appendChild(el); cells.push(el);
-    el.onclick=()=>{ if(over||b[i]) return; b[i]="X"; draw(); const r=win(b); if(r){ check(); return; } $("tst").textContent="🤔 Piensa el gato…"; over=true; tm=setTimeout(()=>{ over=false; cpu(); },450); }; }
+    el.onclick=()=>{ if(over||b[i]) return; b[i]="X"; draw(); sfx.tick(); const r=line(b); if(r){ check(); return; } $("tst").textContent="🤔 Piensa el gato…"; over=true; tm=setTimeout(()=>{ over=false; cpu(); },hard?350:450); }; }
   stop=()=>clearTimeout(tm);
 }
 function pongGame(){
   mt.textContent="🏓 Ping Pong: lagartija vs gato";
-  mb.innerHTML='<p class="hint2">Sos la lagartija 🦎 (abajo). Mové tu paleta con el dedo, el mouse o los botones y no dejes pasar el ovillo 🧶. ¡El primero en llegar a 5 gana!</p><div class="ghead"><span>🦎 <b id="ps">0</b></span><span>🐈 <b id="pcs">0</b></span></div><canvas id="cv" class="lcd pong" width="300" height="400"></canvas><div class="dpad2"><button id="pl">◀</button><button id="pr">▶</button></div><div class="gend" id="gend"></div>';
-  const cv=$("cv"), g=cv.getContext("2d"), W=300,H=400,PW=64,PH=10; let px=118,cx=118,ps=0,cs=0,over=false,raf,mv=0,last=0;
+  mb.innerHTML='<p class="hint2">Sos la lagartija 🦎 (abajo). Mové tu paleta con el dedo, el mouse o las flechas y no dejes pasar el ovillo 🧶. ¡Pegale con la punta de la paleta para un SMASH! El primero en llegar a 5 gana.</p><div class="ghead"><span>🦎 <b id="ps">0</b></span><span>Rally <b id="pry">0</b></span><span>🐈 <b id="pcs">0</b></span></div><canvas id="cv" class="lcd pong" width="300" height="400"></canvas><div class="dpad2"><button id="pl">◀</button><button id="pr">▶</button></div><div class="gend" id="gend"></div>';
+  const cv=$("cv"), g=cv.getContext("2d"), W=300,H=400,PW=64,PH=10, fx=makeFX(); let seenTh=AMB.thunderId;
+  let px=118,cx=118,ps=0,cs=0,over=false,raf,last=0,mv=0,rally=0,best=0,trail=[],banner=null,pause=0;
   const ball={x:150,y:200,vx:2,vy:3.2};
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-  const serve=down=>{ ball.x=150; ball.y=200; ball.vx=(Math.random()<.5?-1:1)*rnd(1.4,2.4); ball.vy=down?3.2:-3.2; };
+  const serve=down=>{ ball.x=150; ball.y=200; ball.vx=(Math.random()<.5?-1:1)*rnd(1.4,2.4); ball.vy=down?3.2:-3.2; rally=0; trail=[]; pause=40; };
   const setPx=x=>{ const r=cv.getBoundingClientRect(); px=clamp((x-r.left)*(W/r.width)-PW/2,0,W-PW); };
   cv.addEventListener("pointermove",e=>setPx(e.clientX)); cv.addEventListener("pointerdown",e=>{ setPx(e.clientX); try{ cv.setPointerCapture(e.pointerId); }catch(_){} });
   const hold=(id,v)=>{ const el=$(id); el.addEventListener("pointerdown",e=>{ e.preventDefault(); mv=v; }); ["pointerup","pointerleave","pointercancel"].forEach(ev=>el.addEventListener(ev,()=>{ if(mv===v) mv=0; })); };
   hold("pl",-1); hold("pr",1);
   const kd=e=>{ if(e.key==="ArrowLeft"||e.key==="a"||e.key==="A"){ e.preventDefault(); mv=-1; } if(e.key==="ArrowRight"||e.key==="d"||e.key==="D"){ e.preventDefault(); mv=1; } }, ku=e=>{ if(["ArrowLeft","ArrowRight","a","A","d","D"].includes(e.key)) mv=0; };
   addEventListener("keydown",kd); addEventListener("keyup",ku);
-  function draw(){
-    g.fillStyle="#111"; g.fillRect(0,0,W,H);
-    g.fillStyle="#555"; for(let x=0;x<W;x+=20) g.fillRect(x+4,H/2-1,10,2);
-    g.fillStyle="#fff"; g.fillRect(cx,12,PW,PH); g.fillRect(px,H-22,PW,PH);
-    g.font="22px serif"; g.textAlign="center"; g.textBaseline="middle"; g.fillText("🐈",cx+PW/2,32); g.fillText("🦎",px+PW/2,H-34); g.font="18px serif"; g.fillText("🧶",ball.x,ball.y);
-  }
   function cleanup(){ over=true; cancelAnimationFrame(raf); removeEventListener("keydown",kd); removeEventListener("keyup",ku); }
-  function end(){
-    cleanup(); const won=ps>cs;
-    $("gend").innerHTML=(won?"🏆 ¡Ganó la lagartija "+ps+" a "+cs+"! Como en el Atari 🕹️":"😼 Ganó el gato "+cs+" a "+ps+". ¡Revancha!")+ENDB; wireEnd(); if(won) confetti(45);
+  function end(){ cleanup(); const won=ps>cs; if(won) sfx.win(); $("gend").innerHTML=(won?"🏆 ¡Ganó la lagartija "+ps+" a "+cs+"! Como en el Atari 🕹️":"😼 Ganó el gato "+cs+" a "+ps+". ¡Revancha!")+" · mejor rally: "+best+ENDB; wireEnd(); if(won) confetti(45); }
+  function point(playerScored){
+    if(playerScored){ ps++; $("ps").textContent=ps; sfx.score(); fx.boom(ball.x,12,"#7fe0b6",24,4); } else { cs++; $("pcs").textContent=cs; sfx.bad(); fx.boom(ball.x,H-12,"#ff6b6b",24,4); fx.shake(12); }
+    fx.flash(.4); best=Math.max(best,rally);
+    if(ps>=5||cs>=5){ draw(0); return end(); }
+    if(ps===4||cs===4) banner={t:"¡PUNTO DE PARTIDO!",life:90};
+    serve(!playerScored);
+  }
+  function draw(k){
+    fx.update(k); if(AMB.thunderId!==seenTh){ seenTh=AMB.thunderId; fx.shake(8); } fx.begin(g); g.globalAlpha=1;
+    g.fillStyle="#111"; g.fillRect(0,0,W,H); AMB.sky(g,W,H,.34); g.fillStyle="#555"; for(let x=0;x<W;x+=20) g.fillRect(x+4,H/2-1,10,2);
+    g.fillStyle="rgba(124,92,255,.08)"; g.fillRect(0,H/2-60,W,120);
+    trail.forEach(q=>{ g.globalAlpha=q.l/14*.4; g.fillStyle="#ffffff"; g.beginPath(); g.arc(q.x,q.y,5,0,6.283); g.fill(); }); g.globalAlpha=1;
+    g.fillStyle="#fff"; g.fillRect(cx,12,PW,PH); g.fillStyle="#7fe0b6"; g.fillRect(px,H-22,PW,PH);
+    g.font="22px serif"; g.textAlign="center"; g.textBaseline="middle"; g.fillStyle="#fff"; g.fillText("🐈",cx+PW/2,32); g.fillText("🦎",px+PW/2,H-34);
+    const sp=Math.hypot(ball.vx,ball.vy); if(sp>5){ g.shadowColor="#ff6b9d"; g.shadowBlur=16; } g.font="18px serif"; g.fillText("🧶",ball.x,ball.y); g.shadowBlur=0;
+    fx.parts(g); fx.pops(g);
+    g.font="bold 11px sans-serif"; g.fillStyle="#ffd54f"; g.textAlign="left"; g.fillText("VELOCIDAD "+"▮".repeat(Math.min(8,Math.round(sp))),8,H/2+5);
+    if(banner&&banner.life>0){ banner.life-=k||1; g.globalAlpha=Math.min(1,banner.life/25); g.fillStyle="#fff"; g.textAlign="center"; g.shadowColor="#ff6b9d"; g.shadowBlur=16; g.font="bold 22px sans-serif"; g.fillText(banner.t,W/2,H/2-40); g.shadowBlur=0; g.globalAlpha=1; }
+    AMB.front(g,W,H,.8); g.textAlign="right"; g.textBaseline="middle"; g.font="13px serif"; g.fillStyle="#fff"; g.fillText(AMB.icon(),W-6,12);
+    fx.end(g,W,H);
   }
   function frame(t){
-    if(over) return; const k=Math.min(2.5,(t-(last||t))/16.67||1); last=t;
+    if(over) return; let k=Math.min(2.5,(t-(last||t))/16.67||1); last=t;
+    const match=(ps===4||cs===4)?.8:1; k*=match;
     px=clamp(px+mv*6*k,0,W-PW);
-    cx=clamp(cx+clamp(ball.x-PW/2-cx,-2.7*k,2.7*k),0,W-PW);
+    if(pause>0){ pause-=k; draw(k); raf=requestAnimationFrame(frame); return; }
+    const cpuSp=2.5+ps*.28+Math.min(.8,rally*.04); cx=clamp(cx+clamp(ball.x-PW/2-cx,-cpuSp*k,cpuSp*k),0,W-PW);
     ball.x+=ball.vx*k; ball.y+=ball.vy*k;
-    if(ball.x<5||ball.x>W-5){ ball.vx*=-1; ball.x=clamp(ball.x,5,W-5); }
-    if(ball.vy>0&&ball.y>=H-27&&ball.y<=H-12&&ball.x>=px-5&&ball.x<=px+PW+5){ ball.vy=-Math.min(7,Math.abs(ball.vy)*1.05); ball.vx=clamp(ball.vx+((ball.x-(px+PW/2))/(PW/2))*2,-5,5); }
-    if(ball.vy<0&&ball.y<=27&&ball.y>=12&&ball.x>=cx-5&&ball.x<=cx+PW+5){ ball.vy=Math.min(7,Math.abs(ball.vy)*1.05); ball.vx=clamp(ball.vx+((ball.x-(cx+PW/2))/(PW/2))*2,-5,5); }
-    if(ball.y>H+8){ cs++; $("pcs").textContent=cs; serve(false); }
-    else if(ball.y<-8){ ps++; $("ps").textContent=ps; serve(true); }
-    draw(); if(ps>=5||cs>=5) return end();
-    raf=requestAnimationFrame(frame);
+    trail.push({x:ball.x,y:ball.y,l:14}); trail.forEach(q=>q.l-=k); trail=trail.filter(q=>q.l>0);
+    if(ball.x<5||ball.x>W-5){ ball.vx*=-1; ball.x=clamp(ball.x,5,W-5); sfx.tick(); }
+    if(ball.vy>0&&ball.y>=H-27&&ball.y<=H-12&&ball.x>=px-5&&ball.x<=px+PW+5){
+      const off=(ball.x-(px+PW/2))/(PW/2); rally++; $("pry").textContent=rally;
+      ball.vy=-Math.min(8,Math.abs(ball.vy)*1.05); ball.vx=clamp(ball.vx+off*2,-5.2,5.2); sfx.hit(); fx.boom(ball.x,H-24,"#7fe0b6",6,2);
+      if(Math.abs(off)>.8){ ball.vy*=1.15; ball.vx*=1.2; fx.flash(.4); fx.shake(6); fx.pop(ball.x,H-60,"¡SMASH!","#ffd54f"); sfx.power(); }
+      if(rally>0&&rally%5===0) fx.pop(150,H/2+40,"RALLY "+rally+" 🔥","#ffd54f");
+    }
+    if(ball.vy<0&&ball.y<=27&&ball.y>=12&&ball.x>=cx-5&&ball.x<=cx+PW+5){ ball.vy=Math.min(8,Math.abs(ball.vy)*1.05); ball.vx=clamp(ball.vx+((ball.x-(cx+PW/2))/(PW/2))*2,-5.2,5.2); sfx.tick(); fx.boom(ball.x,24,"#ffffff",5,2); rally++; $("pry").textContent=rally; }
+    if(ball.y>H+8) return point(false); if(ball.y<-8) return point(true);
+    draw(k); raf=requestAnimationFrame(frame);
   }
-  stop=cleanup; draw(); raf=requestAnimationFrame(frame);
+  stop=cleanup; draw(0); raf=requestAnimationFrame(frame);
 }
 function petGame(){
   mt.textContent="🥚 Mascota virtual";
@@ -792,8 +916,8 @@ function petGame(){
 function startPet(cat){
   const base=cat?"🐈":"🦎", sad=cat?"😿":"😢", nm=cat?"gatito":"lagartito";
   mt.textContent=base+" Mascota virtual";
-  mb.innerHTML='<p class="hint2">Cuidá a tu '+nm+' como en los años 90. Mantené las tres barras arriba.</p><div class="pet"><div class="face" id="pf">'+base+'</div><div class="say" id="psay">¡Hola! Soy tu '+nm+'.</div><div class="bars"><div>COMIDA<div class="bar2"><i id="b1"></i></div></div><div>DIVERSIÓN<div class="bar2"><i id="b2"></i></div></div><div>ENERGÍA<div class="bar2"><i id="b3"></i></div></div></div><div>Nivel <b id="plv">1</b></div></div><div class="pbtn"><button class="btn solid" id="pe">'+(cat?"🐟":"🪰")+' Comer</button><button class="btn solid" id="pj">'+(cat?"🧶":"🎾")+' Jugar</button><button class="btn solid" id="pd">😴 Dormir</button></div>';
-  let h=70,f=70,e=70,lv=1,good=0,sleep=0; const cl=v=>Math.max(0,Math.min(100,v)), food=cat?"🐟":"🪰", toy=cat?"🧶":"🎾";
+  mb.innerHTML='<p class="hint2">Cuidá a tu '+nm+' como en los años 90. Mantené las tres barras arriba y atrapá lo que aparece.</p><div class="pet" id="petbox"><div class="face" id="pf">'+base+'</div><div class="say" id="psay">¡Hola! Soy tu '+nm+'.</div><div class="bars"><div>COMIDA<div class="bar2"><i id="b1"></i></div></div><div>DIVERSIÓN<div class="bar2"><i id="b2"></i></div></div><div>ENERGÍA<div class="bar2"><i id="b3"></i></div></div></div><div>Nivel <b id="plv">1</b></div></div><div class="pbtn"><button class="btn solid" id="pe">'+(cat?"🐟":"🪰")+' Comer</button><button class="btn solid" id="pj">'+(cat?"🧶":"🎾")+' Jugar</button><button class="btn solid" id="pd">😴 Dormir</button></div>';
+  let h=70,f=70,e=70,lv=1,good=0,sleep=0,evT=null,evEl=null; const cl=v=>Math.max(0,Math.min(100,v)), food=cat?"🐟":"🪰", toy=cat?"🧶":"🎾";
   function show(){
     $("b1").style.width=h+"%"; $("b2").style.width=f+"%"; $("b3").style.width=e+"%";
     const low=Math.min(h,f,e); let face=base,say="¡Estoy feliz! Seguí así.";
@@ -802,32 +926,43 @@ function startPet(cat){
     else if(low<45){ face="😐"; say=h===low?"Ya me dio un poquito de hambre.":f===low?"¿Jugamos un ratito?":"Me estoy cansando un poco."; }
     $("pf").textContent=face; $("psay").textContent=say; $("plv").textContent=lv;
   }
-  $("pe").onclick=()=>{ if(sleep>0) return; h=cl(h+25); e=cl(e-1); show(); };
-  $("pj").onclick=()=>{ if(sleep>0) return; f=cl(f+25); e=cl(e-6); h=cl(h-4); show(); };
-  $("pd").onclick=()=>{ sleep=4; show(); };
+  const at=id=>{ const r=$(id).getBoundingClientRect(); return [r.left+r.width/2,r.top]; };
+  $("pe").onclick=()=>{ if(sleep>0) return; h=cl(h+25); e=cl(e-1); const [x,y]=at("pe"); burst(x,y,[food,"💗"],5,80); sfx.score(); show(); };
+  $("pj").onclick=()=>{ if(sleep>0) return; f=cl(f+25); e=cl(e-6); h=cl(h-4); const [x,y]=at("pj"); burst(x,y,[toy,"✨"],5,80); sfx.hit(); show(); };
+  $("pd").onclick=()=>{ sleep=4; sfx.tick(); show(); };
+  function event(){
+    if(evEl||sleep>0){ evT=setTimeout(event,4000); return; }
+    evEl=document.createElement("button"); evEl.className="petev"; evEl.textContent=food; evEl.style.left=rnd(6,80)+"%"; evEl.style.top=rnd(10,60)+"%"; evEl.setAttribute("aria-label","Sorpresa");
+    evEl.onclick=()=>{ f=cl(f+18); h=cl(h+8); const r=evEl.getBoundingClientRect(); burst(r.left+r.width/2,r.top,["⭐","💗","✨","+18"],6,90); sfx.power(); evEl.remove(); evEl=null; show(); };
+    $("petbox").appendChild(evEl); const el=evEl; setTimeout(()=>{ el.remove(); if(evEl===el) evEl=null; },2300); evT=setTimeout(event,rnd(9000,15000));
+  }
+  evT=setTimeout(event,6000);
   const tick=setInterval(()=>{
     if(sleep>0){ e=cl(e+10); h=cl(h-1); sleep--; }
     else { h=cl(h-3); f=cl(f-2.5); e=cl(e-2); }
-    if(Math.min(h,f,e)>=40){ good++; if(good>=25){ good=0; lv++; confetti(35); say("🎉 ¡Tu "+nm+" subió al nivel "+lv+"!"); } } else good=Math.max(0,good-1);
+    if(Math.min(h,f,e)>=40){ good++; if(good>=25){ good=0; lv++; confetti(35); sfx.win(); say("🎉 ¡Tu "+nm+" subió al nivel "+lv+"!"); } } else good=Math.max(0,good-1);
     show();
   },1500);
-  stop=()=>clearInterval(tick); show();
+  stop=()=>{ clearInterval(tick); clearTimeout(evT); };
+  show();
 }
 function rpsGame(){
   mt.textContent="✊✋✌️ Piedra, papel o tijera";
-  mb.innerHTML='<p class="hint2">Vos sos la lagartija 🦎 y la compu es el gato 🐈. Elegí una opción: gana el primero que llegue a 3 puntos.</p><div class="ghead"><span>🦎 <b id="rw">0</b></span><span>🐈 <b id="rc">0</b></span></div><div class="duel" id="duel">🦎❔ vs ❔🐈</div><div class="status" id="rst">👆 ¡Elegí!</div><div class="rps"><button data-m="0">✊</button><button data-m="1">✋</button><button data-m="2">✌️</button></div><div class="gend" id="gend"></div>';
-  const E=["✊","✋","✌️"]; let w=0,c=0,done=false,tm;
+  mb.innerHTML='<p class="hint2">Vos sos la lagartija 🦎 y la compu es el gato 🐈. Elegí una opción: gana el primero que llegue a 3 puntos. ¡Las rachas dan confeti!</p><div class="ghead"><span>🦎 <b id="rw">0</b></span><span>🐈 <b id="rc">0</b></span><span id="rsk">Racha 0</span></div><div class="duel" id="duel">🦎❔ vs ❔🐈</div><div class="status" id="rst">👆 ¡Elegí!</div><div class="rps"><button data-m="0">✊</button><button data-m="1">✋</button><button data-m="2">✌️</button></div><div class="gend" id="gend"></div>';
+  const E=["✊","✋","✌️"]; let w=0,c=0,done=false,busy=false,streak=0; const timers=[];
+  const later=(f,ms)=>timers.push(setTimeout(f,ms));
   mb.querySelectorAll(".rps button").forEach(btn=>btn.onclick=()=>{
-    if(done) return; const a=+btn.dataset.m, b=Math.floor(rnd(0,3)); $("duel").textContent="🦎"+E[a]+" vs "+E[b]+"🐈";
-    if(a===b) $("rst").textContent="🤝 Empate, ¡otra vez!";
-    else if((a-b+3)%3===1){ w++; $("rw").textContent=w; $("rst").textContent="✅ ¡Punto para la lagartija!"; }
-    else { c++; $("rc").textContent=c; $("rst").textContent="😼 Punto para el gato"; }
-    if(w>=3||c>=3){ done=true; $("gend").innerHTML=(w>c?"🏆 ¡Ganó la lagartija!":"😼 Ganó el gato. ¡Revancha!")+ENDB; wireEnd(); if(w>c) confetti(40); }
+    if(done||busy) return; busy=true; const a=+btn.dataset.m, b=Math.floor(rnd(0,3)); const du=$("duel"); du.classList.add("shakeit"); $("rst").textContent="✊ ¡Piedra…!"; sfx.tick(); du.textContent="🦎✊ vs ✊🐈";
+    later(()=>{ $("rst").textContent="✋ ¡Papel…!"; sfx.tick(); },260); later(()=>{ $("rst").textContent="✌️ ¡Tijera!"; sfx.tick(); },520);
+    later(()=>{ du.classList.remove("shakeit"); du.textContent="🦎"+E[a]+" vs "+E[b]+"🐈"; const r=du.getBoundingClientRect();
+      if(a===b){ $("rst").textContent="🤝 Empate, ¡otra vez!"; sfx.tick(); }
+      else if((a-b+3)%3===1){ w++; streak++; $("rw").textContent=w; $("rst").textContent="✅ ¡Punto para la lagartija!"+(streak>=2?" 🔥 racha "+streak:""); sfx.score(); burst(r.left+r.width/2,r.top+r.height/2,["⭐","✨","🦎"],7,100); if(streak===3) confetti(25); }
+      else { c++; streak=0; $("rc").textContent=c; $("rst").textContent="😼 Punto para el gato"; sfx.bad(); du.classList.add("shakeit"); }
+      $("rsk").textContent="Racha "+streak; busy=false;
+      if(w>=3||c>=3){ done=true; $("gend").innerHTML=(w>c?"🏆 ¡Ganó la lagartija!":"😼 Ganó el gato. ¡Revancha!")+ENDB; wireEnd(); if(w>c){ confetti(40); sfx.win(); } } },780);
   });
-  stop=()=>clearTimeout(tm);
+  stop=()=>timers.forEach(clearTimeout);
 }
-
-
 /* ---------- nombres y rankings (compartidos entre invitados) ---------- */
 const RK="https://textdb.dev/api/data/xvmaia-xv-ranking-9b8a290d7eb4-";
 const cleanName=t=>String(t||"").replace(/[\u0000-\u001f<>]/g,"").replace(/\s+/g," ").trim().slice(0,20);
@@ -854,7 +989,7 @@ const RKWHAT={
   memoria:"Intentos para encontrar las 6 parejas. Gana quien use menos.",
   simon:"Rondas superadas en Simón dice. Gana quien más rondas supere.",
   moscas:"Moscas cazadas en 15 segundos. Gana quien más cace.",
-  veloz:"Moscas comidas por la lagartija sin chocarse. Gana quien más coma.",
+  veloz:"Puntos comiendo moscas y juntando poderes sin chocarse. Gana quien más puntos junte.",
   espacial:"Puntos en la nave espacial. Gana quien más puntos junte.",
   ladrillos:"Puntos rompiendo ladrillos. Gana quien más puntos junte.",
   bloques:"Puntos en Bloques que caen. Gana quien más puntos junte.",
@@ -879,7 +1014,7 @@ function rigHearts(list){
   return [...others,{n:"Lagartija",s:Math.max(1,top-lagMode.d),rig:true}].sort((x,y)=>y.s-x.s);
 }
 async function showRanking(id,title,high,fmt,back){
-  stop(); stop=()=>{}; modal.hidden=false; $("mbk").style.display="none";
+  stop(); stop=()=>{}; modal.hidden=false; ambOn(); $("mbk").style.display="none";
   mt.textContent="🏆 "+title;
   mb.innerHTML='<p class="hint2">'+(RKWHAT[id]||"Los mejores jugadores.")+' ¡Poné tu nombre y entrá al ranking!</p><div id="rklist">Cargando…</div><div id="rkfoot"></div>';
   const foot=$("rkfoot"); foot.appendChild(nameRow(n=>{ if(id==="corazones"&&hearts>0) rkSubmit(id,n,hearts,true).then(()=>showRanking(id,title,high,fmt,back)).catch(()=>{}); }));
@@ -902,7 +1037,7 @@ async function showRanking(id,title,high,fmt,back){
 }
 
 async function openAllRankings(back){
-  stop(); stop=()=>{}; modal.hidden=false; $("mbk").style.display="none"; mt.textContent="🏆 Todos los rankings";
+  stop(); stop=()=>{}; modal.hidden=false; ambOn(); $("mbk").style.display="none"; mt.textContent="🏆 Todos los rankings";
   mb.innerHTML='<p class="hint2">Quién lidera cada juego y qué mide cada ranking, todo en un solo lugar.</p><div id="allrk">Cargando…</div><div id="rkfoot"></div>';
   const foot=$("rkfoot"); foot.appendChild(nameRow(n=>{ if(hearts>0) rkSubmit("corazones",n,hearts,true).then(()=>openAllRankings(back)).catch(()=>{}); }));
   const bk=document.createElement("button"); bk.className="btn"; bk.textContent="Cerrar"; bk.style.marginTop="12px"; bk.onclick=back||closeGame; foot.appendChild(bk);
@@ -960,7 +1095,7 @@ function spaceGame(){
   mt.textContent="🚀 Lagartija espacial";
   mb.innerHTML='<p class="hint2">Tu lagartija 🦎 vuela en un cohete y dispara sola. Movela con el dedo, el mouse, las flechas o WASD. ¡Enfrentá a los gatos meme y mejorá a tu lagartija!</p><div class="ghead"><span>Puntos <b id="gs">0</b></span><span>Vidas <b id="gl">3</b></span><span>💥 <b id="gbm">2</b></span></div><div class="cvwrap"><canvas id="cv" class="lcd sp" width="360" height="260"></canvas><div class="upg" id="upg" hidden></div></div><div class="dpad"><button class="u" data-d="u">▲</button><button class="l" data-d="l">◀</button><button class="d" data-d="d">▼</button><button class="r" data-d="r">▶</button></div><div class="dpad2"><button id="bomb" style="width:230px">💥 BOMBA</button></div><div class="gend" id="gend"></div>';
   const cv=$("cv"), g=cv.getContext("2d"), W=360, H=260, R=(a,b)=>rnd(a,b), clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-  const ship={x:70,y:H/2}; let tx=null,ty=null; const keys={l:0,r:0,u:0,d:0};
+  let seenTh=AMB.thunderId; const ship={x:70,y:H/2}; let tx=null,ty=null; const keys={l:0,r:0,u:0,d:0};
   let bullets=[],foes=[],eshots=[],items=[],parts=[],pops=[],boss=null,paused=false;
   let score=0,lives=3,bombs=2,weapon=1,shield=false,rapid=0,wave=1,waveKills=0,need=8,combo=0,lastKill=-9e9,mult=1,shake=0,flash=0,invul=0,over=false,raf,last=0,fireAt=0,spawnAt=900,time=0,kills=0,banner={t:"OLEADA 1",life:130};
   const up={speed:1,pierce:0,magnet:0,armor:0,rate:1,acc:[]};
@@ -1083,6 +1218,7 @@ function spaceGame(){
     g.fillStyle="#fff"; g.font="12px serif"; g.fillText((weapon>=3?"🔱":weapon===2?"✌️":"•")+(rapid>0?" ⚡":"")+(shield?" 🛡️":"")+(up.acc.length?"  "+up.acc.join(""):""),10,mult>1?62:30); g.textAlign="center";
     if(banner.life>0){ banner.life-=k; const a=Math.min(1,banner.life/30); g.globalAlpha=a; g.fillStyle="#fff"; g.shadowColor="#7c5cff"; g.shadowBlur=20; g.font="bold "+(24+(130-banner.life)*.04)+"px sans-serif"; g.fillText(banner.t,W/2,H/2-30); g.shadowBlur=0; g.globalAlpha=1; }
     if(flash>0){ g.globalAlpha=Math.min(.7,flash); g.fillStyle="#fff"; g.fillRect(-20,-20,W+40,H+40); g.globalAlpha=1; }
+    AMB.front(g,W,H,.9,"space"); if(AMB.thunderId!==seenTh){ seenTh=AMB.thunderId; shake=Math.max(shake,8); }
     g.restore();
     if(lives<=0){ boom(ship.x,ship.y,"#ffd54f",50,5); return end(); }
     raf=requestAnimationFrame(frame);
@@ -1091,152 +1227,294 @@ function spaceGame(){
 }
 function bricksGame(){
   mt.textContent="🧱 Rompe-ladrillos";
-  mb.innerHTML='<p class="hint2">Movés la paleta de la lagartija 🦎 con el dedo, el mouse o los botones. Hacé rebotar el ovillo 🧶 y rompé todos los ladrillos.</p><div class="ghead"><span>Puntos <b id="gs">0</b></span><span>Vidas <b id="gl">3</b></span></div><canvas id="cv" class="lcd pong" width="300" height="400"></canvas><div class="dpad2"><button id="pl">◀</button><button id="pr">▶</button></div><div class="gend" id="gend"></div>';
-  const cv=$("cv"), g=cv.getContext("2d"), W=300, H=400, PW=64, PH=10, COLS=8, ROWS=6, BW=34, BH=14;
-  const colors=["#f49ac8","#f0a35e","#f7e07a","#7fe0b6","#7fb8f0","#c4b5fd"];
-  let bricks=[]; for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) bricks.push({x:6+c*36,y:46+r*(BH+4),r,alive:true});
-  let px=118, mv=0, score=0, lives=3, over=false, raf, last=0, launched=false;
-  const ball={x:150,y:H-40,vx:2.2,vy:-3.4};
+  mb.innerHTML='<p class="hint2">Movés la paleta de la lagartija 🦎 con el dedo, el mouse o las flechas. Tocá para lanzar el ovillo 🧶, rompé ladrillos y atrapá los poderes que caen.</p><div class="ghead"><span>Puntos <b id="gs">0</b></span><span>Vidas <b id="gl">3</b></span><span>Nivel <b id="gv">1</b></span></div><canvas id="cv" class="lcd pong" width="300" height="400"></canvas><div class="dpad2"><button id="pl">◀</button><button id="pr">▶</button></div><div class="gend" id="gend"></div>';
+  const cv=$("cv"), g=cv.getContext("2d"), W=300, H=400, COLS=8, BW=34, BH=14, PH=10, fx=makeFX(), R=(a,b)=>rnd(a,b); let seenTh=AMB.thunderId;
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-  const setPx=x=>{ const r=cv.getBoundingClientRect(); px=clamp((x-r.left)*(W/r.width)-PW/2,0,W-PW); };
-  cv.addEventListener("pointermove",e=>setPx(e.clientX)); cv.addEventListener("pointerdown",e=>{ setPx(e.clientX); launched=true; try{ cv.setPointerCapture(e.pointerId); }catch(_){} });
-  const hold=(id,v)=>{ const el=$(id); el.addEventListener("pointerdown",e=>{ e.preventDefault(); mv=v; launched=true; }); ["pointerup","pointerleave","pointercancel"].forEach(ev=>el.addEventListener(ev,()=>{ if(mv===v) mv=0; })); };
+  const colors=["#f49ac8","#f0a35e","#f7e07a","#7fe0b6","#7fb8f0","#c4b5fd","#ff8a80","#a5d6a7"];
+  let level=1,score=0,lives=3,over=false,raf,last=0,time=0,launched=false,combo=0,mv=0,px=118;
+  let balls=[],bricks=[],items=[],lasers=[],trail=[],banner={t:"NIVEL 1",life:100},laserAt=0;
+  const pw={fire:0,wide:0,slow:0,laser:0};
+  const PW=()=>pw.wide>0?100:64, base=()=>(3.3+level*.22)*(pw.slow>0?.72:1);
+  function build(){
+    bricks=[]; const rows=Math.min(8,5+Math.floor(level/2));
+    for(let r=0;r<rows;r++) for(let c=0;c<COLS;c++){
+      let on=true; if(level%3===2) on=((r+c)%2===0)||r<2; if(level%3===0) on=Math.abs(c-3.5)<=r+.5||r>=rows-2; if(!on) continue;
+      const hp=(level>=4&&r<1)?3:(level>=2&&r<2)?2:1;
+      bricks.push({x:6+c*36,y:46+r*(BH+4),r,hp,max:hp,alive:true,boom:Math.random()<.06});
+    }
+  }
+  function newBall(){ balls=[{x:px+PW()/2,y:H-40,vx:(Math.random()<.5?-1:1)*2,vy:-base()}]; launched=false; trail=[]; }
+  build(); newBall();
+  const setPx=x=>{ const r=cv.getBoundingClientRect(); px=clamp((x-r.left)*(W/r.width)-PW()/2,0,W-PW()); };
+  const go=()=>{ if(!launched){ launched=true; sfx.tick(); } };
+  cv.addEventListener("pointermove",e=>setPx(e.clientX)); cv.addEventListener("pointerdown",e=>{ setPx(e.clientX); go(); try{ cv.setPointerCapture(e.pointerId); }catch(_){} });
+  const hold=(id,v)=>{ const el=$(id); el.addEventListener("pointerdown",e=>{ e.preventDefault(); mv=v; go(); }); ["pointerup","pointerleave","pointercancel"].forEach(ev=>el.addEventListener(ev,()=>{ if(mv===v) mv=0; })); };
   hold("pl",-1); hold("pr",1);
-  const kd=e=>{ if(e.key==="ArrowLeft"||e.key==="a"||e.key==="A"){ e.preventDefault(); mv=-1; launched=true; } if(e.key==="ArrowRight"||e.key==="d"||e.key==="D"){ e.preventDefault(); mv=1; launched=true; } }, ku=e=>{ if(["ArrowLeft","ArrowRight","a","A","d","D"].includes(e.key)) mv=0; };
+  const kd=e=>{ if(e.key==="ArrowLeft"||e.key==="a"||e.key==="A"){ e.preventDefault(); mv=-1; go(); } else if(e.key==="ArrowRight"||e.key==="d"||e.key==="D"){ e.preventDefault(); mv=1; go(); } else if(e.key===" "){ e.preventDefault(); go(); } }, ku=e=>{ if(["ArrowLeft","ArrowRight","a","A","d","D"].includes(e.key)) mv=0; };
   addEventListener("keydown",kd); addEventListener("keyup",ku);
   function cleanup(){ over=true; cancelAnimationFrame(raf); removeEventListener("keydown",kd); removeEventListener("keyup",ku); }
-  function finish(win){ cleanup(); if(win) score+=lives*50; $("gs").textContent=score; $("gend").innerHTML=(win?"🏆 ¡Rompiste todos los ladrillos! ":"😅 Se acabaron las vidas. ")+score+" puntos."+ENDB; wireEnd(); if(win) confetti(50); rankAfter(12,score); }
+  function finish(){ cleanup(); $("gend").innerHTML=(level>=4?"🔥 ":"😅 ")+"Llegaste al nivel "+level+" con "+score+" puntos."+ENDB; wireEnd(); if(level>=3) confetti(45); rankAfter(12,score); }
+  function hitBrick(b){
+    b.hp--; if(b.hp>0){ fx.boom(b.x+BW/2,b.y+BH/2,"#ffffff",3,1.8); sfx.hit(); return; }
+    b.alive=false; combo++; const m=1+Math.floor(combo/4), pts=(10+(8-b.r)*2)*m; score+=pts;
+    fx.boom(b.x+BW/2,b.y+BH/2,colors[b.r%colors.length],11,3.2); fx.pop(b.x+BW/2,b.y-2,"+"+pts+(m>1?" x"+m:""),m>1?"#ffd54f":"#ffffff"); sfx.hit(); if(b.max>1) fx.shake(4);
+    if(b.boom){ fx.shake(11); fx.flash(.5); sfx.boom(); bricks.forEach(o=>{ if(o.alive&&o!==b&&Math.hypot(o.x-b.x,o.y-b.y)<54){ o.hp=1; hitBrick(o); } }); }
+    if(Math.random()<.17) items.push({x:b.x+BW/2,y:b.y+BH,t:["🔥","🧶","📏","🐌","🔫","❤️","💥"][Math.floor(R(0,7))]});
+  }
+  function take(t,x,y){
+    sfx.power(); fx.boom(x,y,"#ffffff",10,2.4);
+    if(t==="🔥"){ pw.fire=6000; fx.pop(x,y-14,"¡BOLA DE FUEGO!","#ff9800"); }
+    else if(t==="🧶"){ const b=balls[0]||{x:px+PW()/2,y:H-60,vx:2,vy:-base()}; balls.push({x:b.x,y:b.y,vx:-2.4,vy:-Math.abs(b.vy)},{x:b.x,y:b.y,vx:2.4,vy:-Math.abs(b.vy)}); launched=true; fx.pop(x,y-14,"¡MULTIBOLA!","#7fe0ff"); }
+    else if(t==="📏"){ pw.wide=12000; fx.pop(x,y-14,"PALETA GRANDE","#7fe0b6"); }
+    else if(t==="🐌"){ pw.slow=8000; fx.pop(x,y-14,"CÁMARA LENTA","#a5d6a7"); }
+    else if(t==="🔫"){ pw.laser=8000; fx.pop(x,y-14,"¡LÁSER!","#ff6b9d"); }
+    else if(t==="❤️"){ lives=Math.min(6,lives+1); fx.pop(x,y-14,"+1 VIDA","#ff8fb1"); }
+    else { const alive=bricks.filter(b=>b.alive).sort(()=>Math.random()-.5).slice(0,8); alive.forEach(b=>{ b.hp=1; hitBrick(b); }); fx.flash(.8); fx.shake(14); sfx.boom(); fx.pop(x,y-14,"¡BOMBA!","#ffd54f"); }
+  }
   function frame(t){
-    if(over) return; const k=Math.min(2.5,(t-(last||t))/16.67||1); last=t;
-    px=clamp(px+mv*6*k,0,W-PW);
-    if(launched){ ball.x+=ball.vx*k; ball.y+=ball.vy*k; } else { ball.x=px+PW/2; ball.y=H-40; }
-    if(ball.x<6||ball.x>W-6){ ball.vx*=-1; ball.x=clamp(ball.x,6,W-6); }
-    if(ball.y<6){ ball.vy=Math.abs(ball.vy); ball.y=6; }
-    if(ball.vy>0&&ball.y>=H-34&&ball.y<=H-20&&ball.x>=px-6&&ball.x<=px+PW+6){ ball.vy=-Math.min(7,Math.abs(ball.vy)*1.02); ball.vx=clamp(ball.vx+((ball.x-(px+PW/2))/(PW/2))*2.2,-5,5); }
-    for(const b of bricks){ if(!b.alive) continue;
-      if(ball.x>b.x-5&&ball.x<b.x+BW+5&&ball.y>b.y-5&&ball.y<b.y+BH+5){ b.alive=false; score+=10+(ROWS-b.r)*2; $("gs").textContent=score;
-        const ox=Math.min(ball.x-(b.x-5),b.x+BW+5-ball.x), oy=Math.min(ball.y-(b.y-5),b.y+BH+5-ball.y); if(ox<oy) ball.vx*=-1; else ball.vy*=-1; break; } }
-    if(ball.y>H+8){ lives--; $("gl").textContent=Math.max(0,lives); launched=false; ball.vx=(Math.random()<.5?-1:1)*2.2; ball.vy=-3.4; if(lives<=0) return finish(false); }
-    if(bricks.every(b=>!b.alive)) return finish(true);
-    g.fillStyle="#1b1426"; g.fillRect(0,0,W,H);
-    bricks.forEach(b=>{ if(!b.alive) return; g.fillStyle=colors[b.r%colors.length]; g.fillRect(b.x,b.y,BW,BH); g.fillStyle="rgba(255,255,255,.35)"; g.fillRect(b.x,b.y,BW,3); });
-    g.fillStyle="#7fe0b6"; g.fillRect(px,H-22,PW,PH); g.font="22px serif"; g.textAlign="center"; g.textBaseline="middle"; g.fillText("🦎",px+PW/2,H-34);
-    g.font="18px serif"; g.fillText("🧶",ball.x,ball.y);
+    if(over) return; const k=Math.min(2.5,(t-(last||t))/16.67||1); last=t; time+=16.67*k;
+    ["fire","wide","slow","laser"].forEach(n=>{ if(pw[n]>0) pw[n]-=16.67*k; });
+    px=clamp(px+mv*6.2*k,0,W-PW());
+    if(pw.laser>0&&launched&&time>laserAt){ laserAt=time+380; lasers.push({x:px+6,y:H-26},{x:px+PW()-6,y:H-26}); sfx.tick(); }
+    lasers.forEach(l=>l.y-=9*k); lasers=lasers.filter(l=>{ if(l.y<0) return false; for(const b of bricks){ if(b.alive&&l.x>b.x&&l.x<b.x+BW&&l.y<b.y+BH&&l.y>b.y-6){ hitBrick(b); return false; } } return true; });
+    balls.forEach(b=>{
+      if(!launched){ b.x=px+PW()/2; b.y=H-40; return; }
+      const sp=Math.hypot(b.vx,b.vy), want=base()*(1+Math.min(.5,combo*.01)); if(sp>0){ const f=(sp+(want-sp)*.02)/sp; b.vx*=f; b.vy*=f; }
+      b.x+=b.vx*k; b.y+=b.vy*k;
+      if(b.x<6||b.x>W-6){ b.vx*=-1; b.x=clamp(b.x,6,W-6); sfx.tick(); } if(b.y<6){ b.vy=Math.abs(b.vy); b.y=6; sfx.tick(); }
+      if(b.vy>0&&b.y>=H-34&&b.y<=H-18&&b.x>=px-6&&b.x<=px+PW()+6){ const off=(b.x-(px+PW()/2))/(PW()/2); b.vy=-Math.abs(b.vy); b.vx=clamp(b.vx+off*2.4,-5.2,5.2); b.y=H-35; combo=0; sfx.tick(); fx.boom(b.x,H-30,"#7fe0b6",4,1.6); }
+      for(const br of bricks){ if(!br.alive) continue;
+        if(b.x>br.x-5&&b.x<br.x+BW+5&&b.y>br.y-5&&b.y<br.y+BH+5){
+          if(pw.fire>0){ br.hp=1; hitBrick(br); } else { const ox=Math.min(b.x-(br.x-5),br.x+BW+5-b.x), oy=Math.min(b.y-(br.y-5),br.y+BH+5-b.y); if(ox<oy) b.vx*=-1; else b.vy*=-1; hitBrick(br); break; } } }
+    });
+    trail.push(...balls.map(b=>({x:b.x,y:b.y,l:10}))); trail.forEach(q=>q.l-=k); trail=trail.filter(q=>q.l>0).slice(-60);
+    const before=balls.length; balls=balls.filter(b=>b.y<=H+8);
+    if(before>0&&balls.length===0){ lives--; combo=0; fx.shake(14); fx.flash(.5); sfx.bad(); if(lives<=0){ cleanup(); $("gl").textContent=0; return finish(); } newBall(); }
+    items.forEach(i=>i.y+=1.9*k); items=items.filter(i=>{ if(i.y>H-18&&i.y<H-6&&i.x>px-8&&i.x<px+PW()+8){ take(i.t,i.x,i.y); return false; } return i.y<H+10; });
+    if(bricks.every(b=>!b.alive)){ level++; score+=100*level+lives*20; fx.flash(1); fx.shake(10); sfx.win(); confetti(18); banner={t:"NIVEL "+level,life:110}; items=[]; lasers=[]; build(); newBall(); }
+    $("gs").textContent=score; $("gl").textContent=Math.max(0,lives); $("gv").textContent=level; fx.update(k);
+    if(AMB.thunderId!==seenTh){ seenTh=AMB.thunderId; fx.shake(8); }
+    fx.begin(g); g.globalAlpha=1;
+    g.fillStyle="#120a26"; g.fillRect(0,0,W,H); AMB.sky(g,W,H,.32); g.fillStyle="rgba(124,92,255,.07)"; for(let x=0;x<=W;x+=30) g.fillRect(x,0,1,H); for(let y=0;y<=H;y+=30) g.fillRect(0,y,W,1);
+    bricks.forEach(b=>{ if(!b.alive) return; g.fillStyle=colors[b.r%colors.length]; g.fillRect(b.x,b.y,BW,BH); g.fillStyle="rgba(255,255,255,.35)"; g.fillRect(b.x,b.y,BW,3);
+      if(b.hp>1){ g.strokeStyle="#fff"; g.lineWidth=b.hp; g.strokeRect(b.x+1,b.y+1,BW-2,BH-2); }
+      if(b.boom){ g.fillStyle="#fff"; g.font="11px serif"; g.textAlign="center"; g.textBaseline="middle"; g.fillText("💥",b.x+BW/2,b.y+BH/2+1); } });
+    fx.parts(g);
+    trail.forEach(q=>{ g.globalAlpha=q.l/12*.35; g.fillStyle=pw.fire>0?"#ff9800":"#ffffff"; g.beginPath(); g.arc(q.x,q.y,4,0,6.283); g.fill(); }); g.globalAlpha=1;
+    lasers.forEach(l=>{ g.fillStyle="#ff6b9d"; g.shadowColor="#ff6b9d"; g.shadowBlur=8; g.fillRect(l.x-1.5,l.y,3,12); }); g.shadowBlur=0;
+    items.forEach(i=>{ g.fillStyle="#fff"; g.shadowColor="#ffd54f"; g.shadowBlur=12; g.font="20px serif"; g.textAlign="center"; g.textBaseline="middle"; g.fillText(i.t,i.x,i.y); }); g.shadowBlur=0;
+    g.fillStyle=pw.laser>0?"#ff6b9d":"#7fe0b6"; g.fillRect(px,H-22,PW(),PH); g.font="22px serif"; g.textAlign="center"; g.textBaseline="middle"; g.fillStyle="#fff"; g.fillText("🦎",px+PW()/2,H-34);
+    balls.forEach(b=>{ g.font="18px serif"; g.fillStyle="#fff"; if(pw.fire>0){ g.shadowColor="#ff9800"; g.shadowBlur=14; } g.fillText("🧶",b.x,b.y); g.shadowBlur=0; });
+    fx.pops(g);
+    g.textAlign="left"; g.fillStyle="#fff"; g.font="bold 12px sans-serif"; g.fillText("NIVEL "+level,8,16);
+    const m=1+Math.floor(combo/4); if(combo>=4){ g.fillStyle="#ffd54f"; g.font="bold "+(14+Math.min(8,m*2))+"px sans-serif"; g.textAlign="center"; g.fillText("COMBO x"+m,W/2,20); }
+    g.textAlign="right"; g.font="13px serif"; let ix=W-8; [["fire","🔥"],["wide","📏"],["slow","🐌"],["laser","🔫"]].forEach(([n,e])=>{ if(pw[n]>0){ g.fillStyle="#fff"; g.fillText(e,ix,16); g.fillStyle="rgba(255,255,255,.3)"; g.fillRect(ix-14,22,14,3); g.fillStyle="#ffd54f"; g.fillRect(ix-14,22,14*Math.min(1,pw[n]/(n==="fire"?6000:n==="wide"?12000:8000)),3); ix-=28; } });
+    g.textAlign="center";
     if(!launched){ g.fillStyle="#fff"; g.font="12px sans-serif"; g.fillText("Tocá o mové para lanzar",W/2,H-70); }
+    if(banner.life>0){ banner.life-=k; g.globalAlpha=Math.min(1,banner.life/25); g.fillStyle="#fff"; g.shadowColor="#7c5cff"; g.shadowBlur=18; g.font="bold 28px sans-serif"; g.fillText(banner.t,W/2,H/2); g.shadowBlur=0; g.globalAlpha=1; }
+    AMB.front(g,W,H,.8); g.textAlign="right"; g.textBaseline="middle"; g.font="13px serif"; g.fillStyle="#fff"; g.fillText(AMB.icon(),W-6,H-10);
+    fx.end(g,W,H);
     raf=requestAnimationFrame(frame);
   }
   stop=cleanup; raf=requestAnimationFrame(frame);
 }
 function blocksGame(){
   mt.textContent="🧩 Bloques que caen";
-  mb.innerHTML='<p class="hint2">La lagartija 🦎 y el gato 🐈 construyen una torre. Deslizá el dedo para mover y bajar los bloques, y tocá para girarlos. En la compu: flechas y barra espaciadora.</p><div class="ghead"><span>Puntos <b id="gs">0</b></span><span>Nivel <b id="gl">1</b></span></div><canvas id="cv" class="lcd" width="200" height="320" style="background:#1b1426"></canvas><div class="dpad2"><button id="bl">◀</button><button id="br">▶</button><button id="bt">⟳</button><button id="bd">▼</button></div><div class="gend" id="gend"></div>';
-  const cv=$("cv"), g=cv.getContext("2d"), COLS=10, ROWS=16, C=20;
+  mb.innerHTML='<p class="hint2">La lagartija 🦎 y el gato 🐈 construyen una torre. Deslizá el dedo para mover y bajar los bloques, y tocá para girarlos. En la compu: flechas y barra espaciadora. ¡Completá filas para hacer COMBOS!</p><div class="ghead"><span>Puntos <b id="gs">0</b></span><span>Nivel <b id="gl">1</b></span><span>Filas <b id="gr">0</b></span></div><canvas id="cv" class="lcd" width="270" height="320" style="background:#120a26;border-color:#7c5cff"></canvas><div class="dpad2"><button id="bl">◀</button><button id="br">▶</button><button id="bt">⟳</button><button id="bd">▼</button></div><div class="gend" id="gend"></div>';
+  const cv=$("cv"), g=cv.getContext("2d"), COLS=10, ROWS=16, C=20, fx=makeFX(); let seenTh=AMB.thunderId;
   const SH=[[[1,1,1,1]],[[1,1],[1,1]],[[0,1,0],[1,1,1]],[[1,0,0],[1,1,1]],[[0,0,1],[1,1,1]],[[0,1,1],[1,1,0]],[[1,1,0],[0,1,1]]];
   const COL=["#7fb8f0","#f7e07a","#c4b5fd","#f0a35e","#7fb8f0","#7fe0b6","#f49ac8"];
-  let board=Array.from({length:ROWS},()=>Array(COLS).fill(0)), piece, score=0, lines=0, level=1, over=false, timer;
+  let board=Array.from({length:ROWS},()=>Array(COLS).fill(0)), piece, nextI=Math.floor(rnd(0,7)), score=0, lines=0, level=1, combo=0, over=false, timer, raf, last=0, banner={t:"¡A CONSTRUIR!",life:90};
   const rot=m=>m[0].map((_,i)=>m.map(r=>r[i]).reverse());
   const ok=(m,x,y)=>m.every((row,r)=>row.every((v,c)=>!v||(x+c>=0&&x+c<COLS&&y+r<ROWS&&(y+r<0||!board[y+r][x+c]))));
-  function spawn(){ const i=Math.floor(rnd(0,SH.length)); piece={m:SH[i],c:COL[i],x:Math.floor((COLS-SH[i][0].length)/2),y:0}; if(!ok(piece.m,piece.x,piece.y)) end(); }
-  function draw(){
-    g.fillStyle="#1b1426"; g.fillRect(0,0,200,320); g.fillStyle="rgba(255,255,255,.04)"; for(let i=0;i<=COLS;i++) g.fillRect(i*C,0,1,320); for(let i=0;i<=ROWS;i++) g.fillRect(0,i*C,200,1);
-    const cell=(x,y,c)=>{ g.fillStyle=c; g.fillRect(x*C+1,y*C+1,C-2,C-2); g.fillStyle="rgba(255,255,255,.3)"; g.fillRect(x*C+1,y*C+1,C-2,3); };
-    board.forEach((row,y)=>row.forEach((v,x)=>{ if(v) cell(x,y,v); }));
-    if(piece) piece.m.forEach((row,r)=>row.forEach((v,c)=>{ if(v) cell(piece.x+c,piece.y+r,piece.c); }));
-  }
+  function spawn(){ const i=nextI; nextI=Math.floor(rnd(0,SH.length)); piece={m:SH[i],c:COL[i],x:Math.floor((COLS-SH[i][0].length)/2),y:0}; if(!ok(piece.m,piece.x,piece.y)) end(); }
   function lock(){
     piece.m.forEach((row,r)=>row.forEach((v,c)=>{ if(v&&piece.y+r>=0) board[piece.y+r][piece.x+c]=piece.c; }));
-    let n=0; board=board.filter(row=>{ if(row.every(Boolean)){ n++; return false; } return true; }); while(board.length<ROWS) board.unshift(Array(COLS).fill(0));
-    if(n){ score+=[0,100,300,500,800][n]*level; lines+=n; level=1+Math.floor(lines/6); $("gs").textContent=score; $("gl").textContent=level; }
+    const full=[]; board.forEach((row,y)=>{ if(row.every(Boolean)) full.push(y); });
+    if(full.length){
+      full.forEach(y=>{ for(let x=0;x<COLS;x++) fx.boom(x*C+C/2,y*C+C/2,board[y][x],3,3); });
+      board=board.filter((_,y)=>!full.includes(y)); while(board.length<ROWS) board.unshift(Array(COLS).fill(0));
+      combo++; const n=full.length, pts=[0,100,300,500,800][n]*level*(1+Math.min(3,combo-1)*.5); score+=Math.round(pts); lines+=n; const nl=1+Math.floor(lines/6);
+      fx.flash(n>=4?1:.5); fx.shake(4+n*3); sfx[n>=4?"win":"score"](); fx.pop(100,full[0]*C,"+"+Math.round(pts)+(combo>1?" COMBO x"+combo:""),combo>1?"#ffd54f":"#fff"); if(n>=4){ banner={t:"¡BLOQUEMANÍA!",life:80}; confetti(14); }
+      if(nl>level){ level=nl; banner={t:"NIVEL "+level,life:90}; }
+      $("gs").textContent=score; $("gl").textContent=level; $("gr").textContent=lines;
+    } else { combo=0; fx.shake(2); sfx.tick(); }
     spawn();
   }
-  const move=dx=>{ if(!over&&ok(piece.m,piece.x+dx,piece.y)){ piece.x+=dx; draw(); } };
-  const turn=()=>{ if(over) return; const m=rot(piece.m); for(const dx of [0,-1,1,-2,2]) if(ok(m,piece.x+dx,piece.y)){ piece.m=m; piece.x+=dx; draw(); return; } };
-  const down=()=>{ if(over) return; if(ok(piece.m,piece.x,piece.y+1)) piece.y++; else lock(); draw(); };
-  const press=(id,fn)=>{ const el=$(id); el.addEventListener("pointerdown",e=>{ e.preventDefault(); fn(); }); };
+  const move=dx=>{ if(!over&&ok(piece.m,piece.x+dx,piece.y)){ piece.x+=dx; sfx.tick(); } };
+  const turn=()=>{ if(over) return; const m=rot(piece.m); for(const dx of [0,-1,1,-2,2]) if(ok(m,piece.x+dx,piece.y)){ piece.m=m; piece.x+=dx; sfx.tick(); return; } };
+  const down=()=>{ if(over) return; if(ok(piece.m,piece.x,piece.y+1)) piece.y++; else lock(); };
+  const hard=()=>{ if(over) return; const cur=piece; let n=0; while(!over&&piece===cur&&n<30){ down(); n++; } fx.shake(5); };
+  const press=(id,fn)=>$(id).addEventListener("pointerdown",e=>{ e.preventDefault(); fn(); });
   press("bl",()=>move(-1)); press("br",()=>move(1)); press("bt",turn); press("bd",down);
-  const hard=()=>{ if(over) return; const cur=piece; let n=0; while(!over&&piece===cur&&n<30){ down(); n++; } };
   const key=e=>{ const m={ArrowLeft:()=>move(-1),ArrowRight:()=>move(1),ArrowUp:turn,ArrowDown:down,a:()=>move(-1),A:()=>move(-1),d:()=>move(1),D:()=>move(1),w:turn,W:turn,s:down,S:down," ":hard}[e.key]; if(m){ e.preventDefault(); m(); } };
+  addEventListener("keydown",key);
   { let sx=0,sy=0,tot=0,on=false,lx=0,ly=0;
     cv.addEventListener("pointerdown",e=>{ on=true; sx=lx=e.clientX; sy=ly=e.clientY; tot=0; try{ cv.setPointerCapture(e.pointerId); }catch(_){} });
     cv.addEventListener("pointermove",e=>{ if(!on) return; const dx=e.clientX-lx, dy=e.clientY-ly; tot=Math.max(tot,Math.abs(e.clientX-sx),Math.abs(e.clientY-sy));
-      if(Math.abs(dx)>=22&&Math.abs(dx)>Math.abs(dy)){ move(dx>0?1:-1); lx=e.clientX; ly=e.clientY; }
-      else if(dy>=26&&Math.abs(dy)>Math.abs(dx)){ down(); ly=e.clientY; lx=e.clientX; } });
-    cv.addEventListener("pointerup",()=>{ if(on&&tot<10) turn(); on=false; });
-    cv.addEventListener("pointercancel",()=>{ on=false; }); }
-  addEventListener("keydown",key);
-  function cleanup(){ over=true; clearTimeout(timer); removeEventListener("keydown",key); }
-  function end(){ cleanup(); const m=score>=2000?"¡Maestra de los bloques! 🏆":score>=800?"¡Muy bien! Como en los celulares de antes 📱":"Buen intento 🧩"; $("gend").innerHTML=score+" puntos. "+m+ENDB; wireEnd(); if(score>=800) confetti(40); rankAfter(13,score); }
-  const loop=()=>{ if(over) return; down(); if(!over) timer=setTimeout(loop,Math.max(110,650-(level-1)*70)); };
-  stop=cleanup; spawn(); draw(); timer=setTimeout(loop,650);
+      if(Math.abs(dx)>=22&&Math.abs(dx)>Math.abs(dy)){ move(dx>0?1:-1); lx=e.clientX; ly=e.clientY; } else if(dy>=26&&Math.abs(dy)>Math.abs(dx)){ down(); ly=e.clientY; lx=e.clientX; } });
+    cv.addEventListener("pointerup",()=>{ if(on&&tot<10) turn(); on=false; }); cv.addEventListener("pointercancel",()=>{ on=false; }); }
+  function cleanup(){ over=true; clearTimeout(timer); cancelAnimationFrame(raf); removeEventListener("keydown",key); }
+  function end(){ over=true; clearTimeout(timer); fx.shake(14); fx.flash(.6); sfx.bad(); removeEventListener("keydown",key); const m=score>=2500?"¡Maestra de los bloques! 🏆":score>=900?"¡Muy bien! Como en los celulares de antes 📱":"Buen intento 🧩"; $("gend").innerHTML=score+" puntos · "+lines+" filas · nivel "+level+". "+m+ENDB; wireEnd(); if(score>=900) confetti(40); rankAfter(13,score); }
+  const loop=()=>{ if(over) return; down(); if(!over) timer=setTimeout(loop,Math.max(100,650-(level-1)*65)); };
+  function ghostY(){ let y=piece.y; while(ok(piece.m,piece.x,y+1)) y++; return y; }
+  function draw(t){
+    const k=Math.min(2.5,(t-(last||t))/16.67||1); last=t; fx.update(k);
+    if(AMB.thunderId!==seenTh){ seenTh=AMB.thunderId; fx.shake(8); }
+    fx.begin(g); g.globalAlpha=1; g.fillStyle="#120a26"; g.fillRect(-10,-10,290,340); AMB.sky(g,270,320,.34); g.fillStyle="rgba(255,255,255,.04)"; for(let i=0;i<=COLS;i++) g.fillRect(i*C,0,1,320); for(let i=0;i<=ROWS;i++) g.fillRect(0,i*C,200,1);
+    const cell=(x,y,c,a)=>{ g.globalAlpha=a||1; g.fillStyle=c; g.fillRect(x*C+1,y*C+1,C-2,C-2); g.fillStyle="rgba(255,255,255,.3)"; g.fillRect(x*C+1,y*C+1,C-2,3); g.globalAlpha=1; };
+    board.forEach((row,y)=>row.forEach((v,x)=>{ if(v) cell(x,y,v); }));
+    if(piece&&!over){ const gy=ghostY(); piece.m.forEach((row,r)=>row.forEach((v,c)=>{ if(v) cell(piece.x+c,gy+r,piece.c,.22); })); piece.m.forEach((row,r)=>row.forEach((v,c)=>{ if(v) cell(piece.x+c,piece.y+r,piece.c); })); }
+    fx.parts(g); fx.pops(g);
+    g.fillStyle="rgba(255,255,255,.06)"; g.fillRect(205,8,60,150);
+    g.fillStyle="#fff"; g.font="bold 10px sans-serif"; g.textAlign="center"; g.fillText("SIGUIENTE",235,22);
+    const nm=SH[nextI], nc=COL[nextI]; nm.forEach((row,r)=>row.forEach((v,c)=>{ if(v){ g.fillStyle=nc; g.fillRect(212+c*13+(4-nm[0].length)*6,36+r*13,12,12); } }));
+    g.fillStyle="#ffd54f"; g.font="bold 12px sans-serif"; g.fillText("NIVEL "+level,235,100); if(combo>1){ g.fillText("COMBO x"+combo,235,120); }
+    g.font="26px serif"; g.fillStyle="#fff"; g.fillText(level%2?"🦎":"🐈",235,150);
+    if(banner.life>0){ banner.life-=k; g.globalAlpha=Math.min(1,banner.life/25); g.fillStyle="#fff"; g.shadowColor="#7c5cff"; g.shadowBlur=14; g.font="bold 18px sans-serif"; g.fillText(banner.t,100,150); g.shadowBlur=0; g.globalAlpha=1; }
+    AMB.front(g,270,320,.8); g.textAlign="right"; g.textBaseline="middle"; g.font="13px serif"; g.fillStyle="#fff"; g.fillText(AMB.icon(),264,308);
+    fx.end(g,270,320);
+    raf=requestAnimationFrame(draw);
+  }
+  stop=cleanup; spawn(); raf=requestAnimationFrame(draw); timer=setTimeout(loop,650);
 }
-
 function runnerGame(){
   mt.textContent="🦎 Lagartija saltarina";
-  mb.innerHTML='<p class="hint2">La lagartija corre sola. Tocá la pantalla (o el botón, o la barra espaciadora) para saltar a los gatos y las piedras.</p><div class="ghead"><span>Puntos <b id="gs">0</b></span><span>Récord <b id="gb">'+runBest+'</b></span></div><canvas id="cv" class="lcd" width="320" height="180"></canvas><div class="dpad2"><button id="jmp" style="width:200px">⤴ SALTAR</button></div><div class="gend" id="gend"></div>';
-  const cv=$("cv"), g=cv.getContext("2d"), W=320, H=180, GY=146;
-  let y=0, vy=0, obs=[], dist=0, score=0, over=false, raf, last=0, gap=170, started=false;
-  const types=[{e:"🐈",w:24,h:26},{e:"🪨",w:22,h:20},{e:"🌵",w:20,h:30},{e:"🧶",w:20,h:20},{e:"🐈‍⬛",w:24,h:26}];
-  const jump=()=>{ if(over) return; started=true; if(y===0) vy=9.4; };
-  cv.addEventListener("pointerdown",e=>{ e.preventDefault(); jump(); }); $("jmp").addEventListener("pointerdown",e=>{ e.preventDefault(); jump(); });
-  const kd=e=>{ if(e.key===" "||e.key==="ArrowUp"||e.key==="w"||e.key==="W"){ e.preventDefault(); jump(); } }; addEventListener("keydown",kd);
-  function cleanup(){ over=true; cancelAnimationFrame(raf); removeEventListener("keydown",kd); }
-  function end(){ cleanup(); runBest=Math.max(runBest,score); $("gb").textContent=runBest; const m=score>=400?"¡Imparable! Más rápida que un gato 🏆":score>=200?"¡Muy bien! Saltás como una campeona 🦎":score>=80?"Nada mal, seguí practicando 😄":"Los gatos te alcanzaron 😼"; $("gend").innerHTML=score+" puntos. "+m+ENDB; wireEnd(); if(score>=200) confetti(45); rankAfter(14,score); }
+  mb.innerHTML='<p class="hint2">La lagartija corre sola. Tocá para saltar (¡tocá otra vez en el aire para un salto doble!). Deslizá hacia abajo o usá ⬇ para agacharte y esquivar a las águilas 🦅.</p><div class="ghead"><span>Puntos <b id="gs">0</b></span><span>Combo <b id="gc">0</b></span><span>Récord <b id="gb">'+runBest+'</b></span></div><canvas id="cv" class="lcd" width="320" height="180"></canvas><div class="dpad2"><button id="jmp" style="width:150px;font-size:18px">⤴ SALTAR</button><button id="dck" style="width:150px;font-size:18px">⬇ AGACHAR</button></div><div class="gend" id="gend"></div>';
+  const cv=$("cv"), g=cv.getContext("2d"), W=320, H=180, GY=146, fx=makeFX(); let seenTh=AMB.thunderId;
+  let y=0, vy=0, jumps=0, duck=0, duckHold=false, obs=[], coins=[], dist=0, bonus=0, score=0, combo=0, shield=false, over=false, raf, last=0, gap=170, coinGap=120, started=false, banner=null, nextShield=900;
+  const types=[{e:"🐈",w:24,h:26,b:0},{e:"🪨",w:22,h:20,b:0},{e:"🌵",w:20,h:30,b:0},{e:"🧶",w:20,h:20,b:0},{e:"🐈‍⬛",w:24,h:26,b:0},{e:"🦅",w:28,h:22,b:16,bird:true}];
+  const jump=()=>{ if(over) return; if(!started){ started=true; banner={t:"¡CORRÉ!",life:60}; } if(y===0){ vy=9.4; jumps=1; sfx.tick(); fx.boom(48,GY,"#8d8d8d",4,1.6); } else if(jumps<2){ vy=8.2; jumps=2; sfx.power(); fx.boom(48,GY-y,"#7fe0ff",8,2); fx.pop(60,GY-y-20,"SALTO DOBLE","#1f3d1a"); } };
+  const doDuck=ms=>{ if(over) return; started=true; duck=ms||600; if(y>0) vy=Math.min(vy,-3); };
+  cv.addEventListener("pointerdown",e=>{ e.preventDefault(); jump(); }); swipe(cv,d=>{ if(d==="d") doDuck(650); else if(d==="u") jump(); },26);
+  $("jmp").addEventListener("pointerdown",e=>{ e.preventDefault(); jump(); });
+  $("dck").addEventListener("pointerdown",e=>{ e.preventDefault(); duckHold=true; doDuck(250); }); ["pointerup","pointerleave","pointercancel"].forEach(ev=>$("dck").addEventListener(ev,()=>{ duckHold=false; }));
+  const kd=e=>{ if(e.key===" "||e.key==="ArrowUp"||e.key==="w"||e.key==="W"){ e.preventDefault(); jump(); } else if(e.key==="ArrowDown"||e.key==="s"||e.key==="S"){ e.preventDefault(); duckHold=true; doDuck(250); } }, ku=e=>{ if(["ArrowDown","s","S"].includes(e.key)) duckHold=false; };
+  addEventListener("keydown",kd); addEventListener("keyup",ku);
+  function cleanup(){ over=true; cancelAnimationFrame(raf); removeEventListener("keydown",kd); removeEventListener("keyup",ku); }
+  function end(){ over=true; fx.boom(48,GY-y-10,"#ffd54f",24,4); fx.shake(14); fx.flash(.5); sfx.bad(); draw(0); cancelAnimationFrame(raf); removeEventListener("keydown",kd); removeEventListener("keyup",ku); runBest=Math.max(runBest,score); $("gb").textContent=runBest;
+    const m=score>=500?"¡Imparable! Más rápida que un gato 🏆":score>=250?"¡Muy bien! Saltás como una campeona 🦎":score>=90?"Nada mal, seguí practicando 😄":"Los gatos te alcanzaron 😼"; $("gend").innerHTML=score+" puntos. "+m+ENDB; wireEnd(); if(score>=250) confetti(45); rankAfter(14,score); }
+  const sky=ph=>{ const p=ph%1; const mix=(a,b,t)=>a.map((v,i)=>Math.round(v+(b[i]-v)*t)); const day=[199,240,216],dusk=[247,197,159],night=[27,27,58]; let c; if(p<.4) c=day; else if(p<.5) c=mix(day,dusk,(p-.4)/.1); else if(p<.6) c=mix(dusk,night,(p-.5)/.1); else if(p<.9) c=night; else c=mix(night,day,(p-.9)/.1); return {c:"rgb("+c.join(",")+")",night:c[0]<80}; };
+  function draw(k){
+    fx.update(k); if(AMB.thunderId!==seenTh){ seenTh=AMB.thunderId; fx.shake(8); }
+    fx.begin(g); g.globalAlpha=1; const nt=AMB.sky(g,W,H,1), sk={night:nt>.5}; if(AMB.rainy()>.4){ g.fillStyle="rgba(255,255,255,.08)"; g.fillRect(0,GY+3,W,H); }
+    const ink=sk.night?"#cdbff0":"#1f3d1a";
+    g.fillStyle=sk.night?"rgba(205,191,240,.10)":"rgba(31,61,26,.10)"; for(let i=0;i<4;i++){ const bx=((i*120-dist*.3)%(W+160)+W+160)%(W+160)-80; g.beginPath(); g.moveTo(bx-60,GY+2); g.lineTo(bx,GY-34-(i%2)*14); g.lineTo(bx+60,GY+2); g.fill(); } g.fillStyle=ink; g.fillRect(0,GY+2,W,2); for(let i=0;i<20;i++){ const gx=((i*37-dist)%W+W)%W; g.fillRect(gx,GY+9+(i%3)*5,6,2); }
+    const sp=3.2+Math.min(5.2,dist/1300); if(started&&sp>5.5){ g.fillStyle=sk.night?"rgba(255,255,255,.18)":"rgba(31,61,26,.2)"; for(let i=0;i<5;i++){ const lx=((i*83-dist*2.2)%W+W)%W; g.fillRect(lx,40+i*17,26,1.5); } }
+    g.textAlign="center"; g.textBaseline="bottom"; g.fillStyle="#fff";
+    coins.forEach(c=>{ g.font="18px serif"; g.shadowColor="#ffd54f"; g.shadowBlur=10; g.fillText(c.shield?"🛡️":"✨",c.x,GY+4-c.h); }); g.shadowBlur=0;
+    obs.forEach(o=>{ const fl=o.bird?(Math.floor(dist/14)%2?4:0):0; g.font=(o.h+6+fl)+"px serif"; g.fillText(o.e,o.x,GY+4-o.b); });
+    const bob=(y===0&&started)?(Math.floor(dist/9)%2?-1.5:0):0; g.font=(duck>0?"22px":"30px")+" serif"; if(shield){ g.shadowColor="#7fe0ff"; g.shadowBlur=14; } g.fillText("🦎",48,GY-y+4+bob); g.shadowBlur=0;
+    fx.parts(g); fx.pops(g);
+    g.textAlign="left"; g.textBaseline="middle"; if(combo>=3){ g.fillStyle=ink; g.font="bold 12px sans-serif"; g.fillText("RACHA x"+combo,8,14); } if(shield){ g.fillStyle=ink; g.font="12px serif"; g.fillText("🛡️",8,32); }
+    g.textAlign="center"; if(!started){ g.fillStyle=ink; g.font="13px sans-serif"; g.fillText("Tocá para empezar a correr",W/2,60); }
+    if(banner&&banner.life>0){ banner.life-=k||1; g.globalAlpha=Math.min(1,banner.life/20); g.fillStyle=ink; g.font="bold 22px sans-serif"; g.fillText(banner.t,W/2,50); g.globalAlpha=1; }
+    AMB.front(g,W,H,1); g.textAlign="right"; g.textBaseline="middle"; g.font="14px serif"; g.fillStyle="#fff"; g.fillText(AMB.icon(),W-6,14);
+    fx.end(g,W,H);
+  }
   function frame(t){
     if(over) return; const k=Math.min(2.5,(t-(last||t))/16.67||1); last=t;
-    const sp=3.2+Math.min(4.2,dist/1400);
     if(started){
-      vy-=0.52*k; y=Math.max(0,y+vy*k); if(y===0&&vy<0) vy=0;
-      dist+=sp*k; score=Math.floor(dist/9); $("gs").textContent=score;
-      gap-=sp*k; if(gap<=0){ const ty=types[Math.floor(rnd(0,types.length))]; obs.push({x:W+20,...ty}); gap=rnd(150,280)-Math.min(60,dist/80); }
-      obs.forEach(o=>o.x-=sp*k); obs=obs.filter(o=>o.x>-40);
-      const lx=48, lw=22, lh=24;
-      if(obs.some(o=>lx+lw-4>o.x-o.w/2+3&&lx+4<o.x+o.w/2-3&&y<o.h-6)) return end();
+      const sp=3.2+Math.min(5.2,dist/1300);
+      if(y>0||vy>0){ vy-=0.52*k; y=Math.max(0,y+vy*k); if(y===0){ if(vy<-2) fx.boom(48,GY,"#8d8d8d",5,1.8); vy=0; jumps=0; } }
+      if(duck>0){ duck-=16.67*k; if(duckHold) duck=Math.max(duck,60); }
+      dist+=sp*k; score=Math.floor(dist/9)+bonus; $("gs").textContent=score; $("gc").textContent=combo;
+      gap-=sp*k; if(gap<=0){ const ty=types[Math.floor(rnd(0,dist<400?5:6))]; const nb={x:W+20,...ty,passed:false}; if(nb.bird) nb.b=[6,18,18,42][Math.floor(rnd(0,4))]; obs.push(nb); if(dist>1500&&Math.random()<.22) obs.push({x:W+20+rnd(34,48),...types[Math.floor(rnd(0,5))],passed:false}); gap=rnd(150,280)-Math.min(70,dist/70); }
+      coinGap-=sp*k; if(coinGap<=0){ coins.push({x:W+20,h:Math.random()<.5?8:rnd(46,66),shield:false}); coinGap=rnd(90,190); }
+      nextShield-=sp*k; if(nextShield<=0){ coins.push({x:W+20,h:rnd(20,50),shield:true}); nextShield=rnd(1400,2400); }
+      obs.forEach(o=>o.x-=sp*k); coins.forEach(c=>c.x-=sp*k); coins=coins.filter(c=>c.x>-20);
+      const lx=48, lw=20, lh=duck>0?12:25;
+      for(const c of coins){ if(!c.got&&Math.abs(c.x-lx)<18&&(c.h<y+lh+10&&c.h+16>y-4)){ c.got=true; if(c.shield){ shield=true; fx.pop(c.x,GY-c.h-24,"ESCUDO","#1f3d1a"); sfx.power(); } else { bonus+=5; fx.pop(c.x,GY-c.h-24,"+5","#1f3d1a"); sfx.score(); } fx.boom(c.x,GY-c.h-8,"#ffd54f",8,2.6); } } coins=coins.filter(c=>!c.got);
+      for(const o of obs){ if(!o.passed&&o.x+o.w/2<lx-lw/2){ o.passed=true; combo++; if(combo%5===0){ bonus+=10; fx.pop(lx+20,GY-60,"RACHA x"+combo+" +10","#1f3d1a"); sfx.win(); fx.flash(.3); } }
+        const overlapX=lx+lw/2-4>o.x-o.w/2+3&&lx-lw/2+4<o.x+o.w/2-3, overlapY=(y<o.b+o.h-5)&&(y+lh>o.b+4);
+        if(overlapX&&overlapY){ if(shield){ shield=false; o.x=-99; fx.boom(lx,GY-y-10,"#7fe0ff",16,3.4); fx.flash(.5); fx.pop(lx,GY-y-30,"¡Salvada!","#1f3d1a"); sfx.power(); } else return end(); }
+        else if(!o.near&&Math.abs(o.x-lx)<10&&y>0&&Math.abs(y-(o.b+o.h))<8&&!o.bird){ o.near=true; bonus+=3; fx.pop(lx,GY-y-30,"¡Casi! +3","#1f3d1a"); } }
+      obs=obs.filter(o=>o.x>-40);
     }
-    g.fillStyle="#c7f0d8"; g.fillRect(0,0,W,H);
-    g.fillStyle="rgba(31,61,26,.15)"; for(let i=0;i<5;i++){ const cx=((i*97-dist*0.15)%(W+60)+W+60)%(W+60)-30; g.fillRect(cx,24+i*9%40,28,6); }
-    g.fillStyle="#1f3d1a"; g.fillRect(0,GY+2,W,2); for(let i=0;i<20;i++){ const gx=((i*37-dist)%W+W)%W; g.fillRect(gx,GY+9+(i%3)*5,6,2); }
-    g.textAlign="center"; g.textBaseline="bottom";
-    g.font="30px serif"; g.fillText("🦎",48,GY-y+4);
-    obs.forEach(o=>{ g.font=(o.h+6)+"px serif"; g.fillText(o.e,o.x,GY+4); });
-    if(!started){ g.fillStyle="#1f3d1a"; g.font="13px sans-serif"; g.textBaseline="middle"; g.fillText("Tocá para empezar a correr",W/2,60); }
-    raf=requestAnimationFrame(frame);
+    draw(k); raf=requestAnimationFrame(frame);
   }
   stop=cleanup; raf=requestAnimationFrame(frame);
 }
 function dodgeGame(){
   mt.textContent="🐈 Esquivá a los gatos";
-  mb.innerHTML='<p class="hint2">Movete entre los 3 carriles: deslizá el dedo, tocá un costado, usá ◀ ▶ o las flechas del teclado. Esquivá gatos, piedras y ovillos. ¡Juntá las moscas 🪰!</p><div class="ghead"><span>Puntos <b id="gs">0</b></span><span>Vidas <b id="gl">3</b></span></div><canvas id="cv" class="lcd" width="240" height="360" style="background:#2a1f3a;border-color:#f49ac8"></canvas><div class="dpad2"><button id="dl">◀</button><button id="dr">▶</button></div><div class="gend" id="gend"></div>';
-  const cv=$("cv"), g=cv.getContext("2d"), W=240, H=360, L=80;
-  let lane=1, things=[], score=0, lives=3, over=false, raf, last=0, spawn=0, dist=0, invul=0;
+  mb.innerHTML='<p class="hint2">Movete entre los 3 carriles: deslizá el dedo, tocá un costado, usá ◀ ▶ o las flechas. Esquivá gatos 🐈, piedras 🪨 y ovillos 🧶, juntá moscas 🪰 y escudos 🛡️. Con el NITRO ⚡ sos invencible un ratito.</p><div class="ghead"><span>Puntos <b id="gs">0</b></span><span>Vidas <b id="gl">3</b></span><span>Combo <b id="gc">0</b></span></div><canvas id="cv" class="lcd" width="240" height="360" style="background:#2a1f3a;border-color:#f49ac8"></canvas><div class="dpad2"><button id="dl">◀</button><button id="dn" style="width:120px">⚡ NITRO</button><button id="dr">▶</button></div><div class="gend" id="gend"></div>';
+  const cv=$("cv"), g=cv.getContext("2d"), W=240, H=360, L=80, fx=makeFX(); let seenTh=AMB.thunderId; const dk=document.createElement("canvas"); dk.width=W; dk.height=H; const dg=dk.getContext("2d");
+  let lane=1, tl=1, things=[], score=0, lives=3, over=false, raf, last=0, spawn=0, dist=0, invul=0, bonus=0, combo=0, shield=false, nitro=0, charge=0, pf=1, banner=null, stamp=0, nextStamp=900, flies=0;
   const go=d=>{ if(!over) lane=Math.max(0,Math.min(2,lane+d)); };
   [["dl",-1],["dr",1]].forEach(([id,d])=>$(id).addEventListener("pointerdown",e=>{ e.preventDefault(); go(d); }));
+  const useNitro=()=>{ if(over||nitro>0||charge<100) return; nitro=2400; charge=0; fx.flash(.7); fx.shake(8); sfx.power(); banner={t:"⚡ ¡NITRO! ⚡",life:70}; };
+  $("dn").addEventListener("pointerdown",e=>{ e.preventDefault(); useNitro(); });
   let swiped=false, downX=0, downY=0;
-  swipe(cv,d=>{ swiped=true; if(d==="l") go(-1); else if(d==="r") go(1); },20);
+  swipe(cv,d=>{ swiped=true; if(d==="l") go(-1); else if(d==="r") go(1); else if(d==="u") useNitro(); },20);
   cv.addEventListener("pointerdown",e=>{ swiped=false; downX=e.clientX; downY=e.clientY; });
   cv.addEventListener("pointerup",e=>{ if(swiped||Math.hypot(e.clientX-downX,e.clientY-downY)>12) return; const r=cv.getBoundingClientRect(); go(e.clientX<r.left+r.width/2?-1:1); });
-  const kd=e=>{ if(e.key==="ArrowLeft"||e.key==="a"||e.key==="A"){ e.preventDefault(); go(-1); } if(e.key==="ArrowRight"||e.key==="d"||e.key==="D"){ e.preventDefault(); go(1); } }; addEventListener("keydown",kd);
+  const kd=e=>{ if(e.key==="ArrowLeft"||e.key==="a"||e.key==="A"){ e.preventDefault(); go(-1); } else if(e.key==="ArrowRight"||e.key==="d"||e.key==="D"){ e.preventDefault(); go(1); } else if(e.key===" "||e.key==="ArrowUp"||e.key==="w"||e.key==="W"){ e.preventDefault(); useNitro(); } };
+  addEventListener("keydown",kd);
   function cleanup(){ over=true; cancelAnimationFrame(raf); removeEventListener("keydown",kd); }
-  function end(){ cleanup(); const m=score>=150?"¡Reina de la ruta! 🏆":score>=70?"¡Muy bien, esquivaste de todo! 🦎":score>=25?"Nada mal 😄":"Los gatos ganaron esta vez 😼"; $("gend").innerHTML=score+" puntos. "+m+ENDB; wireEnd(); if(score>=70) confetti(45); rankAfter(15,score); }
+  function end(){ over=true; fx.boom(tl*L+L/2+0,H-60,"#ffd54f",30,4.5); fx.shake(14); fx.flash(.6); sfx.bad(); draw(0); cancelAnimationFrame(raf); removeEventListener("keydown",kd); const m=score>=400?"¡Reina de la ruta! 🏆":score>=200?"¡Muy bien, esquivaste de todo! 🦎":score>=60?"Nada mal 😄":"Los gatos ganaron esta vez 😼"; $("gend").innerHTML=score+" puntos · "+flies+" moscas. "+m+ENDB; wireEnd(); if(score>=200) confetti(45); rankAfter(15,score); }
+  function addRow(dense){
+    const free=Math.max(0,Math.min(2,pf+Math.floor(rnd(-1,2)))); pf=free; const r=Math.random();
+    for(let c=0;c<3;c++){
+      if(c===free){ if(r<.5) things.push({lane:c,y:-30,e:"🪰",good:true}); else if(r<.58) things.push({lane:c,y:-30,e:"🛡️",good:true,sh:true}); continue; }
+      if(dense||Math.random()<.9) things.push({lane:c,y:-30,e:["🐈","🐈","🪨","🧶","🐈‍⬛"][Math.floor(rnd(0,5))]});
+    }
+  }
+  function draw(k){
+    fx.update(k); if(AMB.thunderId!==seenTh){ seenTh=AMB.thunderId; fx.shake(8); } const sp=2.6+Math.min(3.2,dist/2200)+(nitro>0?3.2:0);
+    fx.begin(g); g.globalAlpha=1; g.fillStyle=nitro>0?"#3b2358":"#2a1f3a"; g.fillRect(-10,-10,W+20,H+20);
+    g.fillStyle="rgba(255,255,255,.35)"; for(let i=1;i<3;i++) for(let y=((dist*1.2)%40)-40;y<H;y+=40) g.fillRect(i*L-2,y,4,20);
+    g.fillStyle="rgba(255,255,255,.12)"; for(let i=0;i<8;i++){ const yy=((i*61+dist*2.4)%H); g.fillRect(4,yy,3,28); g.fillRect(W-7,(yy+90)%H,3,28); }
+    g.fillStyle="#fff"; g.textAlign="center"; g.textBaseline="middle";
+    things.forEach(o=>{ g.font="34px serif"; if(o.good){ g.shadowColor="#ffd54f"; g.shadowBlur=10; } g.fillText(o.e,o.lane*L+L/2,o.y); g.shadowBlur=0; });
+    const px=tl*L+L/2, py=H-60; if(!(invul>0&&Math.floor(invul/5)%2)){ if(nitro>0){ g.fillStyle="rgba(255,213,79,.35)"; g.beginPath(); g.arc(px,py,30,0,6.283); g.fill(); g.fillStyle="#fff"; } if(shield){ g.strokeStyle="rgba(127,224,255,.9)"; g.lineWidth=3; g.beginPath(); g.arc(px,py,26,0,6.283); g.stroke(); } g.font="38px serif"; g.fillText("🦎",px,py); }
+    fx.parts(g); fx.pops(g);
+    const nn=AMB.night(); if(nn>.12){ dg.globalCompositeOperation="source-over"; dg.clearRect(0,0,W,H); dg.fillStyle="rgba(4,4,24,"+(.62*nn)+")"; dg.fillRect(0,0,W,H); dg.globalCompositeOperation="destination-out"; const rg=dg.createRadialGradient(px,py-30,10,px,py-30,170); rg.addColorStop(0,"rgba(0,0,0,1)"); rg.addColorStop(1,"rgba(0,0,0,0)"); dg.fillStyle=rg; dg.fillRect(0,0,W,H); g.drawImage(dk,0,0); }
+    if(AMB.rainy()>.4){ g.fillStyle="rgba(180,200,255,.07)"; g.fillRect(0,0,W,H); }
+    AMB.front(g,W,H,1); g.textAlign="right"; g.textBaseline="middle"; g.font="14px serif"; g.fillStyle="#fff"; g.fillText(AMB.icon(),W-6,14);
+    g.fillStyle="rgba(255,255,255,.2)"; g.fillRect(8,H-14,224,6); g.fillStyle=charge>=100?"#ffd54f":"#f49ac8"; g.fillRect(8,H-14,224*Math.min(1,charge/100),6); g.fillStyle="#fff"; g.font="bold 10px sans-serif"; g.textAlign="left"; g.fillText(charge>=100?"⚡ NITRO LISTO: tocá el botón o deslizá hacia arriba":"NITRO "+Math.floor(charge)+"%",8,H-22);
+    if(combo>=3){ g.fillStyle="#ffd54f"; g.font="bold 13px sans-serif"; g.fillText("COMBO x"+combo,8,16); }
+    g.textAlign="center"; if(banner&&banner.life>0){ banner.life-=k||1; g.globalAlpha=Math.min(1,banner.life/25); g.fillStyle="#fff"; g.shadowColor="#f49ac8"; g.shadowBlur=14; g.font="bold 24px sans-serif"; g.fillText(banner.t,W/2,100); g.shadowBlur=0; g.globalAlpha=1; }
+    fx.end(g,W,H);
+  }
   function frame(t){
     if(over) return; const k=Math.min(2.5,(t-(last||t))/16.67||1); last=t;
-    const sp=2.6+Math.min(2.6,dist/2400); dist+=sp*k; score=Math.floor(dist/12)+bonus; $("gs").textContent=score;
-    spawn-=sp*k; if(spawn<=0){ spawn=rnd(170,240)-Math.min(60,dist/150);
-      const free=Math.max(0,Math.min(2,pf+Math.floor(rnd(-1,2)))); pf=free; const r=Math.random();
-      for(let c=0;c<3;c++){ if(c===free&&r<.45){ things.push({lane:c,y:-30,e:"🪰",good:true}); continue; } if(c!==free||r<.2){ if(Math.random()<.65||c!==free) things.push({lane:c,y:-30,e:["🐈","🐈","🪨","🧶","🐈‍⬛"][Math.floor(rnd(0,5))]}); } } }
+    tl+=(lane-tl)*Math.min(1,(AMB.rainy()>.4?.18:.28)*k);
+    const sp=2.6+Math.min(3.2,dist/2200)+(nitro>0?3.2:0); dist+=sp*k; score=Math.floor(dist/12)*(nitro>0?2:1)+bonus; $("gs").textContent=score; $("gc").textContent=combo;
+    if(nitro>0){ nitro-=16.67*k; if(nitro<=0) pop0(); } if(invul>0) invul-=k;
+    spawn-=sp*k; if(spawn<=0){ spawn=stamp>0?rnd(80,110):rnd(165,235)-Math.min(55,dist/160); addRow(stamp>0); }
+    if(dist>nextStamp&&stamp<=0){ stamp=330; nextStamp=dist+rnd(900,1300); banner={t:"¡ESTAMPIDA DE GATOS!",life:90}; fx.shake(8); sfx.boom(); } if(stamp>0) stamp-=k*sp/2.6;
     things.forEach(o=>o.y+=sp*k); things=things.filter(o=>o.y<H+30);
-    if(invul>0) invul-=k;
-    const py=H-60;
-    for(const o of things){ if(o.hit) continue; if(o.lane===lane&&Math.abs(o.y-py)<26){ o.hit=true; if(o.good){ bonus+=5; } else if(invul<=0){ lives--; invul=70; $("gl").textContent=Math.max(0,lives); } } }
-    things=things.filter(o=>!o.hit||!o.good); things.forEach(o=>{ if(o.hit&&!o.good) o.e=o.e; });
-    g.fillStyle="#2a1f3a"; g.fillRect(0,0,W,H);
-    g.fillStyle="rgba(255,255,255,.35)"; for(let i=1;i<3;i++) for(let y=((dist*1.2)%40)-40;y<H;y+=40) g.fillRect(i*L-2,y,4,20);
-    g.fillStyle="#fff"; g.textAlign="center"; g.textBaseline="middle";
-    things.forEach(o=>{ g.font="34px serif"; g.fillText(o.e,o.lane*L+L/2,o.y); });
-    if(!(invul>0&&Math.floor(invul/5)%2)){ g.font="38px serif"; g.fillText("🦎",lane*L+L/2,py); }
-    if(lives<=0) return end();
-    raf=requestAnimationFrame(frame);
+    const py=H-60, lane0=Math.round(tl);
+    for(const o of things){ if(o.hit) continue;
+      if(o.lane===lane0&&Math.abs(o.y-py)<26){ o.hit=true;
+        if(o.good){ if(o.sh){ shield=true; fx.pop(o.lane*L+L/2,o.y-20,"ESCUDO","#7fe0ff"); sfx.power(); } else { combo++; flies++; const m=Math.min(5,1+Math.floor(combo/4)); bonus+=5*m*(nitro>0?2:1); charge=Math.min(100,charge+12); fx.pop(o.lane*L+L/2,o.y-20,"+"+5*m+(m>1?" x"+m:""),"#ffd54f"); sfx.score(); } fx.boom(o.lane*L+L/2,o.y,"#ffd54f",10,3); }
+        else if(nitro>0){ fx.boom(o.lane*L+L/2,o.y,"#ff9ecb",14,4); bonus+=4; fx.pop(o.lane*L+L/2,o.y-20,"+4 ¡ARROLLADO!","#fff"); o.dead=true; sfx.hit(); }
+        else if(shield){ shield=false; o.dead=true; fx.boom(o.lane*L+L/2,o.y,"#7fe0ff",16,3.5); fx.flash(.5); fx.pop(o.lane*L+L/2,o.y-20,"¡Salvada!","#7fe0ff"); invul=40; sfx.power(); }
+        else if(invul<=0){ lives--; invul=75; combo=0; fx.shake(14); fx.flash(.5); fx.boom(o.lane*L+L/2,o.y,"#ff6b6b",20,4); sfx.bad(); $("gl").textContent=Math.max(0,lives); if(lives<=0){ return end(); } } }
+      else if(!o.near&&!o.good&&Math.abs(o.y-py)<14&&Math.abs(o.lane-lane0)===1){ o.near=true; bonus+=2; fx.pop(o.lane*L+L/2,o.y-20,"¡Casi! +2","#fff"); } }
+    things=things.filter(o=>!o.dead&&!(o.hit&&o.good));
+    draw(k); raf=requestAnimationFrame(frame);
   }
-  let bonus=0, pf=1; stop=cleanup; raf=requestAnimationFrame(frame);
+  function pop0(){ nitro=0; invul=Math.max(invul,30); }
+  stop=cleanup; raf=requestAnimationFrame(frame);
+}
+/* ---------- sonido (apagado por defecto) y efectos comunes ---------- */
+let sndOn=false; try{ sndOn=localStorage.getItem("xv_snd")==="1"; }catch(e){}
+let actx=null;
+function beep(f,d,type,vol){ if(!sndOn) return; try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); if(actx.state==="suspended") actx.resume(); const o=actx.createOscillator(), gn=actx.createGain(); o.type=type||"square"; o.frequency.value=f; gn.gain.value=vol||.035; o.connect(gn); gn.connect(actx.destination); o.start(); gn.gain.exponentialRampToValueAtTime(.0001,actx.currentTime+(d||.08)); o.stop(actx.currentTime+(d||.08)+.02); }catch(e){} }
+const sfx={tick:()=>beep(520,.05),hit:()=>beep(380+Math.random()*180,.07),score:()=>{ beep(660,.06); setTimeout(()=>beep(880,.08),60); },bad:()=>beep(130,.25,"sawtooth",.05),power:()=>{ beep(440,.06); setTimeout(()=>beep(760,.1),60); },boom:()=>beep(85,.28,"sawtooth",.06),win:()=>{ [523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.12,"triangle",.045),i*110)); },pad:i=>beep([262,330,392,523][i%4],.18,"triangle",.06)};
+function makeFX(){
+  let P=[],T=[],sh=0,fl=0;
+  return {
+    boom(x,y,col,n,sp){ n=n||12; sp=sp||3; for(let i=0;i<n;i++){ const a=rnd(0,6.283),v=rnd(.5,sp); P.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:rnd(20,40),max:40,col,s:rnd(1.5,3.4)}); } if(P.length>260) P=P.slice(-260); },
+    pop(x,y,txt,col){ T.push({x,y,txt,col,life:50}); },
+    shake(v){ sh=Math.max(sh,v); }, flash(v){ fl=Math.max(fl,v||1); },
+    update(k){ P.forEach(p=>{ p.x+=p.vx*k; p.y+=p.vy*k; p.vy+=.03*k; p.life-=k; }); P=P.filter(p=>p.life>0); T.forEach(t=>{ t.y-=.6*k; t.life-=k; }); T=T.filter(t=>t.life>0); sh=Math.max(0,sh-k*.9); fl=Math.max(0,fl-.05*k); },
+    begin(g){ g.save(); if(sh>0) g.translate(rnd(-1,1)*sh*.5,rnd(-1,1)*sh*.5); },
+    parts(g){ P.forEach(p=>{ g.globalAlpha=Math.max(0,p.life/p.max); g.fillStyle=p.col; g.beginPath(); g.arc(p.x,p.y,p.s,0,6.283); g.fill(); }); g.globalAlpha=1; },
+    pops(g){ g.textAlign="center"; g.textBaseline="middle"; T.forEach(t=>{ g.globalAlpha=Math.min(1,t.life/22); g.fillStyle=t.col; g.font="bold 13px sans-serif"; g.fillText(t.txt,t.x,t.y); }); g.globalAlpha=1; },
+    end(g,W,H){ if(fl>0){ g.globalAlpha=Math.min(.55,fl); g.fillStyle="#fff"; g.fillRect(-20,-20,W+40,H+40); g.globalAlpha=1; } g.restore(); }
+  };
 }
 
 function swipe(el,cb,th){
@@ -1246,24 +1524,86 @@ function swipe(el,cb,th){
   ["pointerup","pointercancel"].forEach(ev=>el.addEventListener(ev,()=>{ on=false; }));
 }
 
+/* ---------- clima compartido: día, atardecer, noche, lluvia y tormenta con rayos ---------- */
+function makeAmbient(){
+  let tod=Math.random()*.35, wx=0, wxT=rnd(420,800), rain=0, storm=0, flash=0, thunderAt=-1, time=0, boltX=.5, drops=[], th=0;
+  const mix=(a,b,t)=>a.map((v,i)=>Math.round(v+(b[i]-v)*t));
+  const DAYT=[96,190,255],DAYB=[190,232,255],SUNT=[255,138,128],SUNB=[88,60,128],NIT=[10,14,46],NIB=[26,40,92];
+  function cols(){
+    const p=tod; let t,b,n=0;
+    if(p<.40){ t=DAYT;b=DAYB; } else if(p<.50){ const q=(p-.4)/.1; t=mix(DAYT,SUNT,q); b=mix(DAYB,SUNB,q); n=q*.4; }
+    else if(p<.60){ const q=(p-.5)/.1; t=mix(SUNT,NIT,q); b=mix(SUNB,NIB,q); n=.4+q*.6; } else if(p<.90){ t=NIT;b=NIB;n=1; } else { const q=(p-.9)/.1; t=mix(NIT,DAYT,q); b=mix(NIB,DAYB,q); n=1-q; }
+    const gr=rain*.55+storm*.25; t=mix(t,[64,72,92],gr); b=mix(b,[96,104,122],gr); return {t,b,n:Math.min(1,n+gr*.25)};
+  }
+  const api={
+    thunderId:0,
+    update(k){
+      time+=k; tod=(tod+k/3600)%1; wxT-=k;
+      if(wxT<=0){ if(wx===0){ wx=1; wxT=rnd(500,900); } else if(wx===1){ wx=Math.random()<.55?2:0; wxT=wx===2?rnd(420,700):rnd(600,1000); } else { wx=0; wxT=rnd(800,1400); } }
+      rain+=((wx>=1?1:0)-rain)*.012*k; storm+=((wx===2?1:0)-storm)*.02*k;
+      if(storm>.5&&flash<=0&&Math.random()<.009*k){ flash=1; boltX=rnd(.15,.85); thunderAt=time+rnd(14,42); }
+      if(thunderAt>0&&time>=thunderAt){ thunderAt=-1; api.thunderId++; sfx.boom(); }
+      flash=Math.max(0,flash-.05*k);
+      const n=Math.round(rain*90); while(drops.length<n) drops.push({x:rnd(0,1.15),y:rnd(0,1),v:rnd(.7,1.3)}); while(drops.length>n) drops.pop();
+      drops.forEach(d=>{ d.y+=d.v*.03*k; d.x-=.005*k; if(d.y>1){ d.y=-.05; d.x=rnd(0,1.15); } if(d.x<0) d.x+=1.15; });
+    },
+    night(){ return cols().n; }, rainy(){ return rain; }, stormy(){ return storm; },
+    icon(){ const n=cols().n; const a=n>.7?"🌙":n>.3?"🌅":"☀️"; return a+(storm>.5?" ⛈️":rain>.4?" 🌧️":""); },
+    sky(g,W,H,alpha){
+      const c=cols(), gr=g.createLinearGradient(0,0,0,H); gr.addColorStop(0,"rgb("+c.t.join(",")+")"); gr.addColorStop(1,"rgb("+c.b.join(",")+")");
+      g.save(); g.globalAlpha=alpha==null?1:alpha; g.fillStyle=gr; g.fillRect(0,0,W,H); g.globalAlpha=(alpha==null?1:alpha);
+      if(c.n>.45){ g.fillStyle="#fff"; for(let i=0;i<40;i++){ g.globalAlpha=(alpha==null?1:alpha)*(c.n-.3)*(.4+.6*((i*7+Math.floor(time/20))%5)/5); g.fillRect((i*83.7)%W,(i*47.3)%(H*.7),1.6,1.6); } }
+      g.globalAlpha=(alpha==null?1:alpha); const a=tod<.5?tod/.5:0; // sol y luna
+      if(c.n<.6&&rain<.7){ const sx=W*(.15+.7*((tod%.55)/.55)), sy=H*.18+Math.abs(Math.sin((tod%.55)/.55*Math.PI))*-H*.1; g.font=Math.round(H*.11)+"px serif"; g.textAlign="center"; g.fillStyle="#fff"; g.fillText("☀️",sx,sy+H*.12); }
+      else if(c.n>=.6){ g.font=Math.round(H*.1)+"px serif"; g.textAlign="center"; g.fillStyle="#fff"; g.fillText("🌙",W*.82,H*.16); }
+      const cl=.25+rain*.75; g.fillStyle="rgba("+(c.n>.5?"60,70,110":"255,255,255")+","+(.18+cl*.35)+")";
+      for(let i=0;i<4;i++){ const cx=((i*W*.37-time*(.18+i*.05))%(W+120)+W+120)%(W+120)-60, cy=H*(.12+i*.1); g.beginPath(); g.ellipse(cx,cy,34+i*8,12+i*3,0,0,6.283); g.ellipse(cx+22,cy+3,26,10,0,0,6.283); g.fill(); }
+      g.restore(); return c.n;
+    },
+    front(g,W,H,alpha,theme){
+      g.save(); const al=alpha==null?1:alpha;
+      if(rain>.04){ if(theme==="space"){ g.strokeStyle="rgba(255,190,120,"+(.55*al)+")"; g.lineWidth=1.4; g.beginPath(); drops.forEach(d=>{ const x=d.x*W,y=d.y*H; g.moveTo(x,y); g.lineTo(x+16*d.v,y-8*d.v); }); g.stroke(); }
+        else { g.strokeStyle="rgba(200,220,255,"+(.5*al)+")"; g.lineWidth=1; g.beginPath(); drops.forEach(d=>{ const x=d.x*W,y=d.y*H; g.moveTo(x,y); g.lineTo(x-3*d.v,y+11*d.v); }); g.stroke(); if(rain>.5){ g.fillStyle="rgba(200,220,255,"+(.22*al)+")"; for(let i=0;i<6;i++){ g.fillRect(((i*53+time*3)%W),H-3-((i*7)%4),4,1.4); } } } }
+      if(flash>.05){ if(flash>.55&&theme!=="space"){ g.strokeStyle="rgba(255,255,230,"+Math.min(1,flash)+")"; g.lineWidth=2.4; g.shadowColor="#fff"; g.shadowBlur=14; g.beginPath(); let x=boltX*W,y=0; g.moveTo(x,y); while(y<H*.7){ x+=rnd(-14,14); y+=rnd(14,26); g.lineTo(x,y); } g.stroke(); g.shadowBlur=0; }
+        g.fillStyle="rgba(255,255,255,"+(Math.min(.55,flash*.5)*al)+")"; g.fillRect(0,0,W,H); }
+      if(storm>.4){ g.fillStyle="rgba(10,10,30,"+(.18*storm*al)+")"; g.fillRect(0,0,W,H); }
+      g.restore();
+    }
+  };
+  return api;
+}
+const AMB=makeAmbient();
+let ambRaf=0, ambLast=0;
+function ambLoop(t){
+  if(modal.hidden){ ambRaf=0; return; }
+  const k=Math.min(2.5,(t-(ambLast||t))/16.67||1); ambLast=t; const c=$("mamb");
+  if(c.width!==innerWidth||c.height!==innerHeight){ c.width=innerWidth; c.height=innerHeight; }
+  const g=c.getContext("2d"); AMB.update(k); g.clearRect(0,0,c.width,c.height); AMB.sky(g,c.width,c.height,.92); AMB.front(g,c.width,c.height,1);
+  const w=$("wxc"); if(w){ const ic=AMB.icon(); if(w.textContent!==ic) w.textContent=ic; }
+  if(AMB.thunderId!==ambTh){ ambTh=AMB.thunderId; const b=modal.querySelector(".mbox"); b.classList.remove("shakeit"); void b.offsetWidth; b.classList.add("shakeit"); }
+  ambRaf=requestAnimationFrame(ambLoop);
+}
+let ambTh=0;
+function ambOn(){ if(!ambRaf){ ambLast=0; ambRaf=requestAnimationFrame(ambLoop); } }
+
 let runBest=0;
 const GAMES=[
- {n:"Atrapá a la lagartija",e:"🦎",run:catGame,how:["Van apareciendo 🦎 en los huecos.","Tocalas antes de que se escondan.","Tenés 20 segundos. ¡Cada una vale 1 punto!"]},
- {n:"El ovillo",e:"🧶",run:yarnGame,how:["Tocá el ovillo 🧶 lo más rápido que puedas.","Tenés 10 segundos. ¡Cada toque suma un punto!"]},
- {n:"Reflejos felinos",e:"🐟",run:fishGame,how:["Esperá: el botón dice «esperá…».","Cuando se ponga verde y aparezca el 🐟, tocalo rapidísimo.","Si tocás antes de tiempo, perdés esa ronda. Son 5 rondas."]},
- {n:"Memoria",e:"🃏",run:lizGame,how:["Tocá dos cartas para darlas vuelta.","Si son iguales, se quedan a la vista. Si no, se tapan.","Encontrá las 6 parejas con los menos intentos."]},
- {n:"Simón dice",e:"🎨",run:simonGame,how:["Mirá cómo se iluminan los colores.","Cuando diga «¡Tu turno!», tocalos en el mismo orden.","En cada ronda se suma un paso más."]},
- {n:"Cazamoscas",e:"🪰",run:flyGame,how:["Van apareciendo 🪰 en la pantalla.","Tocalas antes de que se vayan.","Tenés 15 segundos. ¡Cada una suma un punto!"]},
- {n:"Lagartija veloz",e:"🦎",retro:true,run:snakeGame,how:["Guiá a la lagartija con las flechas, el teclado o deslizando el dedo.","Comé las moscas 🪰: cada una la hace más larga.","Si te chocás con tu propia cola, termina. Las paredes no importan: se sale por el otro lado."]},
- {n:"Ta-Te-Ti",e:"🐈",retro:true,run:tttGame,how:["Vos sos la lagartija 🦎 y la compu es el gato 🐈.","Tocá un casillero vacío para poner tu 🦎.","Gana quien junte tres en línea: horizontal, vertical o diagonal."]},
- {n:"Ping Pong",e:"🏓",retro:true,run:pongGame,how:["Sos la lagartija 🦎, abajo. Movela con el dedo, el mouse o los botones ◀ ▶.","Hacé rebotar el ovillo 🧶 para que no pase. El gato 🐈 juega arriba.","El primero que llegue a 5 puntos gana."]},
- {n:"Mascota virtual",e:"🥚",retro:true,run:petGame,how:["Elegí si querés cuidar a un lagartito 🦎 o a un gatito 🐈.","Necesita comida, diversión y energía: tocá Comer, Jugar o 😴 Dormir cuando una barra baje.","Si las tres barras se mantienen altas un rato, ¡sube de nivel!"]},
- {n:"Piedra, papel o tijera",e:"✌️",retro:true,run:rpsGame,how:["Vos sos la lagartija 🦎 y la compu es el gato 🐈.","Elegí ✊ piedra, ✋ papel o ✌️ tijera: la piedra gana a la tijera, la tijera al papel y el papel a la piedra.","El primero en llegar a 3 puntos gana."]}
+ {n:"Atrapá a la lagartija",e:"🦎",run:catGame,how:["Van apareciendo 🦎 en los huecos. Tocalas antes de que se escondan.", "La 🌟 vale 5 puntos y suma 2 segundos. ¡No toques al 🐕: te resta puntos!", "Si tocás seguido armás COMBOS que multiplican los puntos. Tenés 20 segundos."]},
+ {n:"El ovillo",e:"🧶",run:yarnGame,how:["Tocá el ovillo 🧶 lo más rápido que puedas durante 10 segundos.", "Cada 20 toques se activa la FIEBRE 🔥: ¡puntos dobles!", "Atrapá los 🐟 que aparecen un instante: valen 10 puntos."]},
+ {n:"Reflejos felinos",e:"🐟",run:fishGame,how:["Esperá: el botón dice «esperá…».", "Cuando se ponga verde y aparezca el 🐟, tocalo rapidísimo. Si tocás antes, perdés la ronda.", "¡Cuidado con el pez globo 🐡 rojo! Es una trampa: no lo toques. Son 5 rondas."]},
+ {n:"Memoria",e:"🃏",run:lizGame,how:["Tocá dos cartas para darlas vuelta. Si son iguales, quedan a la vista; si no, se tapan.", "Encontrá las 6 parejas con los menos intentos posibles.", "Mirá el cronómetro: ¡las rachas de aciertos se festejan!"]},
+ {n:"Simón dice",e:"🎨",run:simonGame,how:["Mirá cómo se iluminan los colores y escuchá los sonidos (si activaste el 🔊).", "Cuando diga «¡Tu turno!», tocalos en el mismo orden.", "En cada ronda se suma un paso más y va más rápido."]},
+ {n:"Cazamoscas",e:"🪰",run:flyGame,how:["Van apareciendo 🪰 en la pantalla. Tocalas antes de que se vayan.", "La 🪰 dorada vale 5 y suma tiempo. ¡No toques las 🐝 abejas!", "Los combos multiplican tus puntos. Tenés 15 segundos."]},
+ {n:"Lagartija veloz",e:"🦎",retro:true,run:snakeGame,how:["Guiá a la lagartija con las flechas, el teclado o deslizando el dedo.", "Comé moscas 🪰 para crecer y sumar puntos. Juntá 🌟 (puntos grandes), 🐌 (cámara lenta), 👻 (atravesás todo) y 💥 (limpia las piedras).", "Cuidado con las piedras 🪨 y con tu cola. Las paredes no importan: se sale por el otro lado."]},
+ {n:"Ta-Te-Ti",e:"🐈",retro:true,run:tttGame,how:["Vos sos la lagartija 🦎 y la compu es el gato 🐈.", "Tocá un casillero vacío. Gana quien junte tres en línea.", "Elegí Fácil o Difícil 😼: en Difícil el gato no se equivoca nunca."]},
+ {n:"Ping Pong",e:"🏓",retro:true,run:pongGame,how:["Sos la lagartija 🦎, abajo. Movela con el dedo, el mouse o las flechas.", "Pegale al ovillo 🧶 con la punta de la paleta para un SMASH. El gato 🐈 juega arriba y se vuelve más rápido.", "El primero que llegue a 5 puntos gana."]},
+ {n:"Mascota virtual",e:"🥚",retro:true,run:petGame,how:["Elegí si querés cuidar a un lagartito 🦎 o a un gatito 🐈.", "Tocá Comer, Jugar o 😴 Dormir cuando una barra baje.", "Atrapá las sorpresas que aparecen (suben la diversión). Si las barras se mantienen altas, ¡sube de nivel!"]},
+ {n:"Piedra, papel o tijera",e:"✌️",retro:true,run:rpsGame,how:["Vos sos la lagartija 🦎 y la compu es el gato 🐈.", "Elegí ✊ piedra, ✋ papel o ✌️ tijera. Gana el primero en llegar a 3 puntos.", "Las rachas de victorias se festejan con confeti."]}
  ,{n:"Lagartija espacial",e:"🚀",retro:true,run:spaceGame,how:["Tu lagartija 🦎 vuela en un cohete y dispara sola. Movela arrastrando el dedo, con el mouse, las flechas o WASD.","Enfrentá a los gatos meme 😹🙀😼 y a sus jefes (Grumpy, Nyan Cat, Oiia, Chipi Chipi, Banana y Huh). Derribá seguido para armar COMBOS.","Juntá ⭐ (más disparos), 🛡️ (escudo), ⚡ (rápido), ❤️ (vida) y 💥 (bombas). Al vencer a un jefe elegís una mejora para tu lagartija: 🧢 🕶️ 🧲 🛡️ 🔥 💚 🎒.","Usá 💥 BOMBA (botón o barra espaciadora) cuando todo se complique."]}
- ,{n:"Rompe-ladrillos",e:"🧱",retro:true,run:bricksGame,how:["Movés la paleta de la lagartija con el dedo, el mouse o los botones ◀ ▶.","Tocá para lanzar el ovillo 🧶 y hacelo rebotar para romper los ladrillos de colores.","Si el ovillo se cae, perdés una vida. Tenés 3."]}
- ,{n:"Bloques que caen",e:"🧩",retro:true,run:blocksGame,how:["Caen bloques de distintas formas. Movelos con ◀ ▶ y girálos con ⟳.","Tocá ▼ para que caigan más rápido.","Completá una fila sin huecos para borrarla y sumar puntos. Si se llenan hasta arriba, termina."]}
- ,{n:"Lagartija saltarina",e:"🦎",retro:true,run:runnerGame,how:["La lagartija corre sola por el desierto. Tocá la pantalla, el botón ⤴ SALTAR o la barra espaciadora para saltar.","Saltá los gatos 🐈, las piedras 🪨, los cactus 🌵 y los ovillos 🧶.","Cada vez corre más rápido. ¿Hasta dónde llegás?"]}
- ,{n:"Esquivá a los gatos",e:"🐈",retro:true,run:dodgeGame,how:["Estás en una ruta de 3 carriles. Movete con ◀ ▶, tocando un costado de la pantalla o deslizando el dedo.","Esquivá los gatos 🐈, las piedras 🪨 y los ovillos 🧶. Si te chocás, perdés una vida.","Juntá las moscas 🪰 para sumar puntos extra. Tenés 3 vidas."]}
+ ,{n:"Rompe-ladrillos",e:"🧱",retro:true,run:bricksGame,how:["Movés la paleta con el dedo, el mouse o las flechas. Tocá para lanzar el ovillo 🧶.", "Rompé todos los ladrillos. Algunos aguantan más golpes y otros explotan 💥.", "Atrapá lo que cae: 🔥 bola de fuego, 🧶 multibola, 📏 paleta grande, 🐌 cámara lenta, 🔫 láser, ❤️ vida y 💥 bomba."]}
+ ,{n:"Bloques que caen",e:"🧩",retro:true,run:blocksGame,how:["Los bloques caen: movelos con ◀ ▶ (o deslizando) y girálos con ⟳ (o tocando).", "Verás una sombra donde va a caer y cuál viene después. Tocá ▼ o la barra espaciadora para bajarlo rápido.", "Completá filas sin huecos para borrarlas. ¡Varias seguidas arman COMBOS!"]}
+ ,{n:"Lagartija saltarina",e:"🦎",retro:true,run:runnerGame,how:["La lagartija corre sola por el desierto. Tocá la pantalla, el botón ⤴ SALTAR o la barra espaciadora para saltar (¡y otra vez en el aire: salto doble!).","Saltá los gatos 🐈, las piedras 🪨, los cactus 🌵 y los ovillos 🧶. Las águilas 🦅 vuelan a distintas alturas: las bajas se saltan, las del medio se esquivan agachándote (deslizá hacia abajo o ⬇) y las altas pasan por encima.","Cada vez corre más rápido. ¿Hasta dónde llegás?"]}
+ ,{n:"Esquivá a los gatos",e:"🐈",retro:true,run:dodgeGame,how:["Estás en una ruta de 3 carriles: deslizá el dedo, tocá un costado o usá ◀ ▶.", "Esquivá gatos 🐈, piedras 🪨 y ovillos 🧶, y juntá moscas 🪰 (cargan el ⚡ NITRO) y escudos 🛡️.", "Con el NITRO sos invencible y arrollás todo. Cuidado con la estampida de gatos."]}
 ];
 GAMES[0].rk={id:"lagartijas",high:true,fmt:s=>s+" lagartijas"};
 GAMES[1].rk={id:"ovillo",high:true,fmt:s=>s+" toques"};
@@ -1271,14 +1611,14 @@ GAMES[2].rk={id:"reflejos",high:false,fmt:s=>s+" ms"};
 GAMES[3].rk={id:"memoria",high:false,fmt:s=>s+" intentos"};
 GAMES[4].rk={id:"simon",high:true,fmt:s=>s+" rondas"};
 GAMES[5].rk={id:"moscas",high:true,fmt:s=>s+" moscas"};
-GAMES[6].rk={id:"veloz",high:true,fmt:s=>s+" moscas"};
+GAMES[6].rk={id:"veloz",high:true,fmt:s=>s+" puntos"};
 GAMES[11].rk={id:"espacial",high:true,fmt:s=>s+" puntos"};
 GAMES[12].rk={id:"ladrillos",high:true,fmt:s=>s+" puntos"};
 GAMES[13].rk={id:"bloques",high:true,fmt:s=>s+" puntos"};
 GAMES[14].rk={id:"saltarina",high:true,fmt:s=>s+" puntos"};
 GAMES[15].rk={id:"esquiva",high:true,fmt:s=>s+" puntos"};
 function openMenu(){
-  stop(); stop=()=>{}; modal.hidden=false; $("mbk").style.display="none"; mt.textContent="🎮 Sala de juegos";
+  stop(); stop=()=>{}; modal.hidden=false; ambOn(); $("mbk").style.display="none"; $("msn").style.display=""; mt.textContent="🎮 Sala de juegos";
   const tile=(g,i)=>'<button class="tile'+(g.retro?' retro':'')+'" data-i="'+i+'"><span class="te">'+g.e+'</span><span class="tn'+(g.retro?' px':'')+'" style="'+(g.retro?'font-size:10px;line-height:1.5':'')+'">'+g.n+'</span></button>';
   mb.innerHTML='<p class="hint2">Elegí un juego: hay '+GAMES.length+'. ¡Deslizá hacia abajo para ver todos! Todos explican cómo se juega.</p><div class="sec">Con la lagartija y el gato</div><div class="tiles">'+GAMES.map((g,i)=>g.retro?'':tile(g,i)).join("")+'</div><div class="sec">Recuerdos retro · años 80 y 90</div><div class="tiles">'+GAMES.map((g,i)=>g.retro?tile(g,i):'').join("")+'</div>';
   mb.querySelectorAll(".tile").forEach(t=>t.onclick=()=>openGame(+t.dataset.i));
@@ -1286,7 +1626,7 @@ function openMenu(){
   const rk=document.createElement("button"); rk.className="btn solid"; rk.textContent="🏆 Ver todos los rankings"; rk.style.marginTop="6px"; rk.onclick=()=>openAllRankings(openMenu); mb.appendChild(rk);
 }
 function openRankMenu(){
-  stop(); stop=()=>{}; modal.hidden=false; $("mbk").style.display="none"; mt.textContent="🏆 Rankings";
+  stop(); stop=()=>{}; modal.hidden=false; ambOn(); $("mbk").style.display="none"; mt.textContent="🏆 Rankings";
   const items=GAMES.map((g,i)=>g.rk?{e:g.e,n:g.n,i}:null).filter(Boolean);
   mb.innerHTML='<p class="hint2">Elegí un ranking para ver quién va primero.</p><div class="tiles">'+items.map(x=>'<button class="tile" data-i="'+x.i+'"><span class="te">'+x.e+'</span><span class="tn">'+x.n+'</span></button>').join("")+'<button class="tile" data-h="1"><span class="te">❤️</span><span class="tn">Más corazones</span></button></div><button class="btn" id="rkb2">Volver</button>';
   mb.querySelectorAll(".tile").forEach(t=>t.onclick=()=>{ if(t.dataset.h){ openHeartsRank(); } else { const g=GAMES[+t.dataset.i], r=g.rk; showRanking(r.id,g.n,r.high,r.fmt,openRankMenu); } });
@@ -1300,7 +1640,9 @@ function showHow(g){
   const dv=document.createElement("div"); dv.className="who"; dv.textContent="📱 Celular: tocá o deslizá el dedo · 💻 Compu: mouse y flechas del teclado"; mb.appendChild(dv);
   const w=getName(); const who=document.createElement("div"); who.className="who"; who.textContent=w?"👤 Jugás como "+w:"👤 Poné tu nombre en la sala de juegos para entrar a los rankings"; mb.appendChild(who);
 }
-function openGame(i,skip){ stop(); stop=()=>{}; cur.i=i; modal.hidden=false; $("mbk").style.display=""; if(skip) GAMES[i].run(); else showHow(GAMES[i]); }
+function openGame(i,skip){ stop(); stop=()=>{}; cur.i=i; modal.hidden=false; ambOn(); $("mbk").style.display=""; $("msn").style.display=""; if(skip) GAMES[i].run(); else showHow(GAMES[i]); }
+$("msn").textContent=sndOn?"🔊":"🔇";
+$("msn").addEventListener("click",()=>{ sndOn=!sndOn; try{ localStorage.setItem("xv_snd",sndOn?"1":"0"); }catch(e){} $("msn").textContent=sndOn?"🔊":"🔇"; if(sndOn) sfx.power(); });
 $("mbk").addEventListener("click",openMenu);
 document.querySelectorAll(".peek,.sitcat").forEach(el=>el.addEventListener("click",()=>animalTap()));
 document.querySelectorAll(".peekliz,.lizard").forEach(el=>el.addEventListener("click",()=>animalTap()));
@@ -1452,7 +1794,7 @@ async function revealAdmin(d){
 }
 let keyFails=0, keyBusy=false;
 function openKey(){
-  stop(); stop=()=>{}; modal.hidden=false; $("mbk").style.display="none"; mt.textContent="🔑 ¿Tenés una clave?";
+  stop(); stop=()=>{}; modal.hidden=false; ambOn(); $("mbk").style.display="none"; $("msn").style.display="none"; mt.textContent="🔑 ¿Tenés una clave?";
   mb.innerHTML='<p class="hint2">Escribila para abrir tus mensajes.</p><form id="kform" autocomplete="off" style="margin-top:12px"><input id="kpw" type="password" placeholder="Clave" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="btn solid" id="kgo" type="submit">Abrir</button></form><p class="lerr" id="kerr"></p>';
   $("kform").addEventListener("submit",async e=>{
     e.preventDefault(); if(keyBusy) return; const pw=$("kpw").value; if(!pw) return;
