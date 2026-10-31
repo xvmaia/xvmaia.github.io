@@ -969,10 +969,11 @@ const cleanName=t=>String(t||"").replace(/[\u0000-\u001f<>]/g,"").replace(/\s+/g
 const getName=()=>{ try{ return cleanName(localStorage.getItem("xv_name")||""); }catch(e){ return ""; } };
 const setName=n=>{ try{ localStorage.setItem("xv_name",cleanName(n)); }catch(e){} };
 async function rkGet(id){ try{ const t=await getText(RK+id); const a=JSON.parse(t); return Array.isArray(a)?a.filter(x=>x&&typeof x.n==="string"&&typeof x.s==="number"):[]; }catch(e){ return []; } }
+async function rkGetStrict(id){ const r=await fetch(RK+id,{cache:"no-store"}); if(!r.ok) throw new Error("read"); const t=(await r.text()).trim(); if(!t) return []; const a=JSON.parse(t); if(!Array.isArray(a)) throw new Error("fmt"); return a.filter(x=>x&&typeof x.n==="string"&&typeof x.s==="number"); }
 async function rkSubmit(id,name,score,high){
   const better=(a,b)=>high?a>b:a<b;
   for(let tries=0;tries<3;tries++){
-    let list=await rkGet(id);
+    let list; try{ list=await rkGetStrict(id); }catch(e){ await new Promise(r=>setTimeout(r,800)); continue; }
     const i=list.findIndex(x=>x.n.toLowerCase()===name.toLowerCase());
     if(i>=0){ if(!better(score,list[i].s)) return list; list[i]={n:name,s:score,d:Date.now()}; } else list.push({n:name,s:score,d:Date.now()});
     list.sort((a,b)=>high?b.s-a.s:a.s-b.s); list=list.slice(0,30);
@@ -1030,7 +1031,7 @@ async function showRanking(id,title,high,fmt,back){
     const sc=document.createElement("span"); sc.className="sc"; sc.textContent=fmt(it.s); row.appendChild(sc);
     if(adm&&!it.rig){ const rm=document.createElement("button"); rm.className="rm"; rm.textContent="🗑"; rm.title="Quitar del ranking";
       rm.onclick=async()=>{ if(rm.dataset.a!=="1"){ rm.dataset.a="1"; rm.textContent="¿Seguro?"; setTimeout(()=>{ rm.dataset.a=""; rm.textContent="🗑"; },3000); return; }
-        try{ const cur=await rkGet(id); await putText(RK+id,JSON.stringify(cur.filter(x=>!(x.n===it.n&&x.s===it.s)))); row.remove(); }catch(e){ rm.textContent="Error"; } };
+        try{ const cur=await rkGetStrict(id); await putText(RK+id,JSON.stringify(cur.filter(x=>!(x.n===it.n&&x.s===it.s)))); row.remove(); }catch(e){ rm.textContent="Error"; } };
       row.appendChild(rm); }
     box.appendChild(row);
   });
